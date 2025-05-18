@@ -1,71 +1,150 @@
-"use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { FC, useEffect, useState } from "react";
 
-// components/Login.tsx
-interface Props {
-  onClose: () => void;
-  setRoute: (route: "Login" | "SignUp") => void;
-}
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import {
+  AiOutlineEye,
+  AiOutlineEyeInvisible,
+  AiFillGithub,
+} from "react-icons/ai";
+import { FcGoogle } from "react-icons/fc";
+import { styles } from "../../../app/styles/Style";
+import { userLoggedIn } from "@/redux/features/auth/authSlice";
+import toast from "react-hot-toast";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { signIn } from "next-auth/react";
 
-const LoginForm = ({ onClose, setRoute }: Props) => {
-  const router = useRouter();
+type Props = {
+  setRoute: (route: string) => void;
+  setOpen: (open: boolean) => void;
+};
+
+const schema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid email!")
+    .required("Please enter your email!"),
+  password: Yup.string().required("Please enter your password!").min(6),
+});
+
+const Login: FC<Props> = ({ setRoute, setOpen }) => {
+  const [show, setShow] = useState(false);
+  const [login, { isSuccess, error }] = useLoginMutation();
+  const formik = useFormik({
+    initialValues: { email: "", password: "" },
+    validationSchema: schema,
+    onSubmit: async ({ email, password }) => {
+      await login({ email, password });
+    },
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Login Successfully");
+      setOpen(false);
+    }
+    if (error) {
+      if ("data" in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+      }
+    }
+  }, [isSuccess, error, setOpen]);
+
+  const { errors, touched, values, handleChange, handleSubmit } = formik;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white w-full max-w-md mx-4 p-6 rounded-lg shadow-lg relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-black text-xl"
-        >
-          &times;
-        </button>
+    <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+      <h1 className={`${styles.title}`}>Login With ELearning</h1>
 
-        <h2 className="text-2xl font-semibold text-center mb-6 text-black">
-          Login
-        </h2>
-        <form className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              placeholder="Enter your email"
-              className="w-full border px-4 py-2 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              placeholder="Enter your password"
-              className="w-full border px-4 py-2 rounded-md"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded"
-          >
-            Login
-          </button>
-        </form>
+      <form onSubmit={handleSubmit} className="w-full">
+        <label className={`${styles.label}`} htmlFor="email">
+          Enter your Email
+        </label>
+        <input
+          type="email"
+          name="email"
+          value={values.email}
+          onChange={handleChange}
+          id="email"
+          placeholder="Loginmail@gmail.com"
+          className={`${errors.email && touched.email && "border-red-500"} ${
+            styles.input
+          }`}
+        />
+        {errors.email && touched.email && (
+          <span className="text-red-500 pt-2 block">{errors.email}</span>
+        )}
 
-        <p className="mt-6 text-sm text-center text-gray-600">
-          Don’t have an account?{" "}
+        <div className="w-full mt-5 relative mb-1">
+          <label className={`${styles.label}`} htmlFor="password">
+            Enter your Password
+          </label>
+
+          <input
+            type={!show ? "password" : "text"}
+            name="password"
+            value={values.password}
+            onChange={handleChange}
+            id="password"
+            placeholder="Password!@%"
+            className={`${
+              errors.password && touched.password && "border-red-500"
+            } ${styles.input}`}
+          />
+
+          {!show ? (
+            <AiOutlineEyeInvisible
+              className="absolute bottom-3 right-2 z-10 cursor-pointer"
+              size={20}
+              onClick={() => setShow(true)}
+            />
+          ) : (
+            <AiOutlineEye
+              className="absolute bottom-3 right-2 z-10 cursor-pointer"
+              size={20}
+              onClick={() => setShow(false)}
+            />
+          )}
+
+          {errors.password && touched.password && (
+            <span className="text-red-500 pt-2 block">{errors.password}</span>
+          )}
+        </div>
+        <div className="w-full mt-5">
+          <input type="submit" value="Login" className={`${styles.button}`} />
+        </div>
+        <br />
+        <h5 className="text-center pt-4 font-Poppins text-[14px] text-black dark:text-white">
+          or join with
+        </h5>
+        <div className="flex items-center justify-center my-3">
+          <FcGoogle
+            size={30}
+            className="cursor-pointer mr-2"
+            onClick={() => signIn("google")}
+          />
+          <AiFillGithub
+            size={30}
+            className="cursor-pointer mr-2"
+            onClick={() => signIn("github")}
+          />
+        </div>
+        <h5 className="text-center pt-4 font-Poppins text-[14px]">
+          Not have any account?{" "}
           <span
-            className="text-blue-600 hover:underline cursor-pointer"
-            onClick={() => setRoute("SignUp")}
+            className="text-[#2190ff] pl-1 cursor-pointer"
+            onClick={() => setRoute("Sign-up")}
           >
             Sign up
           </span>
-        </p>
-      </div>
+        </h5>
+      </form>
+      <br />
     </div>
   );
 };
 
-export default LoginForm;
+export default Login;
+
+
+
