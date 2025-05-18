@@ -10,10 +10,10 @@ import { Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Providers from "./Provider";
 import { SessionProvider } from "next-auth/react";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./component/Loader/Loader";
-
+import Header from "./services/components/SeviceHeader"
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -42,7 +42,7 @@ export default function RootLayout({
     <html lang="en">
       {/* dark mode logic in here  */}
       <body
-        className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b  duration-300 `}
+        className={`${poppins.variable} ${josefin.variable} bg-white bg-no-repeat   duration-300 `}
       >
         <Providers>
           <SessionProvider>
@@ -59,6 +59,26 @@ export default function RootLayout({
 
 const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
+  const [open, setOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState(0);
+  const [route, setRoute] = useState("Login");
+  return (
+    <>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <Header
+            open={open}
+            setOpen={setOpen}
+            activeItem={activeItem}
+            setRoute={setRoute}
+            route={route}
+          />
 
-  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
+          {children}
+        </>
+      )}
+    </>
+  );
 };

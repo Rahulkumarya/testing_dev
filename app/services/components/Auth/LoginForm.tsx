@@ -12,11 +12,15 @@ import { styles } from "../../../../app/styles/Style";
 import { userLoggedIn } from "../../../../redux/features/auth/authSlice";
 import toast from "react-hot-toast";
 import { useLoginMutation } from "../../../../redux/features/auth/authApi";
+import { store } from "@/redux/store";
 import { signIn } from "next-auth/react";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 type Props = {
   setRoute: (route: string) => void;
   setOpen: (open: boolean) => void;
+ 
 };
 
 const schema = Yup.object().shape({
@@ -27,6 +31,10 @@ const schema = Yup.object().shape({
 });
 
 const Login: FC<Props> = ({ setRoute, setOpen }) => {
+
+  const router=useRouter();
+  const user = useSelector((state: store) => state.auth.user);
+  console.log(`user_name ${user.name}`,user)
   const [show, setShow] = useState(false);
   const [login, { isSuccess, error }] = useLoginMutation();
   const formik = useFormik({
@@ -34,12 +42,14 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
       await login({ email, password });
+      
     },
   });
 
   useEffect(() => {
     if (isSuccess) {
       toast.success("Login Successfully");
+      router.push("/services/complete_profile");
       setOpen(false);
     }
     if (error) {
