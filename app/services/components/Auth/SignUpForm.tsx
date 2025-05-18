@@ -9,8 +9,8 @@ import {
   AiFillGithub,
 } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
-import { styles } from "../../../app/styles/Style";
-import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import { styles } from "../../../../app/styles/Style";
+import { useRegisterMutation } from "../../../../redux/features/auth/authApi";
 import toast from "react-hot-toast";
 
 type Props = {

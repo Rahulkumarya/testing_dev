@@ -8,10 +8,10 @@ import {
   AiFillGithub,
 } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
-import { styles } from "../../../app/styles/Style";
-import { userLoggedIn } from "@/redux/features/auth/authSlice";
+import { styles } from "../../../../app/styles/Style";
+import { userLoggedIn } from "../../../../redux/features/auth/authSlice";
 import toast from "react-hot-toast";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { useLoginMutation } from "../../../../redux/features/auth/authApi";
 import { signIn } from "next-auth/react";
 
 type Props = {
