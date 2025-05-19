@@ -19,7 +19,7 @@ const validationSchema = Yup.object({
     .required("Account Number is required"),
 });
 
-const BusinessComplianceForm = () => {
+const HospitalProfile = () => {
 
     const router=useRouter()
   const formik = useFormik({
@@ -155,4 +155,4 @@ const BusinessComplianceForm = () => {
   );
 };
 
-export default BusinessComplianceForm;
+export default HospitalProfile;
