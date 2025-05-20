@@ -1,181 +1,452 @@
-"use client";
-
-import React from "react";
-import { useFormik } from "formik";
+"use client"
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useRouter } from "next/navigation"; // ✅ import router for redirect
+import { useState } from "react";
+import { useCreateDoctorProfileMutation } from "@/redux/features/dprofile/profileSlice";
+import toast from "react-hot-toast";
+import axiosInstance from "@/app/utils/axiosInstance";
 
-// ✅ Validation schema using Yup
-const validationSchema = Yup.object({
-  name: Yup.string().required("Doctor's name is required"),
-  specialization: Yup.string().required("Specialization is required"),
-  registrationNumber: Yup.string()
-    .matches(/^[A-Z0-9]{6,20}$/, "Invalid registration number")
-    .required("Registration number is required"),
-  experience: Yup.number()
-    .min(0, "Experience cannot be negative")
-    .required("Experience is required"),
-  contactNumber: Yup.string()
-    .matches(/^\d{10}$/, "Invalid contact number")
-    .required("Contact number is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-});
+const DoctorProfileForm = () => {
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [createDoctorProfile, { isLoading }] = useCreateDoctorProfileMutation();
 
-const DoctorProfile = () => {
-  const router = useRouter(); // ✅ Hook to redirect user
-
-  // ✅ Formik hook for form state & validation
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      specialization: "",
-      registrationNumber: "",
-      experience: "",
-      contactNumber: "",
-      email: "",
+  const initialValues = {
+    specialization: [""],
+    registrationNumber: "",
+    experience: "",
+    gstNumber: "",
+    licenceNumber: "",
+    gender: "",
+    address: "",
+    location: {
+      coordinates: ["", ""],
+      city: "",
+      state: "",
+      pincode: "",
+      address: "",
+      landmark: "",
     },
-    validationSchema,
-    onSubmit: (values) => {
-      console.log("Doctor Profile Submitted:", values);
-      alert("Doctor profile completed successfully!");
-
-      // ✅ Redirect to the next page after submission
-      router.push("/services/dashboard"); // Change this path as needed
+    accountDetails: {
+      HolderName: "",
+      Ifsc: "",
+      accountNumber: "",
+      bankName: "",
     },
+    avatar: null,
+  };
+  
+
+  const validationSchema = Yup.object().shape({
+    specialization: Yup.array().of(Yup.string().required("Required")),
+    registrationNumber: Yup.string().required("Required"),
+    experience: Yup.number().min(0).required("Required"),
+    gstNumber: Yup.string(),
+    licenceNumber: Yup.string(),
+    gender: Yup.string().required("Required"),
+    address: Yup.string().required("Required"),
+    location: Yup.object().shape({
+      coordinates: Yup.array()
+        .of(Yup.number().typeError("Must be a number"))
+        .length(2, "Must have 2 coordinates"),
+      city: Yup.string(),
+      state: Yup.string(),
+      pincode: Yup.string(),
+      address: Yup.string(),
+      landmark: Yup.string(),
+    }),
+    accountDetails: Yup.object().shape({
+      HolderName: Yup.string().required("Holder name is required"),
+      Ifsc: Yup.string().required("IFSC is required"),
+      accountNumber: Yup.number()
+        .typeError("Must be a number")
+        .required("Account Number is required"),
+      bankName: Yup.string().required("Bank Name is required"),
+    }),
   });
+  
+
+  const handleAvatarChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFieldValue: any
+  ) => {
+    const file = e.currentTarget.files?.[0];
+    if (file) {
+      setFieldValue("avatar", file); // stores in Formik state
+      const reader = new FileReader();
+      reader.onloadend = () => setAvatarPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setFieldValue("avatar", null);
+    }
+  };
+
+
+
+  const handleSubmit = async (values: any) => {
+    const formData = new FormData();
+    for (const key in values) {
+      if (key === "avatar" && values.avatar) {
+        formData.append("avatar", values.avatar);
+      } else if (key === "location") {
+        formData.append("location", JSON.stringify(values.location));
+      } else if (key === "specialization") {
+        values.specialization.forEach((spec: string, index: number) =>
+          formData.append(`specialization[${index}]`, spec)
+        );
+      } else {
+        formData.append(key, values[key]);
+      }
+    }
+
+    try {
+      const res = await axiosInstance.post("d-create-profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // ✅ Very Important
+        },
+      }); 
+      console.log(`fromdatawhithout s`,formData)
+      console.log(`files is `,formData.get("avatar") instanceof File);
+      const avatarFile = formData.get("avatar");
+      console.log(avatarFile);
+      console.log(Object.prototype.toString.call(avatarFile));
+      toast.success("Profile updated successfully!");
+      console.log(`responsedata is `,res);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Update failed");
+      console.error(err);
+    }
+  };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-center text-blue-800">
-        Doctor Profile Completion
+    <div className="max-w-4xl mx-auto px-6 py-10 bg-white rounded-xl shadow-md">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-8">
+        Doctor Profile
       </h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ setFieldValue }) => (
+          <Form className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+            {/* Specialization */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Specialization
+              </label>
+              <Field
+                name="specialization[0]"
+                placeholder="e.g. Cardiologist"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <ErrorMessage
+                name="specialization[0]"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-      {/* ✅ Doctor Profile Form */}
-      <form onSubmit={formik.handleSubmit} className="space-y-5">
-        {/* Name */}
-        <div>
-          <label className="block mb-1 font-medium">Doctor Name</label>
-          <input
-            type="text"
-            name="name"
-            placeholder="Dr. John Doe"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.name}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formik.touched.name && formik.errors.name && (
-            <p className="text-sm text-red-500 mt-1">{formik.errors.name}</p>
-          )}
-        </div>
+            {/* Registration Number */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Registration Number
+              </label>
+              <Field
+                name="registrationNumber"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <ErrorMessage
+                name="registrationNumber"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-        {/* Specialization */}
-        <div>
-          <label className="block mb-1 font-medium">Specialization</label>
-          <input
-            type="text"
-            name="specialization"
-            placeholder="Cardiologist, Dermatologist, etc."
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.specialization}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formik.touched.specialization && formik.errors.specialization && (
-            <p className="text-sm text-red-500 mt-1">
-              {formik.errors.specialization}
-            </p>
-          )}
-        </div>
+            {/* Experience */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Experience (Years)
+              </label>
+              <Field
+                name="experience"
+                type="number"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <ErrorMessage
+                name="experience"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-        {/* Registration Number */}
-        <div>
-          <label className="block mb-1 font-medium">Registration Number</label>
-          <input
-            type="text"
-            name="registrationNumber"
-            placeholder="e.g., MED1234567"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.registrationNumber}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formik.touched.registrationNumber &&
-            formik.errors.registrationNumber && (
-              <p className="text-sm text-red-500 mt-1">
-                {formik.errors.registrationNumber}
-              </p>
-            )}
-        </div>
+            {/* GST */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                GST Number (Optional)
+              </label>
+              <Field
+                name="gstNumber"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              />
+            </div>
 
-        {/* Experience */}
-        <div>
-          <label className="block mb-1 font-medium">Years of Experience</label>
-          <input
-            type="number"
-            name="experience"
-            min="0"
-            placeholder="e.g., 5"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.experience}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formik.touched.experience && formik.errors.experience && (
-            <p className="text-sm text-red-500 mt-1">
-              {formik.errors.experience}
-            </p>
-          )}
-        </div>
+            {/* Licence */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Licence Number (Optional)
+              </label>
+              <Field
+                name="licenceNumber"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              />
+            </div>
 
-        {/* Contact Number */}
-        <div>
-          <label className="block mb-1 font-medium">Contact Number</label>
-          <input
-            type="text"
-            name="contactNumber"
-            placeholder="10-digit number"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.contactNumber}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formik.touched.contactNumber && formik.errors.contactNumber && (
-            <p className="text-sm text-red-500 mt-1">
-              {formik.errors.contactNumber}
-            </p>
-          )}
-        </div>
+            {/* Gender */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Gender
+              </label>
+              <Field
+                as="select"
+                name="gender"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </Field>
+              <ErrorMessage
+                name="gender"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-        {/* Email */}
-        <div>
-          <label className="block mb-1 font-medium">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="doctor@example.com"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          {formik.touched.email && formik.errors.email && (
-            <p className="text-sm text-red-500 mt-1">{formik.errors.email}</p>
-          )}
-        </div>
+            {/* Address */}
+            <div className="sm:col-span-2">
+              <label className="block text-gray-700 font-medium mb-1">
+                Primary Address
+              </label>
+              <Field
+                name="address"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              />
+              <ErrorMessage
+                name="address"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-        {/* Submit Button */}
-        <div className="text-center">
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
+            {/* Location Sharing */}
+            <div className="sm:col-span-2">
+              <label className="block text-gray-700 font-medium mb-2">
+                Share Location
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      async (position) => {
+                        const { latitude, longitude } = position.coords;
+
+                        // Set coordinates
+                        setFieldValue("location.coordinates[0]", longitude);
+                        setFieldValue("location.coordinates[1]", latitude);
+
+                        toast.success("Location captured successfully!");
+
+                        try {
+                          // Reverse Geocode using OpenStreetMap (Nominatim)
+                          const res = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                          );
+                          const data = await res.json();
+                          console.log(`longtitude data is `,data);
+                          const address = data.address;
+
+                          // Set auto-filled values
+                          if (address.city || address.town || address.state_district)
+                            setFieldValue(
+                              "location.city",
+                              address.city ||
+                                address.town ||
+                                address.state_district
+                            );
+                          if (address.state)
+                            setFieldValue("location.state", address.state);
+                          if (address.postcode)
+                            setFieldValue("location.pincode", address.postcode);
+                          if (address.road || address.suburb)
+                            setFieldValue(
+                              "location.landmark",
+                              address.road || address.suburb
+                            );
+                        } catch (error) {
+                          toast.error(
+                            "Failed to fetch address from coordinates"
+                          );
+                          console.error("Geocoding error:", error);
+                        }
+                      },
+                      (error) => {
+                        toast.error("Unable to retrieve location");
+                        console.error(error);
+                      }
+                    );
+                  } else {
+                    toast.error(
+                      "Geolocation is not supported by this browser."
+                    );
+                  }
+                }}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+              >
+                Share Location
+              </button>
+            </div>
+
+            {/* City, State, Pincode, Landmark */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                City
+              </label>
+              <Field name="location.city" className="input" />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                State
+              </label>
+              <Field name="location.state" className="input" />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Pincode
+              </label>
+              <Field name="location.pincode" className="input" />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                Landmark
+              </label>
+              <Field name="location.landmark" className="input" />
+            </div>
+
+
+
+            {/* Account Details  */}
+            {/* Account Details Section */}
+<div className="sm:col-span-2">
+  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+    Bank Account Details
+  </h3>
+</div>
+
+<div>
+  <label className="block text-gray-700 font-medium mb-1">
+    Account Holder Name
+  </label>
+  <Field
+    name="accountDetails.HolderName"
+    className="input"
+    placeholder="e.g. Rahul Kumar"
+/>
+  <ErrorMessage
+    name="accountDetails.HolderName"
+    component="div"
+    className="text-red-500 text-sm mt-1"
+/>
+</div>
+
+<div>
+  <label className="block text-gray-700 font-medium mb-1">
+    IFSC Code
+  </label>
+  <Field
+    name="accountDetails.Ifsc"
+    className="input"
+    placeholder="e.g. SBIN0001234"
+/>
+  <ErrorMessage
+    name="accountDetails.Ifsc"
+    component="div"
+    className="text-red-500 text-sm mt-1"
+/>
+</div>
+
+<div>
+  <label className="block text-gray-700 font-medium mb-1">
+    Account Number
+  </label>
+  <Field
+    name="accountDetails.accountNumber"
+    className="input"
+    placeholder="e.g. 1234567890"
+/>
+  <ErrorMessage
+    name="accountDetails.accountNumber"
+    component="div"
+    className="text-red-500 text-sm mt-1"
+/>
+</div>
+
+<div>
+  <label className="block text-gray-700 font-medium mb-1">
+    Bank Name
+  </label>
+  <Field
+    name="accountDetails.bankName"
+    className="input"
+    placeholder="e.g. State Bank of India"
+/>
+  <ErrorMessage
+    name="accountDetails.bankName"
+    component="div"
+    className="text-red-500 text-sm mt-1"
+/>
+</div>
+
+            {/* Avatar Upload */}
+            <div className="sm:col-span-2">
+              <label className="block text-gray-700 font-medium mb-1">
+                Avatar (Optional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleAvatarChange(e, setFieldValue)}
+                className="w-full text-sm text-gray-500
+                       file:mr-4 file:py-2 file:px-4
+                       file:rounded-md file:border-0
+                       file:text-sm file:font-semibold
+                       file:bg-blue-50 file:text-blue-700
+                       hover:file:bg-blue-100"
+              />
+              {avatarPreview && (
+                <img
+                  src={avatarPreview}
+                  alt="Avatar Preview"
+                  className="mt-3 w-24 h-24 rounded-full border object-cover"
+                />
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="sm:col-span-2 mt-6 text-right">
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+              >
+                Submit Profile
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };
 
-export default DoctorProfile;
+export default DoctorProfileForm;
