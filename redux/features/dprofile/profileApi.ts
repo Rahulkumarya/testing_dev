@@ -1,48 +1,56 @@
+// redux/features/doctor/doctorApi.ts
+// require("dotenv").config()
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { apiSlice } from "../api/apiSlice";
-import { profileCreation } from "./profileSlice";
-
-type RegistrationResponse = {
-  message: string;
-  activationToken: string;
-};
-
-type RegistrationData = {};
-
-export const authApi = apiSlice.injectEndpoints({
+export const doctorApi = createApi({
+  reducerPath: "doctorApi",
+  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_SERVER_URI }),
+  tagTypes: ["Doctor"],
   endpoints: (builder) => ({
-    //endpoints here
-    register: builder.mutation<RegistrationResponse, RegistrationData>({
-      query: (data) => ({
-        url: "registration",
-        method: "POST",
-        body: data,
-        credentials: "include" as const,
-      }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        try {
-          const result = await queryFulfilled;
-          dispatch(
-            userRegistration({
-              token: result.data.activationToken,
-            })
-          );
-        } catch (error: any) {
-          console.log(error);
-        }
-      },
+    // Fetch all doctors
+    getDoctors: builder.query<any[], void>({
+      query: () => "/Alldoctors",
+      providesTags: ["Doctor"],
     }),
-  
 
-   
-    
-   
+    // Fetch a single doctor by ID
+    getDoctorById: builder.query<any, string>({
+      query: (id) => `/single/${id}`,
+      providesTags: (result, error, id) => [{ type: "Doctor", id }],
+    }),
+
+    createDoctor: builder.mutation({
+      query: (formData) => ({
+        url: "d-create-profile",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
+    updateDoctor: builder.mutation({
+      query: (doctor) => ({
+        url: "",
+        method: "PUT",
+        body: doctor,
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
+    deleteDoctor: builder.mutation({
+      query: (id) => ({
+        url: `delete/${id}`,
+        method: "DELETE",
+        body: { id },
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
   }),
 });
 
 export const {
-  useRegisterMutation,
-  useActivationMutation,
-  useLoginMutation,
-  useSocialAuthMutation,
-} = authApi;
+  useGetDoctorsQuery,
+  useGetDoctorByIdQuery,
+  useCreateDoctorMutation,
+  useUpdateDoctorMutation,
+  useDeleteDoctorMutation,
+} = doctorApi;
+

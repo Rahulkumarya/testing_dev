@@ -11,16 +11,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./features/api/apiSlice";
 import authSlice from "./features/auth/authSlice";
+import { doctorApi } from "./features/dprofile/profileApi";
 // import { boolean } from "yup";
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    [doctorApi.reducerPath]:doctorApi.reducer,
     auth: authSlice,
+  
   },
   devTools: false,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(apiSlice.middleware,doctorApi.middleware),
 });
 
 //call the refresh token function on every page load
