@@ -17,8 +17,8 @@ import avatar from "../../../public/assests/avatar.png";
 import { useSession } from "next-auth/react";
 import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
-import { userLoggedOut } from "../../../redux/features/auth/authSlice";
-import { useRouter } from "next/router";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
+import { useRouter } from "next/navigation";
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -28,7 +28,7 @@ type Props = {
   logOutHandler: () => void;
 };
 
-const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute,logOutHandler }) => {
+const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute, }) => {
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
     const dispatch = useDispatch();
@@ -36,10 +36,18 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute,logOutHa
     const { data } = useSession();
     const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
     const [showDropdown, setShowDropdown] = useState(false);
+const [logout,{isLoading}]=useLogoutMutation()
+const router=useRouter();
 
-
-    const handleLogout = () => {
-        dispatch(userLoggedOut());
+    const handleLogout = async() => {
+      try {
+        const res=await logout().unwrap();
+        console.log(`response logout`,res);
+        // Optionally redirect or show a message after logout
+        router.push("/");
+      } catch (err) {
+        console.error("Failed to logout:", err);
+      }
       };
 
     

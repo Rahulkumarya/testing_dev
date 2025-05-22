@@ -18,7 +18,7 @@ const Page: FC<Props> = (props) => {
         keywords="Programming ,MERN, Redux,Machine Learning"
       />
 
-    
+    <h1 className="text-black text-center">Home page </h1>
    
     </div>
   );

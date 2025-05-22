@@ -16,7 +16,7 @@ import { store } from "@/redux/store";
 import { signIn } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-
+import { useCheckProfileQuery } from "@/redux/features/dprofile/profileApi";
 type Props = {
   setRoute: (route: string) => void;
   setOpen: (open: boolean) => void;
@@ -37,12 +37,27 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
   console.log(`user_name ${user.name}`,user)
   const [show, setShow] = useState(false);
   const [login, { isSuccess, error }] = useLoginMutation();
+
+  const { data, isLoading, isError, refetch } = useCheckProfileQuery(
+    { userId: user?._id, role: user?.role },
+    { skip: !user?._id || !user?.role } // ✅ wait until user ID and role are present
+  );
+console.log(`data is `,data)
+  useEffect(() => {
+    if (data?.profileCompleted) {
+      router.push("/services/complete_profile");
+    }
+  }, [data]);
+
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
-      await login({ email, password });
-      
+     const res= await login({ email, password }).unwrap();
+      console.log(`response login `,res);
+    const token=  localStorage.setItem("token", res.accessToken);
+    console.log(`token is `,token)
+
     },
   });
 
@@ -50,6 +65,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
     if (isSuccess) {
       toast.success("Login Successfully");
       router.push("/services/complete_profile");
+
       setOpen(false);
     }
     if (error) {

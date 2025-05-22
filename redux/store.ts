@@ -17,13 +17,12 @@ import { doctorApi } from "./features/dprofile/profileApi";
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
-    [doctorApi.reducerPath]:doctorApi.reducer,
     auth: authSlice,
   
   },
   devTools: false,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware,doctorApi.middleware),
+    getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
 //call the refresh token function on every page load
