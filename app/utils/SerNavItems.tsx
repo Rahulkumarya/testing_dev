@@ -7,8 +7,8 @@ export const NavItemsData = [
     url: "/",
   },
   {
-    name: "Courses",
-    url: "/courses",
+    name: "Services",
+    url: "/services",
   },
   {
     name: "About",
@@ -55,7 +55,7 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
               <span
                 className={`text-[25px] font-Poppins font-[500] text-black `}
               >
-                ELearning
+                UronHealth
               </span>
             </Link>
           </div>

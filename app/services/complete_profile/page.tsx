@@ -86,6 +86,8 @@ import { store } from "../../../redux/store";
 import { useCheckProfileQuery } from "@/redux/features/dprofile/profileApi";
 import { useRouter } from "next/navigation";
 import DoctorProfile from "./component/DoctorProfile";
+import GymProfile from "./component/GymProfile";
+import DiagnosisProfile from "./component/DiagnosisProfile";
 // ... other imports
 
 const Page = () => {
@@ -111,8 +113,13 @@ console.log(`data is `,data)
   const renderProfileComponent = () => {
     switch (user?.role) {
       case "doctor":
-        return <DoctorProfile />;
+        return <DoctorProfile />
       // ... add other role-based forms
+      case "gym":
+        return <GymProfile/>
+
+      case "diagnosis":
+        return <DiagnosisProfile/>
       default:
         router.push("/");
     }

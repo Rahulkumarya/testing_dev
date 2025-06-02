@@ -43,39 +43,66 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
     { skip: !user?._id || !user?.role } // ✅ wait until user ID and role are present
   );
 console.log(`data is `,data)
-  useEffect(() => {
-    if (data?.profileCompleted) {
-      router.push("/services/complete_profile");
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if(isLoading){
+  //     <h1 className="text-black text-center">Loading...</h1>
+  //   }
+  //   else if (data?.profileCompleted) {
+  //     router.push("/services/complete_profile");
+  //   }
+  // }, [data]);
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
-    onSubmit: async ({ email, password }) => {
-     const res= await login({ email, password }).unwrap();
-      console.log(`response login `,res);
-    const token=  localStorage.setItem("token", res.accessToken);
-    console.log(`token is `,token)
+    // onSubmit: async ({ email, password }) => {
+    //  const res= await login({ email, password }).unwrap();
+    //   console.log(`response login `,res);
+    // const token=  localStorage.setItem("token", res.accessToken);
+    // console.log(`token is `,token)
 
+    // },
+
+    onSubmit: async ({ email, password }) => {
+      try {
+        const res = await login({ email, password }).unwrap();
+        localStorage.setItem("token", res.accessToken);
+        toast.success("Login Successful");
+
+        // Now check profile here manually (or dispatch to redux)
+        const profileRes = await refetch(); // refetch from `useCheckProfileQuery`
+
+        if (profileRes?.data?.profileCompleted === false) {
+          router.push("/services/complete_profile");
+        } else {
+          router.push("/"); // or any other default home page
+        }
+
+        setOpen(false);
+      } catch (err: any) {
+        if (err?.data?.message) {
+          toast.error(err.data.message);
+        } else {
+          toast.error("Login failed!");
+        }
+      }
     },
   });
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Login Successfully");
-      router.push("/services/complete_profile");
+  // useEffect(() => {        // useEffect occurs problem in this login and form completion 
+  //   if (isSuccess) {
+  //     toast.success("Login Successfully");
+  //     router.push("/services/complete_profile");
 
-      setOpen(false);
-    }
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.data.message);
-      }
-    }
-  }, [isSuccess, error, setOpen]);
-
+  //     setOpen(false);
+  //   }
+  //   if (error) {
+  //     if ("data" in error) {
+  //       const errorData = error as any;
+  //       toast.error(errorData.data.message);
+  //     }
+  //   }
+  // }, [isSuccess, error, setOpen]);
   const { errors, touched, values, handleChange, handleSubmit } = formik;
 
   return (

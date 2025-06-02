@@ -1,6 +1,7 @@
 "use client"; //use because clients in app folder
 import React, { FC, useState } from "react";
 import Heading from "./utils/Heading";
+import SignUp from "./services/complete_profile/component/Test";
 
 
 
@@ -19,6 +20,7 @@ const Page: FC<Props> = (props) => {
       />
 
     <h1 className="text-black text-center">Home page </h1>
+
    
     </div>
   );

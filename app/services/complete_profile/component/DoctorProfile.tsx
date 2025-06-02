@@ -1,31 +1,26 @@
 "use client";
 
-import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useCreateDoctorMutation } from "@/redux/features/dprofile/profileApi";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import Select from "react-select";
 import { store } from "@/redux/store";
+import Select from "react-select";
+import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
+import  FormField  from "../../../styles/Style";
 
-// Helper for form field
-const FormField = ({ label, name, type = "text" }: any) => (
-  <div className="flex flex-col">
-    <label className="font-medium mb-1">{label}</label>
-    <Field
-      name={name}
-      type={type}
-      className="input border border-gray-300 px-3 py-2 rounded-md text-black"
-    />
-    <ErrorMessage
-      name={name}
-      component="div"
-      className="text-red-500 text-sm"
-    />
-  </div>
-);
+const specializationOptions = [
+  { value: "Cardiologist", label: "Cardiologist" },
+  { value: "Dermatologist", label: "Dermatologist" },
+  { value: "Neurologist", label: "Neurologist" },
+  { value: "Orthopedic", label: "Orthopedic" },
+  { value: "Pediatrician", label: "Pediatrician" },
+  // add more as needed
+];
+
 
 const DoctorProfileForm = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -33,7 +28,16 @@ const DoctorProfileForm = () => {
   const user = useSelector((state: store) => state.auth.user);
   const router = useRouter();
 
-  // Get location using Geolocation API
+  const [geo, setGeo] = useState({
+    lat: "",
+    lon: "",
+    city: "",
+    state: "",
+    pincode: "",
+    address: "",
+    landmark: "",
+  });
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -53,16 +57,6 @@ const DoctorProfileForm = () => {
     });
   }, []);
 
-  const [geo, setGeo] = useState({
-    lat: "",
-    lon: "",
-    city: "",
-    state: "",
-    pincode: "",
-    address: "",
-    landmark: "",
-  });
-
   useEffect(() => {
     if (isSuccess) router.push("/");
   }, [isSuccess, router]);
@@ -74,7 +68,6 @@ const DoctorProfileForm = () => {
     experience: "",
     gstNumber: "",
     licenceNumber: "",
-    gender: "",
     address: "",
     location: {
       coordinates: [geo.lon, geo.lat],
@@ -100,8 +93,7 @@ const DoctorProfileForm = () => {
     experience: Yup.number().min(0).required("Required"),
     gstNumber: Yup.string(),
     licenceNumber: Yup.string(),
-    gender: Yup.string(),
-    address: Yup.string().required("Required"),
+    address: Yup.string(),
     location: Yup.object().shape({
       coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
       city: Yup.string(),
@@ -112,7 +104,9 @@ const DoctorProfileForm = () => {
     }),
     accountDetails: Yup.object().shape({
       HolderName: Yup.string().required("Required"),
-      Ifsc: Yup.string().required("Required"),
+      Ifsc: Yup.string()
+  .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
+  .required("Required"),
       accountNumber: Yup.string().required("Required"),
       bankName: Yup.string().required("Required"),
     }),
@@ -157,8 +151,11 @@ const DoctorProfileForm = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-bold mb-6">Doctor Profile</h1>
+    <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
+      <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
+        Create Doctor Profile
+      </h1>
+
       <Formik
         initialValues={initialValues}
         enableReinitialize
@@ -167,99 +164,159 @@ const DoctorProfileForm = () => {
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Specialization (multiple) */}
-            <div className="col-span-1 md:col-span-2">
-              <label className="font-medium">Specializations</label>
-              <FieldArray name="specialization">
-                {({ push, remove }) => (
-                  <div className="flex flex-col gap-2 mt-2">
-                    {values.specialization.map((_: any, index: number) => (
-                      <div key={index} className="flex gap-2 items-center">
-                        <Field
-                          name={`specialization[${index}]`}
-                          className="flex-1 border px-3 py-2 rounded-md text-black"
-                        />
-                        {index > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="text-red-500"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => push("")}
-                      className="text-blue-500 mt-1"
-                    >
-                      + Add More
-                    </button>
-                  </div>
+            <div className="md:col-span-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Specializations
+              </label>
+              <Select
+                isMulti
+                name="specialization"
+                options={specializationOptions}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={(
+                  selectedOptions: { value: string; label: string }[]
+                ) =>
+                  setFieldValue(
+                    "specialization",
+                    selectedOptions.map((opt) => opt.value)
+                  )
+                }
+                value={specializationOptions.filter((opt) =>
+                  values.specialization.includes(opt.value)
                 )}
-              </FieldArray>
+              />
+              <ErrorMessage
+                name="specialization"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
             </div>
 
+            {/* Basic Info */}
             <FormField label="Registration Number" name="registrationNumber" />
             <FormField
-              label="Experience (years)"
+              label="Experience (in years)"
               name="experience"
               type="number"
             />
             <FormField label="GST Number" name="gstNumber" />
-            <FormField label="Licence Number" name="licenceNumber" />
-            <FormField label="Gender" name="gender" />
-            <FormField label="Clinic Address" name="address" />
+            <FormField label="License Number" name="licenceNumber" />
+            {/* <FormField label="Clinic Address" name="address" /> */}
 
-            {/* Geo Coordinates & Address */}
-            <FormField label="Longitude" name="location.coordinates[0]" />
-            <FormField label="Latitude" name="location.coordinates[1]" />
-            <FormField label="City" name="location.city" />
-            <FormField label="State" name="location.state" />
-            <FormField label="Pincode" name="location.pincode" />
-            <FormField label="Full Address" name="location.address" />
-            <FormField label="Landmark" name="location.landmark" />
+            {/* Geo Fields (Auto-Filled) */}
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                {/* <h2 className="text-sm font-semibold text-gray-700">
+                  Professional Location
+                </h2> */}
+                <button
+                  type="button"
+                  className="text-blue-600 underline text-sm cursor-pointer"
+                  onClick={async () => {
+                    if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const { latitude, longitude } = pos.coords;
+                        const res = await fetch(
+                          `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`
+                        );
+                        const data = await res.json();
+                        const locData = {
+                          coordinates: [
+                            longitude.toString(),
+                            latitude.toString(),
+                          ],
+                          city: data.address.city || "",
+                          state: data.address.state || "",
+                          pincode: data.address.postcode || "",
+                          address: data.display_name || "",
+                          landmark:
+                            data.address.suburb ||
+                            data.address.neighbourhood ||
+                            "",
+                        };
+                        // Update Formik fields
+                        setFieldValue("location", locData);
+                        toast.success("Location fetched successfully!");
+                      });
+                    } else {
+                      toast.error(
+                        "Geolocation is not supported by this browser."
+                      );
+                    }
+                  }}
+                >
+                  📍Share Location
+                </button>
+              </div>
 
-            {/* Bank Details */}
-            <FormField
-              label="Account Holder Name"
-              name="accountDetails.HolderName"
-            />
-            <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-            <FormField
-              label="Account Number"
-              name="accountDetails.accountNumber"
-            />
-            <FormField label="Bank Name" name="accountDetails.bankName" />
-
-            {/* Avatar Upload */}
-            <div>
-              <label>Profile Avatar</label>
-              <input
-                type="file"
-                name="avatar"
-                accept="image/*"
-                onChange={(e) => handleAvatarChange(e, setFieldValue)}
-                className="mt-2"
-              />
-              {avatarPreview && (
-                <img
-                  src={avatarPreview}
-                  alt="Avatar Preview"
-                  className="mt-2 w-24 h-24 object-cover rounded-full"
-                />
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField label="City" name="location.city" />
+                <FormField label="State" name="location.state" />
+                <FormField label="Pincode" name="location.pincode" />
+                <FormField label="Full Address" name="location.address" />
+              </div>
             </div>
 
+            {/* Account Information Section */}
+            <div className="md:col-span-2 bg-white rounded-2xl shadow-md px-8 py-6 mb-5 w-full">
+              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6 border-b-2 border-gray-300 pb-3">
+                <span className="text-2xl">💳</span>
+                <span>Account Details</span>
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-6">
+                <FormField
+                  label="Account Holder Name"
+                  name="accountDetails.HolderName"
+                />
+                <FormField label="Bank Name" name="accountDetails.bankName" />
+                <FormField label="IFSC Code" name="accountDetails.Ifsc" />
+                <MaskedInputField
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                  value={values.accountDetails.accountNumber}
+                  onChange={setFieldValue}
+                />
+              </div>
+            </div>
+
+            {/* Avatar Upload Section */}
+            <div className="md:col-span-2 bg-white rounded-2xl shadow-md px-8 py-6 w-full">
+              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6 border-b-2 border-gray-300 pb-3">
+                <span className="text-2xl">🖼️</span>
+                <span>Profile Avatar</span>
+              </h2>
+
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                <div className="w-full md:w-1/2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleAvatarChange(e, setFieldValue)}
+                    className="file-input file-input-bordered w-full"
+                  />
+                </div>
+                {avatarPreview && (
+                  <div className="flex justify-center md:justify-start">
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar Preview"
+                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Submit Button */}
             <div className="md:col-span-2">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 w-full"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg w-full hover:bg-blue-700 transition"
                 disabled={isLoading}
               >
-                {isLoading ? "Submitting..." : "Submit"}
+                {isLoading ? "Submitting..." : "Submit Profile"}
               </button>
             </div>
           </Form>

@@ -107,7 +107,7 @@ const router=useRouter();
                   href="/"
                   className="text-[25px] font-Poppins font-[500] text-black "
                 >
-                  ELearning
+                  UronHealth
                 </Link>
               </div>
               <div className="flex items-center text-black">
@@ -192,7 +192,7 @@ const router=useRouter();
               <p className="text-[16px] px-2 pl-5 text-black">
                 {" "}
                 {/* MOD: removed dark:text-white */}
-                Copyright &copy; 2024 ELearning
+                Copyright &copy; 2025 UronHealth
               </p>
             </div>
           </div>
