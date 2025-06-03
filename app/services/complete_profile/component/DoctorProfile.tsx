@@ -4,13 +4,28 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useCreateDoctorMutation } from "@/redux/features/dprofile/profileApi";
+import { useCreateDoctorMutation } from "../../../../redux/features/services/dprofile/profileApi";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
 import Select from "react-select";
 import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
-import  FormField  from "../../../styles/Style";
+// Reusable Form Field Component
+export const FormField = ({ label, name, type = "text" }: any) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-gray-700">{label}</label>
+    <Field
+      name={name}
+      type={type}
+      className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+    <ErrorMessage
+      name={name}
+      component="div"
+      className="text-red-500 text-sm"
+    />
+  </div>
+);
 
 const specializationOptions = [
   { value: "Cardiologist", label: "Cardiologist" },
@@ -87,31 +102,36 @@ const DoctorProfileForm = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    userId: Yup.string(),
-    specialization: Yup.array().of(Yup.string().required("Required")),
-    registrationNumber: Yup.string().required("Required"),
-    experience: Yup.number().min(0).required("Required"),
-    gstNumber: Yup.string(),
-    licenceNumber: Yup.string(),
-    address: Yup.string(),
-    location: Yup.object().shape({
-      coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
-      city: Yup.string(),
-      state: Yup.string(),
-      pincode: Yup.string(),
+      userId: Yup.string(),
+      specialization: Yup.array().of(Yup.string().required("Required")),
+      registrationNumber: Yup.string().required("Required"),
+      experience: Yup.number().min(0).required("Required"),
+      gstNumber: Yup.string()
+        .matches(
+          /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
+          "Invalid GST Number"
+        )
+        .required("GST Number is required"),
+      licenceNumber: Yup.string(),
       address: Yup.string(),
-      landmark: Yup.string(),
-    }),
-    accountDetails: Yup.object().shape({
-      HolderName: Yup.string().required("Required"),
-      Ifsc: Yup.string()
-  .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
-  .required("Required"),
-      accountNumber: Yup.string().required("Required"),
-      bankName: Yup.string().required("Required"),
-    }),
-  });
-
+      location: Yup.object().shape({
+        coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
+        city: Yup.string(),
+        state: Yup.string(),
+        pincode: Yup.string(),
+        address: Yup.string(),
+        landmark: Yup.string(),
+      }),
+      accountDetails: Yup.object().shape({
+        HolderName: Yup.string().required("Required"),
+        Ifsc: Yup.string()
+          .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
+          .required("Required"),
+        accountNumber: Yup.string()
+          .required("Account Number is required"),
+        bankName: Yup.string().required("Required"),
+      }),
+    });
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setFieldValue: any

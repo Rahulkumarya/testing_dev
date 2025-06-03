@@ -133,7 +133,7 @@ const SignUp: FC<Props> = ({ setRoute }) => {
         </div>
 
         {/* Role Dropdown */}
-        <div className="mb-3 mt-5">
+        <div className="mb-3 mt-5 ">
           <label className={`${styles.label}`} htmlFor="role">
             Select your Role
           </label>
@@ -144,14 +144,35 @@ const SignUp: FC<Props> = ({ setRoute }) => {
             onChange={handleChange}
             className={`${errors.role && touched.role && "border-red-500"} ${
               styles.input
-            } cursor-pointer`}
+            } cursor-pointer text-red-500`}
           >
             <option value="" disabled>
               -- Select Role --
             </option>
-            <option value="doctor">Doctor</option>
-            <option value="diagnosis">Diagnosis</option>
-            <option value="hospital">Hospital</option>
+            <option value="doctor" className="text-black">
+              Doctor
+            </option>
+            <option value="diagnosis" className="text-black">
+              Diagnosis
+            </option>
+            <option value="hospital" className="text-black">
+              Hospital
+            </option>
+            <option value="radiology" className="text-black">
+              Radiology
+            </option>
+            <option value="resort" className="text-black">
+              Resort
+            </option>
+            <option value="ambulance" className="text-black">
+              Ambulance
+            </option>
+            <option value="medicine" className="text-black">
+              Pharmacy
+            </option>
+            <option value="Gym" className="text-black">
+              Gym
+            </option>
           </select>
           {errors.role && touched.role && (
             <span className="text-red-500 pt-2 block">{errors.role}</span>

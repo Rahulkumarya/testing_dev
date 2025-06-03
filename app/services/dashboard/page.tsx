@@ -1,35 +1,24 @@
-"use client"
-import React, {useEffect} from 'react'
-import {useRouter} from "next/navigation"
-import {useSelector} from "react-redux"
-import ServicesProvided from './components/ambulance/ServicesProvided'
-// import AllServices from "./components/ambulance/AllServices"
-import DoctorAddServiceForm from './components/doctor/AddService'
-type Props = {}
+"use client";
 
-const page = (props: Props) => {
+import { useLoadUserQuery } from "../../../redux/features/api/apiSlice"; // update with actual path
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Loader from "./../../component/Loader/Loader";
+import ServiceDashboard from "./pages/ServiceDashboard";
+
+const ProtectedServiceDashboardPage = () => {
+  const { data: user, isLoading } = useLoadUserQuery({});
   const router = useRouter();
-  const user = useSelector((state: store) => state.auth.user);
 
   useEffect(() => {
-    if (!user?._id) {
-      // Not logged in, redirect to login page
-      router.push("/login");
+    if (!isLoading && !user) {
+      router.push("/services/auth/login");
     }
-  }, [user, router]);
+  }, [isLoading, user, router]);
 
-  // Optionally show a loader while checking auth
-  if (!user?._id) return <div>Redirecting to login...</div>;
-  return (
-    <div>
-      <ServicesProvided/>
-    
-      <br />
-      <br />
-      <br />
-      <DoctorAddServiceForm/>
-    </div>
-  )
-}
+  if (isLoading || !user) return <Loader />;
 
-export default page
+  return <ServiceDashboard />;
+};
+
+export default ProtectedServiceDashboardPage;

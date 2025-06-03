@@ -1,158 +1,363 @@
-import React from "react";
-import { useFormik } from "formik";
+"use client";
+
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-const validationSchema = Yup.object({
-  gstNumber: Yup.string()
-    .matches(
-      /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
-      "Invalid GST Number"
-    )
-    .required("GST Number is required"),
-  licenseNumber: Yup.string().required("License Number is mandatory"),
-  bankName: Yup.string().required("Bank Name is required"),
-  ifscCode: Yup.string()
-    .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC Code")
-    .required("IFSC Code is required"),
-  accountNumber: Yup.string()
-    .matches(/^\d{9,18}$/, "Invalid Account Number")
-    .required("Account Number is required"),
-});
+import { store } from "@/redux/store";
+import Select from "react-select";
+import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
+import { useCreateHospitalMutation } from "../../../../redux/features/services/hospital/profileApi";
+
+
+// Reusable Form Field Component
+export const FormField = ({ label, name, type = "text" }: any) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-gray-700">{label}</label>
+    <Field
+      name={name}
+      type={type}
+      className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+    <ErrorMessage
+      name={name}
+      component="div"
+      className="text-red-500 text-sm"
+    />
+  </div>
+);
+const specializationOptions = [
+  { value: "Cardiologist", label: "Yoga" },
+  { value: "Dermatologist", label: "Musuleup" },
+  { value: "Neurologist", label: "Running" },
+  { value: "Orthopedic", label: "Orthopedic" },
+  { value: "Pediatrician", label: "Pediatrician" },
+  // add more as needed
+];
+
 
 const HospitalProfile = () => {
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
 
-    const router=useRouter()
-  const formik = useFormik({
-    initialValues: {
-      gstNumber: "",
-      licenseNumber: "",
-      bankName: "",
-      ifscCode: "",
-      accountNumber: "",
-    },
-    validationSchema,
-    onSubmit: (values) => {
-      console.log("Submitted Data:", values);
-      alert("Form submitted successfully!");
-      router.push("/")
-    },
+  const [createHospital, { isLoading, isSuccess }] =
+    useCreateHospitalMutation();
+  const user = useSelector((state: store) => state.auth.user);
+  const router = useRouter();
+
+  const [geo, setGeo] = useState({
+    lat: "",
+    lon: "",
+    city: "",
+    state: "",
+    pincode: "",
+    address: "",
+    landmark: "",
   });
 
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const response = await fetch(
+        `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`
+      );
+      const data = await response.json();
+      setGeo({
+        lat: latitude.toString(),
+        lon: longitude.toString(),
+        city: data.address.city || "",
+        state: data.address.state || "",
+        pincode: data.address.postcode || "",
+        address: data.display_name || "",
+        landmark: data.address.suburb || "",
+      });
+    });
+  }, []);
 
+  useEffect(() => {
+    if (isSuccess) router.push("/");
+  }, [isSuccess, router]);
+
+  const initialValues = {
+    userId: user?._id,
+    specialization: [""],
+    registrationNumber: "",
+    experience: "",
+    gstNumber: "",
+    licenceNumber: "",
+    address: "",
+    location: {
+      coordinates: [geo.lon, geo.lat],
+      city: geo.city,
+      state: geo.state,
+      pincode: geo.pincode,
+      address: geo.address,
+      landmark: geo.landmark,
+    },
+    accountDetails: {
+      HolderName: "",
+      Ifsc: "",
+      accountNumber: "",
+      bankName: "",
+    },
+    avatar: null,
+  };
+
+  const validationSchema = Yup.object().shape({
+    userId: Yup.string(),
+    specialization: Yup.array().of(Yup.string().required("Required")),
+    registrationNumber: Yup.string().required("Required"),
+    experience: Yup.number().min(0).required("Required"),
+    gstNumber: Yup.string()
+      .matches(
+        /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
+        "Invalid GST Number"
+      )
+      .required("GST Number is required"),
+    licenceNumber: Yup.string(),
+    address: Yup.string(),
+    location: Yup.object().shape({
+      coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
+      city: Yup.string(),
+      state: Yup.string(),
+      pincode: Yup.string(),
+      address: Yup.string(),
+      landmark: Yup.string(),
+    }),
+    accountDetails: Yup.object().shape({
+      HolderName: Yup.string().required("Required"),
+      Ifsc: Yup.string()
+        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
+        .required("Required"),
+      accountNumber: Yup.string()
+        .required("Account Number is required"),
+      bankName: Yup.string().required("Required"),
+    }),
+  });
+
+  const handleAvatarChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFieldValue: any
+  ) => {
+    const file = e.currentTarget.files?.[0];
+    if (file) {
+      setFieldValue("avatar", file);
+      const reader = new FileReader();
+      reader.onloadend = () => setAvatarPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setFieldValue("avatar", null);
+    }
+  };
+
+  const handleSubmit = async (values: any) => {
+    const formData = new FormData();
+    if (values.avatar) formData.append("avatar", values.avatar);
+    values.specialization.forEach((spec: string, i: number) =>
+      formData.append(`specialization[${i}]`, spec)
+    );
+    formData.append("location", JSON.stringify(values.location));
+    formData.append("accountDetails", JSON.stringify(values.accountDetails));
+    const exclude = ["avatar", "specialization", "location", "accountDetails"];
+    Object.keys(values).forEach((key) => {
+      if (!exclude.includes(key)) formData.append(key, values[key]);
+    });
+
+    try {
+      const res = await createHospital(formData).unwrap();
+      toast.success("Doctor profile created!");
+      console.log("Submitted:", res);
+    } catch (err: any) {
+      console.error("Error:", err);
+      toast.error(err?.data?.message || "Failed to submit profile.");
+    }
+  };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Business Compliance Form
-      </h2>
-      <form onSubmit={formik.handleSubmit} className="space-y-5">
-        {/* GST Number */}
-        <div>
-          <label className="block font-medium mb-1">GST Number</label>
-          <input
-            type="text"
-            name="gstNumber"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.gstNumber}
-            className="w-full border border-gray-300 p-2 rounded"
-            placeholder="e.g., 22AAAAA0000A1Z5"
-          />
-          {formik.touched.gstNumber && formik.errors.gstNumber && (
-            <p className="text-red-500 text-sm mt-1">
-              {formik.errors.gstNumber}
-            </p>
-          )}
-        </div>
+    <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
+      <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
+       Complete your Profile
+      </h1>
 
-        {/* License Number */}
-        <div>
-          <label className="block font-medium mb-1">License Number</label>
-          <input
-            type="text"
-            name="licenseNumber"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.licenseNumber}
-            className="w-full border border-gray-300 p-2 rounded"
-            placeholder="Enter License Number"
-          />
-          {formik.touched.licenseNumber && formik.errors.licenseNumber && (
-            <p className="text-red-500 text-sm mt-1">
-              {formik.errors.licenseNumber}
-            </p>
-          )}
-        </div>
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ setFieldValue, values }) => (
+          <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Specializations
+              </label>
+              <Select
+                isMulti
+                name="specialization"
+                options={specializationOptions}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={(
+                  selectedOptions: { value: string; label: string }[]
+                ) =>
+                  setFieldValue(
+                    "specialization",
+                    selectedOptions.map((opt) => opt.value)
+                  )
+                }
+                value={specializationOptions.filter((opt) =>
+                  values.specialization.includes(opt.value)
+                )}
+              />
+              <ErrorMessage
+                name="specialization"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-        {/* Bank Name */}
-        <div>
-          <label className="block font-medium mb-1">Bank Name</label>
-          <input
-            type="text"
-            name="bankName"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.bankName}
-            className="w-full border border-gray-300 p-2 rounded"
-            placeholder="e.g., State Bank of India"
-          />
-          {formik.touched.bankName && formik.errors.bankName && (
-            <p className="text-red-500 text-sm mt-1">
-              {formik.errors.bankName}
-            </p>
-          )}
-        </div>
+            {/* Basic Info */}
+            <FormField label="Registration Number" name="registrationNumber" />
+            <FormField
+              label="Experience (in years)"
+              name="experience"
+              type="number"
+            />
+            <FormField label="GST Number" name="gstNumber" />
+            <FormField label="License Number" name="licenceNumber" />
+            {/* <FormField label="Clinic Address" name="address" /> */}
 
-        {/* IFSC Code */}
-        <div>
-          <label className="block font-medium mb-1">IFSC Code</label>
-          <input
-            type="text"
-            name="ifscCode"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.ifscCode}
-            className="w-full border border-gray-300 p-2 rounded"
-            placeholder="e.g., SBIN0000123"
-          />
-          {formik.touched.ifscCode && formik.errors.ifscCode && (
-            <p className="text-red-500 text-sm mt-1">
-              {formik.errors.ifscCode}
-            </p>
-          )}
-        </div>
+            {/* Geo Fields (Auto-Filled) */}
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                {/* <h2 className="text-sm font-semibold text-gray-700">
+                  Professional Location
+                </h2> */}
+                <button
+                  type="button"
+                  className="text-blue-600 underline text-sm cursor-pointer"
+                  onClick={async () => {
+                    if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const { latitude, longitude } = pos.coords;
+                        const res = await fetch(
+                          `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`
+                        );
+                        const data = await res.json();
+                        const locData = {
+                          coordinates: [
+                            longitude.toString(),
+                            latitude.toString(),
+                          ],
+                          city: data.address.city || "",
+                          state: data.address.state || "",
+                          pincode: data.address.postcode || "",
+                          address: data.display_name || "",
+                          landmark:
+                            data.address.suburb ||
+                            data.address.neighbourhood ||
+                            "",
+                        };
+                        // Update Formik fields
+                        setFieldValue("location", locData);
+                        toast.success("Location fetched successfully!");
+                      });
+                    } else {
+                      toast.error(
+                        "Geolocation is not supported by this browser."
+                      );
+                    }
+                  }}
+                >
+                  📍Share Location
+                </button>
+              </div>
 
-        {/* Account Number */}
-        <div>
-          <label className="block font-medium mb-1">Account Number</label>
-          <input
-            type="text"
-            name="accountNumber"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.accountNumber}
-            className="w-full border border-gray-300 p-2 rounded"
-            placeholder="Enter Account Number"
-          />
-          {formik.touched.accountNumber && formik.errors.accountNumber && (
-            <p className="text-red-500 text-sm mt-1">
-              {formik.errors.accountNumber}
-            </p>
-          )}
-        </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField label="City" name="location.city" />
+                <FormField label="State" name="location.state" />
+                <FormField label="Pincode" name="location.pincode" />
+                <FormField label="Full Address" name="location.address" />
+              </div>
+            </div>
 
-        {/* Submit */}
-        <div className="text-center">
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
+            {/* Account Information Section */}
+            <div className="md:col-span-2 bg-white rounded-2xl shadow-md px-8 py-6 mb-5 w-full">
+              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6 border-b-2 border-gray-300 pb-3">
+                <span className="text-2xl">💳</span>
+                <span>Account Details</span>
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-6">
+                <FormField
+                  label="Account Holder Name"
+                  name="accountDetails.HolderName"
+                />
+                <FormField label="Bank Name" name="accountDetails.bankName" />
+                <FormField label="IFSC Code" name="accountDetails.Ifsc" />
+                <MaskedInputField
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                  value={values.accountDetails.accountNumber}
+                  onChange={setFieldValue}
+                />
+              </div>
+            </div>
+
+            {/* Avatar Upload Section */}
+            <div className="md:col-span-2 bg-white rounded-2xl shadow-md px-8 py-6 w-full">
+              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6 border-b-2 border-gray-300 pb-3">
+                <span className="text-2xl">🖼️</span>
+                <span>Profile Avatar</span>
+              </h2>
+
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                <div className="w-full md:w-1/2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleAvatarChange(e, setFieldValue)}
+                    className="file-input file-input-bordered w-full"
+                  />
+                </div>
+                {avatarPreview && (
+                  <div className="flex justify-center md:justify-start">
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar Preview"
+                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="md:col-span-2">
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg w-full hover:bg-blue-700 transition"
+                disabled={isLoading}
+              >
+                {isLoading ? "Submitting..." : "Submit Profile"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };
 
 export default HospitalProfile;
+
+
+
+
+
+
+
+

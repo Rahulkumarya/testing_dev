@@ -83,11 +83,14 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { store } from "../../../redux/store";
-import { useCheckProfileQuery } from "@/redux/features/dprofile/profileApi";
+import { useCheckProfileQuery } from "../../../redux/features/services/dprofile/profileApi";
 import { useRouter } from "next/navigation";
 import DoctorProfile from "./component/DoctorProfile";
 import GymProfile from "./component/GymProfile";
 import DiagnosisProfile from "./component/DiagnosisProfile";
+import HospitalProfile from "./component/HospitalProfile";
+import RadiologyProfile from "./component/RadiologyProfile";
+import ResortProfile from "./component/ResortProfile";
 // ... other imports
 
 const Page = () => {
@@ -113,13 +116,20 @@ console.log(`data is `,data)
   const renderProfileComponent = () => {
     switch (user?.role) {
       case "doctor":
-        return <DoctorProfile />
+        return <DoctorProfile />;
       // ... add other role-based forms
       case "gym":
-        return <GymProfile/>
+        return <GymProfile />;
 
       case "diagnosis":
-        return <DiagnosisProfile/>
+        return <DiagnosisProfile />;
+
+      case "hospital":
+        return <HospitalProfile />;
+      case "radiology":
+        return <RadiologyProfile />;
+      case "resort":
+        return <ResortProfile />;
       default:
         router.push("/");
     }

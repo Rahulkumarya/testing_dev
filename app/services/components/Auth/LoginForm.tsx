@@ -16,7 +16,7 @@ import { store } from "@/redux/store";
 import { signIn } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { useCheckProfileQuery } from "@/redux/features/dprofile/profileApi";
+import { useCheckProfileQuery } from "../../../../redux/features/services/dprofile/profileApi";
 type Props = {
   setRoute: (route: string) => void;
   setOpen: (open: boolean) => void;

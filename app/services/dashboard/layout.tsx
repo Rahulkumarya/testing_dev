@@ -13,7 +13,7 @@ import { SessionProvider } from "next-auth/react";
 import React, { FC } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./../../component/Loader/Loader";
-import ServiceDashboard from "./ServiceDashboard";
+import ServiceDashboard from "./pages/ServiceDashboard";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -47,10 +47,9 @@ export default function RootLayout({
       >
         <Providers>
           <SessionProvider>
-      <ServiceDashboard/>
+     
               <Custom>{children}</Custom>
               <Toaster position="top-center" reverseOrder={false} />
-            
           </SessionProvider>
         </Providers>
       </body>

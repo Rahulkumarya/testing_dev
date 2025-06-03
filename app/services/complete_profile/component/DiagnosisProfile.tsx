@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
 import Select from "react-select";
 import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
-import { useCreateDiagnosisMutation } from "@/redux/features/diagnosis/profileApi";
+import { useCreateDiagnosisMutation } from "@/redux/features/services/diagnosis/profileApi";
 
 // Reusable Form Field Component
 export const FormField = ({ label, name, type = "text" }: any) => (
@@ -109,7 +109,12 @@ const DiagnosisProfile = () => {
     specialization: Yup.array().of(Yup.string().required("Required")),
     registrationNumber: Yup.string().required("Required"),
     experience: Yup.number().min(0).required("Required"),
-    gstNumber: Yup.string(),
+    gstNumber: Yup.string()
+      .matches(
+        /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
+        "Invalid GST Number"
+      )
+      .required("GST Number is required"),
     licenceNumber: Yup.string(),
     address: Yup.string(),
     location: Yup.object().shape({
@@ -123,9 +128,10 @@ const DiagnosisProfile = () => {
     accountDetails: Yup.object().shape({
       HolderName: Yup.string().required("Required"),
       Ifsc: Yup.string()
-  .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
-  .required("Required"),
-      accountNumber: Yup.string().required("Required"),
+        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
+        .required("Required"),
+      accountNumber: Yup.string()
+        .required("Account Number is required"),
       bankName: Yup.string().required("Required"),
     }),
   });
