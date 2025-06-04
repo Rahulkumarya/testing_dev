@@ -8,44 +8,22 @@ export const profileApi = apiSlice.injectEndpoints({
         url: "create-service",
         method: "POST",
         body: formData,
-        credentials: "include" as const,
+        credentials: "include" as const, //if problem then remove credentials
       }),
     }),
 
     // ✅ GET all doctor services
     getAllDoctorServices: builder.query({
       query: (page = 1) => ({
-        url: `/allDoctorService/page?page=${page}&limit=3`,
+        url: `/allDoctorService/page?page=${page}`,
         method: "GET",
-        credentials: "include" as const,
       }),
     }),
-
-
-
-
-    // getDoctors: builder.query<any[], void>({
-    //   query: () => "/Alldoctors",
-    // }),
-
-    // // Fetch a single doctor by ID
-    // getDoctorById: builder.query<any, string>({
-    //   query: (id) => `/single/${id}`,
-    // }),
-
-
-    // getAllDoctorServices: builder.query({
-    //   query: () => ({
-    //     url: `/allDoctorService/page`,
-    //     method: "GET",
-    //     credentials: "include" as const,
-    //   }),
-    // }),
 
     // ✅ GET single doctor service by ID
     getDoctorServiceById: builder.query({
       query: (id: string) => ({
-        url: `/${id}`,
+        url: `/service/${id}`,
         method: "GET",
         credentials: "include" as const,
       }),

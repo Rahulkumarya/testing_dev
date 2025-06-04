@@ -7,12 +7,13 @@ import { FaUpload, FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import {store} from "../../../../../redux/store"
 import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
+import toast from "react-hot-toast";
 
 const DoctorAddServiceForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [editMode, setEditMode] = useState(true);
+  
   const [discountAmount, setDiscountAmount] = useState<number | null>(null);
-  const [showAddMore, setShowAddMore] = useState(true);
+
 const [createDoctorService, { isLoading, isError }] = useCreateDoctorServiceMutation();
 const user = useSelector((state: store) => state.auth.user);
 const formik = useFormik({
@@ -64,8 +65,8 @@ const formik = useFormik({
 
       const res = await createDoctorService(formData).unwrap();
       console.log("response", res);
-      alert("Service submitted successfully!");
-      setEditMode(false);
+      toast.success("Service submitted successfully!");
+      
       resetForm();
     } catch (error) {
       console.error("Error submitting service:", error);
@@ -104,20 +105,20 @@ const formik = useFormik({
             <h2 className="text-xl font-bold text-blue-700">
               Doctor Service Form
             </h2>
-            {!editMode && (
+            {/* {!editMode && (
               <button
                 onClick={() => setEditMode(true)}
                 className="text-gray-500 hover:text-blue-600 transition"
               >
                 <FaEdit />
               </button>
-            )}
+            )} */}
           </div>
 
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             {/* Service Name */}
             <input
-              disabled={!editMode}
+             
               type="text"
               name="serviceName"
               placeholder="Service Name"
@@ -129,7 +130,7 @@ const formik = useFormik({
 
             {/* Description */}
             <textarea
-              disabled={!editMode}
+           
               name="description"
               placeholder="Service Description"
               rows={3}
@@ -142,7 +143,7 @@ const formik = useFormik({
             {/* Fee & Estimate */}
             <div className="flex gap-4">
               <input
-                disabled={!editMode}
+            
                 type="text"
                 name="fee"
                 placeholder="Fee (₹)"
@@ -152,7 +153,7 @@ const formik = useFormik({
                 className="w-full border px-4 py-2 rounded"
               />
               <input
-                disabled={!editMode}
+                
                 type="text"
                 name="estimatedPrice"
                 placeholder="Estimated Price (₹)"
@@ -165,7 +166,7 @@ const formik = useFormik({
 
             {/* Duration */}
             <select
-              disabled={!editMode}
+             
               name="duration"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -182,7 +183,7 @@ const formik = useFormik({
             {/* Custom Doctor Type */}
             {formik.values.duration === "custom" && (
               <input
-                disabled={!editMode}
+                
                 type="text"
                 name="customDoctorType"
                 placeholder="Doctor Type"
@@ -195,7 +196,7 @@ const formik = useFormik({
 
             {/* Availability */}
             <select
-              disabled={!editMode}
+             
               name="availability"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -211,7 +212,7 @@ const formik = useFormik({
             {/* Image Upload */}
             <div className="flex items-center gap-4">
               <input
-                disabled={!editMode}
+               
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
@@ -226,14 +227,14 @@ const formik = useFormik({
               )}
             </div>
 
-            {editMode && (
+            
               <button
                 type="submit"
                 className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
               >
                 Submit Service
               </button>
-            )}
+           
 
            
           </form>
@@ -282,7 +283,7 @@ const formik = useFormik({
 };
 
 export default DoctorAddServiceForm;
-function createDoctorService(values: { userId: any; serviceName: string; description: string; fee: string; estimatedPrice: string; mode: string; duration: string; customDoctorType: string; availability: string; image: File | null; }) {
-  throw new Error("Function not implemented.");
-}
+// function createDoctorService(values: { userId: any; serviceName: string; description: string; fee: string; estimatedPrice: string; mode: string; duration: string; customDoctorType: string; availability: string; image: File | null; }) {
+//   throw new Error("Function not implemented.");
+// }
 
