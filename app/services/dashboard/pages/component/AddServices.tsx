@@ -10,13 +10,15 @@ import { store } from "@/redux/store";
 // import RadiologyNotifications from "./RadiologyNotifications";
 import DoctorAddServiceForm from "../../roleSpecificPages/doctor/AddService";
 import DiagnosisAddServiceForm from "../../roleSpecificPages/diagnosis/AddServices";
+// import AllService from "../../roleSpecificPages/doctor/AllService"
+import ServicesPage from "../../roleSpecificPages/doctor/AllServicesPage";
 
 const AddService = () => {
   const user = useSelector((state: store) => state.auth.user);
 
   switch (user.role) {
     case "doctor":
-      return <DoctorAddServiceForm/>;
+      return <><DoctorAddServiceForm/> <br /><br /><br /><ServicesPage/> <h1 className="text-black text-center bg-red-400">AllServices</h1></>;
     case "hospital":
       return <DiagnosisAddServiceForm/>;
     default:

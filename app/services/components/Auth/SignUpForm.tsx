@@ -53,7 +53,7 @@ const SignUp: FC<Props> = ({ setRoute }) => {
 
   return (
     <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
-      <h1 className={`${styles.title}`}>Join to ELearning</h1>
+      <h1 className={`${styles.title}`}>Join to UronHealth</h1>
 
       <form onSubmit={handleSubmit} className="w-full">
         {/* Name */}

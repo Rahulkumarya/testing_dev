@@ -179,7 +179,7 @@ const HospitalProfile = () => {
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
       <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-       Complete your Profile
+        Complete your Profile
       </h1>
 
       <Formik
@@ -298,7 +298,13 @@ const HospitalProfile = () => {
                 />
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-                <MaskedInputField
+                {/* <MaskedInputField
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                  value={values.accountDetails.accountNumber}
+                  onChange={setFieldValue}
+                /> */}
+                <FormField
                   label="Account Number"
                   name="accountDetails.accountNumber"
                   value={values.accountDetails.accountNumber}

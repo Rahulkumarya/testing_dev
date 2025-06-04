@@ -46,32 +46,32 @@ const formik = useFormik({
     availability: Yup.string().required("Availability is required"),
     image: Yup.mixed().nullable(),
   }),
-  onSubmit: async (values) => {
-  try {
-    const formData = new FormData();
-    formData.append("userId", values.userId);
-    formData.append("serviceName", values.serviceName);
-    formData.append("description", values.description);
-    formData.append("fee", values.fee.toString());
-    formData.append("estimatedPrice", values.estimatedPrice.toString());
-    formData.append("mode", values.mode);
-    formData.append("duration", values.duration);
-    formData.append("customDoctorType", values.customDoctorType);
-    formData.append("availability", values.availability);
-    if (values.image) {
-      formData.append("image", values.image);
+  onSubmit: async (values, { resetForm }) => {
+    try {
+      const formData = new FormData();
+      formData.append("userId", values.userId);
+      formData.append("serviceName", values.serviceName);
+      formData.append("description", values.description);
+      formData.append("fee", values.fee.toString());
+      formData.append("estimatedPrice", values.estimatedPrice.toString());
+      formData.append("mode", values.mode);
+      formData.append("duration", values.duration);
+      formData.append("customDoctorType", values.customDoctorType);
+      formData.append("availability", values.availability);
+      if (values.image) {
+        formData.append("image", values.image);
+      }
+
+      const res = await createDoctorService(formData).unwrap();
+      console.log("response", res);
+      alert("Service submitted successfully!");
+      setEditMode(false);
+      resetForm();
+    } catch (error) {
+      console.error("Error submitting service:", error);
+      alert("Failed to submit service.");
     }
-
-    const res = await createDoctorService(formData).unwrap();
-    console.log("response", res);
-    alert("Service submitted successfully!");
-    setEditMode(false);
-  } catch (error) {
-    console.error("Error submitting service:", error);
-    alert("Failed to submit service.");
-  }
-}
-
+  },
 });
 
   useEffect(() => {

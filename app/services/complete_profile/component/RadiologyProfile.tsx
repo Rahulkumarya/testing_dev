@@ -43,7 +43,7 @@ const RadiologyProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
 
-  const [createRadiology,{isLoading,isSuccess}]=useCreateRadiologyMutation();
+  const [createRadiology, { isLoading, isSuccess }] = useCreateRadiologyMutation();
   const user = useSelector((state: store) => state.auth.user);
   const router = useRouter();
 
@@ -178,7 +178,7 @@ const RadiologyProfile = () => {
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
       <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-       Complete your Profile
+        Complete your Profile
       </h1>
 
       <Formik
@@ -297,7 +297,7 @@ const RadiologyProfile = () => {
                 />
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-                <MaskedInputField
+                <FormField
                   label="Account Number"
                   name="accountDetails.accountNumber"
                   value={values.accountDetails.accountNumber}

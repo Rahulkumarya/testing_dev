@@ -26,6 +26,7 @@ import DashboardKpi from "./component/DashboardKpi";
 import Notifications from "./component/Notifications";
 import PaymentDetails from "./component/PaymentDetails";
 import AddServices from "./component/AddServices"
+import AllServices from "./component/AllServices";
 
   const doctorMenu = [
     { name: "DashboardKpi", icon: <FaTachometerAlt />, label: "Dashboard" },
@@ -54,6 +55,7 @@ import AddServices from "./component/AddServices"
     { name: "Lead", icon: <MdLeaderboard />, label: "Lead Manager" },
     { name: "Payment", icon: <BsCashStack />, label: "Payment Details" },
     { name: "AddService", icon: <FaPlus />, label: "Add Service" },
+    { name: "AllService", icon: <FaPlus />, label: "All Service" },
     { name: "UpdateService", icon: <FaEdit />, label: "Update Service" },
     { name: "DeleteService", icon: <FaTrash />, label: "Delete Service" },
     { name: "Suggestion", icon: <FaCog />, label: "Suggestion" },
@@ -94,6 +96,8 @@ const ServiceDashboard = () => {
         return <PaymentDetails />;
     case "AddService":
         return <AddServices/>
+    case "AllService":
+      return <AllServices/>
       default:
         return <div>Page Not Found</div>;
     }

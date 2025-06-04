@@ -292,12 +292,12 @@ const DoctorProfileForm = () => {
                 />
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-                <MaskedInputField
-                  label="Account Number"
-                  name="accountDetails.accountNumber"
-                  value={values.accountDetails.accountNumber}
-                  onChange={setFieldValue}
-                />
+               <FormField
+                                label="Account Number"
+                                name="accountDetails.accountNumber"
+                                value={values.accountDetails.accountNumber}
+                                onChange={setFieldValue}
+                              />
               </div>
             </div>
 
