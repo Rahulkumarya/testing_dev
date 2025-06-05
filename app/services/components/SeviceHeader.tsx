@@ -1,6 +1,6 @@
 
 
-//remove dark mode
+// //remove dark mode
 "use client";
 import Link from "next/link";
 import React, { FC, useState, useEffect } from "react";
@@ -66,6 +66,17 @@ const router=useRouter();
     }, [data, isSuccess, socialAuth, user]);
 
 
+
+    // const [showDropdown, setShowDropdown] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+      const handleScroll = () => {
+        setIsScrolled(window.scrollY > 0);
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
     //handle close after login pop
     useEffect(() => {
       const handleClickOutside = (e: any) => {
@@ -92,142 +103,348 @@ const router=useRouter();
     };
 
     return (
-      <div className="w-full relative container mx-auto">
-        <div
-          className={`${
-            active
-              ? " fixed top-0 left-0 w-full h-[80px] z-[80] border-t-0 border-l-0 border-r-0 border-b md:border-b-0 sm:border-b-0  shadow-x md:shadow-blue-50 lg:shadow-amber-50 transition duration-500" // MOD: removed dark mode and set bg to white
-              : "w-full border-t-0 border-l-0 border-r-0 sm:border-b-0 md:border-b-0  h-[80px] z-[80] shadow" // MOD: removed dark class
-          }`}
-        >
-          <div className="w-[95%] 800px:w-[92%] m-auto py-2 h-full">
-            <div className="w-full h-[80px] flex items-center justify-between p-3">
-              <div>
-                <Link
-                  href="/"
-                  className="text-[25px] font-Poppins font-[500] text-black "
-                >
-                  UronHealth
-                </Link>
-              </div>
-              <div className="flex items-center text-black">
-                <NavItems activeItem={activeItem} isMobile={false} />
-
-                {/* //   only for mobile for responsiveness*/}
-                <div className="800px:hidden block md:hidden sm:hidden lg:hidden">
-                  <HiOutlineMenuAlt3
-                    size={25}
-                    className="cursor-pointer  text-black"
-                    onClick={() => setOpenSidebar(true)}
-                  />
-                </div>
-                {user ? (
-                  <div className="relative dropdown-avatar">
-                    <Image
-                      src={user.avatar ? user.avatar : avatar}
-                      alt="User Avatar"
-                      className="w-[30px] h-[30px] rounded-full cursor-pointer"
-                      onClick={() => setShowDropdown((prev) => !prev)} // Toggle on click
-                    />
-
-                    {showDropdown && (
-                      <div className="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-lg border z-50 text-black">
-                        <Link
-                          href="/services/dashboard"
-                          className="px-4 py-2 hover:bg-gray-100 block"
-                        >
-                          Dashboard
-                        </Link>
-                        <Link
-                          href="/profile"
-                          className="px-4 py-2 hover:bg-gray-100 block"
-                        >
-                          Profile
-                        </Link>
-                        <Link
-                          href="/settings"
-                          className="px-4 py-2 hover:bg-gray-100 block"
-                        >
-                          Settings
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="text-left w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        >
-                          Logout
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <HiOutlineUserCircle
-                    size={25}
-                    className="hidden 800px:block md:block lg:block sm:block cursor-pointer text-black"
-                    onClick={() => setOpen(true)}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* mobile sidebar */}
-        {openSidebar && (
+      <div className="fixed top-0 left-0 w-full z-50 bg-blue-50 shadow-sm border-b h-[80px]">
+        <div className="w-full relative container mx-auto px-4 h-full">
           <div
-            className="fixed w-full h-screen top-0 left-0 z-[99999] bg-white text-black" // MOD: removed dark:bg-[unset]
-            onClick={handleClose}
-            id="screen"
+            className={`flex justify-between items-center h-full transition-all duration-300 ${
+              isScrolled ? "shadow-sm" : ""
+            }`}
           >
-            <div className="w-[70%] fixed z-[999999999] h-screen bg-white top-0 right-0 text-black">
-              {" "}
-              {/* MOD: removed dark:bg-slate-900 */}
-              <NavItems activeItem={activeItem} isMobile={true} />
-              <HiOutlineUserCircle
-                size={25}
-                className="cursor-pointer ml-5 my-2 text-black" // MOD: removed dark:text-white
-                onClick={() => setOpen(true)}
-              />
-              <br />
-              <br />
-              <p className="text-[16px] px-2 pl-5 text-black">
-                {" "}
-                {/* MOD: removed dark:text-white */}
-                Copyright &copy; 2025 UronHealth
-              </p>
+            <div className="w-[95%] 800px:w-[92%] m-auto py-2 h-full">
+              <div className="w-full h-[80px] flex items-center justify-between p-3">
+                <div>
+                  <Link
+                    href="/"
+                    className="text-[25px] font-Poppins font-[500] text-black "
+                  >
+                    UronHealth
+                  </Link>
+                </div>
+                <div className="flex items-center text-black">
+                  <NavItems activeItem={activeItem} isMobile={false} />
+
+                  {/* //   only for mobile for responsiveness*/}
+                  <div className="800px:hidden block md:hidden sm:hidden lg:hidden">
+                    <HiOutlineMenuAlt3
+                      size={25}
+                      className="cursor-pointer  text-black"
+                      onClick={() => setOpenSidebar(true)}
+                    />
+                  </div>
+                  {user ? (
+                    <div className="relative dropdown-avatar">
+                      <Image
+                        src={user.avatar ? user.avatar : avatar}
+                        alt="User Avatar"
+                        className="w-[30px] h-[30px] rounded-full cursor-pointer"
+                        onClick={() => setShowDropdown((prev) => !prev)} // Toggle on click
+                      />
+
+                      {showDropdown && (
+                        <div className="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-lg border z-50 text-black">
+                          <Link
+                            href="/services/dashboard"
+                            className="px-4 py-2 hover:bg-gray-100 block"
+                          >
+                            Dashboard
+                          </Link>
+                          <Link
+                            href="/profile"
+                            className="px-4 py-2 hover:bg-gray-100 block"
+                          >
+                            Profile
+                          </Link>
+                          <Link
+                            href="/settings"
+                            className="px-4 py-2 hover:bg-gray-100 block"
+                          >
+                            Settings
+                          </Link>
+                          <button
+                            onClick={handleLogout}
+                            className="text-left w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <HiOutlineUserCircle
+                      size={25}
+                      className="hidden 800px:block md:block lg:block sm:block cursor-pointer text-black"
+                      onClick={() => setOpen(true)}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* auth modals */}
-        {route === "Login" && open && (
-          <CustomModel
-            open={open}
-            setOpen={setOpen}
-            setRoute={setRoute}
-            activeItem={activeItem}
-            component={Login}
-          />
-        )}
-        {route === "Sign-up" && open && (
-          <CustomModel
-            open={open}
-            setOpen={setOpen}
-            setRoute={setRoute}
-            activeItem={activeItem}
-            component={SignUp}
-          />
-        )}
-        {route === "Verification" && open && (
-          <CustomModel
-            open={open}
-            setOpen={setOpen}
-            setRoute={setRoute}
-            activeItem={activeItem}
-            component={Verification}
-          />
-        )}
+          {/* mobile sidebar */}
+          {openSidebar && (
+            <div
+              className="fixed w-full h-screen top-0 left-0 z-[99999] bg-white text-black" // MOD: removed dark:bg-[unset]
+              onClick={handleClose}
+              id="screen"
+            >
+              <div className="w-[70%] fixed z-[999999999] h-screen bg-white top-0 right-0 text-black">
+                {" "}
+                {/* MOD: removed dark:bg-slate-900 */}
+                <NavItems activeItem={activeItem} isMobile={true} />
+                <HiOutlineUserCircle
+                  size={25}
+                  className="cursor-pointer ml-5 my-2 text-black" // MOD: removed dark:text-white
+                  onClick={() => setOpen(true)}
+                />
+                <br />
+                <br />
+                <p className="text-[16px] px-2 pl-5 text-black">
+                  {" "}
+                  {/* MOD: removed dark:text-white */}
+                  Copyright &copy; 2025 UronHealth
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* auth modals */}
+          {route === "Login" && open && (
+            <CustomModel
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={Login}
+            />
+          )}
+          {route === "Sign-up" && open && (
+            <CustomModel
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={SignUp}
+            />
+          )}
+          {route === "Verification" && open && (
+            <CustomModel
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={Verification}
+            />
+          )}
+        </div>
       </div>
     );
 };
 
 export default Header;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import Link from "next/link";
+// import React, { FC, useState, useEffect } from "react";
+// import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
+// import NavItems from "../../utils/SerNavItems";
+// import Image from "next/image";
+// import avatar from "../../../public/assests/avatar.png";
+// import { useDispatch, useSelector } from "react-redux";
+// import { useSession } from "next-auth/react";
+// import {
+//   useSocialAuthMutation,
+//   useLogoutMutation,
+// } from "@/redux/features/auth/authApi";
+// import toast from "react-hot-toast";
+// import { useRouter } from "next/navigation";
+
+// type Props = {
+//   open: boolean;
+//   setOpen: (open: boolean) => void;
+//   activeItem: number;
+//   route: string;
+//   setRoute: (route: string) => void;
+//   logOutHandler: () => void;
+// };
+
+// const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
+//   const [isScrolled, setIsScrolled] = useState(false);
+//   const [showDropdown, setShowDropdown] = useState(false);
+//   const [openSidebar, setOpenSidebar] = useState(false);
+
+//   const dispatch = useDispatch();
+//   const { user } = useSelector((state: any) => state.auth);
+//   const { data } = useSession();
+//   const [socialAuth, { isSuccess }] = useSocialAuthMutation();
+//   const [logout] = useLogoutMutation();
+//   const router = useRouter();
+
+//   // Social auth handling
+//   useEffect(() => {
+//     if (!user && data) {
+//       socialAuth({
+//         email: data?.user?.email,
+//         name: data?.user?.name,
+//         avatar: data?.user?.image,
+//       });
+//     }
+
+//     if (isSuccess) {
+//       toast.success("Login Successfully");
+//     }
+//   }, [data, isSuccess, socialAuth, user]);
+
+//   // Sticky header effect
+//   useEffect(() => {
+//     const onScroll = () => {
+//       setIsScrolled(window.scrollY > 0);
+//     };
+//     window.addEventListener("scroll", onScroll);
+//     return () => window.removeEventListener("scroll", onScroll);
+//   }, []);
+
+//   // Close dropdown when clicking outside
+//   useEffect(() => {
+//     const handleClickOutside = (e: any) => {
+//       if (!e.target.closest(".dropdown-avatar")) {
+//         setShowDropdown(false);
+//       }
+//     };
+//     document.addEventListener("click", handleClickOutside);
+//     return () => document.removeEventListener("click", handleClickOutside);
+//   }, []);
+
+//   const handleLogout = async () => {
+//     try {
+//       await logout().unwrap();
+//       router.push("/");
+//     } catch (err) {
+//       console.error("Logout failed:", err);
+//     }
+//   };
+
+//   const handleCloseSidebar = (e: any) => {
+//     if (e.target.id === "screen") {
+//       setOpenSidebar(false);
+//     }
+//   };
+
+//   return (
+//     <header className="fixed top-0 left-0 w-full z-50 bg-blue-50 shadow-sm border-b h-[80px]">
+//       <div className="w-full relative container mx-auto px-4 h-full">
+//         <div
+//           className={`flex justify-between items-center h-full transition-all duration-300 ${
+//             isScrolled ? "shadow-sm" : ""
+//           }`}
+//         >
+//           {/* Logo */}
+//           <Link
+//             href="/"
+//             className="text-[25px] font-semibold text-black font-Poppins"
+//           >
+//             UronHealth
+//           </Link>
+
+//           {/* Desktop Nav */}
+//           <div className="hidden 800px:flex sm:flex md:flex lg:flex items-center text-black">
+//             <NavItems activeItem={activeItem} isMobile={false} />
+//           </div>
+
+//           {/* Mobile Menu */}
+//           <div className="800px:hidden md:hidden sm:hidden lg:hidden">
+//             <HiOutlineMenuAlt3
+//               size={25}
+//               className="cursor-pointer text-black"
+//               onClick={() => setOpenSidebar(true)}
+//             />
+//           </div>
+
+//           {/* User Avatar or Login Icon */}
+//           <div className="flex items-center gap-4 text-black">
+//             {user ? (
+//               <div className="relative dropdown-avatar">
+//                 <Image
+//                   src={user.avatar || avatar}
+//                   alt="User"
+//                   width={30}
+//                   height={30}
+//                   className="rounded-full cursor-pointer"
+//                   onClick={() => setShowDropdown((prev) => !prev)}
+//                 />
+//                 {showDropdown && (
+//                   <div className="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-md border z-50">
+//                     <Link
+//                       href="/services/dashboard"
+//                       className="px-4 py-2 block hover:bg-gray-100"
+//                     >
+//                       Dashboard
+//                     </Link>
+//                     <Link
+//                       href="/profile"
+//                       className="px-4 py-2 block hover:bg-gray-100"
+//                     >
+//                       Profile
+//                     </Link>
+//                     <Link
+//                       href="/settings"
+//                       className="px-4 py-2 block hover:bg-gray-100"
+//                     >
+//                       Settings
+//                     </Link>
+//                     <button
+//                       onClick={handleLogout}
+//                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
+//                     >
+//                       Logout
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             ) : (
+//               <HiOutlineUserCircle
+//                 size={25}
+//                 className="cursor-pointer"
+//                 onClick={() => setOpen(true)}
+//               />
+//             )}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Mobile Sidebar */}
+//       {openSidebar && (
+//         <div
+//           className="fixed top-0 left-0 w-full h-screen z-[9999] bg-opacity-30"
+//           id="screen"
+//           onClick={handleCloseSidebar}
+//         >
+//           <div className="w-[70%] h-full bg-white absolute top-0 right-0 z-[10000]">
+//             <NavItems activeItem={activeItem} isMobile={true} />
+//           </div>
+//         </div>
+//       )}
+
+
+      
+//     </header>
+//   );
+// };
+
+// export default Header;

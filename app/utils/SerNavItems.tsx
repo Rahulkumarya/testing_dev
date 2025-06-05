@@ -7,20 +7,20 @@ export const NavItemsData = [
     url: "/",
   },
   {
-    name: "Services",
-    url: "/services",
+    name: "AddServices",
+    url: "/service/addservices",
   },
   {
     name: "About",
-    url: "/about",
+    url: "/service/about",
   },
   {
     name: "Policy",
-    url: "/policy",
+    url: "/service/policy",
   },
   {
     name: "FAQ",
-    url: "/faq",
+    url: "/service/faq",
   },
 ];
 

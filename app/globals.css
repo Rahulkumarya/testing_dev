@@ -125,3 +125,36 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+
+
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  /* Firefox: thin scrollbar */
+  scrollbar-color: #4A90E2 #E0E0E0;
+  /* thumb color and track color */
+}
+
+/* WebKit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  /* width of vertical scrollbar */
+  height: 8px;
+  /* height of horizontal scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #E0E0E0;
+  /* track color */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #4A90E2;
+  /* thumb color */
+  border-radius: 4px;
+  border: 2px solid #E0E0E0;
+  /* padding around thumb */
+}

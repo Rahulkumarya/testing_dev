@@ -247,6 +247,8 @@ import toast from "react-hot-toast";
 import AddService from "./AddService"
 import { ArrowLeft } from "lucide-react";
 import { SlidersHorizontal } from "lucide-react";
+
+import Loader from "../../../../../../urohealth/app/component/Loader/Loader"
 // Simple AddService component placeholder
 const AddServices = ({ onCancel }: { onCancel: () => void }) => {
   // Here add your form logic for adding a new service
@@ -340,7 +342,7 @@ const ServicesPage = () => {
     setPage(1); // Reset page when sorting
   };
 
-  if (isLoading) return <p className="text-center">Loading services...</p>;
+  if (isLoading) return <p className="text-center"><Loader/></p>;
 
   return (
     <div className="max-w-6xl mx-auto p-6">

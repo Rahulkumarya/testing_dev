@@ -48,16 +48,9 @@ import AllServices from "./component/AllServices";
 
   const hospitalMenu = [
     { name: "DashboardKpi", icon: <FaTachometerAlt />, label: "Dashboard" },
-    { name: "Availability", icon: <FaToggleOn />, label: "Availability" },
     { name: "Notifications", icon: <FaBell />, label: "Notifications" },
-    { name: "Earning", icon: <SiGreatlearning />, label: "Earning" },
-    { name: "Growth", icon: <GiGrowth />, label: "Growth" },
-    { name: "Lead", icon: <MdLeaderboard />, label: "Lead Manager" },
     { name: "Payment", icon: <BsCashStack />, label: "Payment Details" },
-    { name: "AddService", icon: <FaPlus />, label: "Add Service" },
-    { name: "AllService", icon: <FaPlus />, label: "All Service" },
-    { name: "UpdateService", icon: <FaEdit />, label: "Update Service" },
-    { name: "DeleteService", icon: <FaTrash />, label: "Delete Service" },
+    { name: "AllService", icon: <FaPlus />, label: "Add Service" },
     { name: "Suggestion", icon: <FaCog />, label: "Suggestion" },
     { name: "Settings", icon: <FaCog />, label: "Settings" },
     { name: "Logout", icon: <FaSignOutAlt />, label: "Logout" },

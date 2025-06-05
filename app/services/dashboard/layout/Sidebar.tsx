@@ -28,9 +28,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`h-full bg-[#ccccdd] from-gray-900 to-gray-800 text-gray-800 ${
+      className={`h-full bg-blue-50 from-gray-900 to-gray-800 text-gray-800 ${
         isCollapsed ? "w-16" : "w-64"
-      } transition-all duration-300 p-4`}
+      } transition-all duration-300 p-4 `}
     >
       {/* Toggle Button */}
       <div className="flex justify-between items-center mb-6">
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Menu Items */}
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-2 fixed">
         {menu.map((item) => (
           <button
             key={item.name}
