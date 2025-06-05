@@ -1,16 +1,32 @@
-"use client"
-import React from 'react'
+"use client";
+//handles all addServices router like radiology,doctor,ambulance,patient
 
-interface Props {
-    
-}
+import { useSelector } from "react-redux";
+import { store } from "@/redux/store";
+// import DoctorNotifications from "./DoctorNotifications";
+// import RadiologyNotifications from "./RadiologyNotifications";
 
-const DashboardKpi = (props: Props) => {
-    return (
-        <div>
-            DashboardKPI
-        </div>
-    )
-}
+import DiagnosisAddServiceForm from "../../roleSpecificPages/diagnosis/AddServices";
+// import AllService from "../../roleSpecificPages/doctor/AllService"
+import DoctorServiceStats from "../../roleSpecificPages/doctor/DashboardKpi";
 
-export default DashboardKpi
+const AllDashboardKpi = () => {
+  const user = useSelector((state: store) => state.auth.user);
+
+  switch (user.role) {
+    case "doctor":
+      return (
+        <>
+          
+          <h1 className="text-black text-center bg-red-400">AllServices</h1>
+        </>
+      );
+    case "hospital":
+      return <DoctorServiceStats />;
+    default:
+      return <p>No notifications available for your role.</p>;
+  }
+};
+
+
+export default AllDashboardKpi;
