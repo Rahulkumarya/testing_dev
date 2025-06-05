@@ -248,7 +248,7 @@ import AddService from "./AddService"
 import { ArrowLeft } from "lucide-react";
 import { SlidersHorizontal } from "lucide-react";
 
-import Loader from "../../../../../../urohealth/app/component/Loader/Loader"
+import Loader from "../../../../component/Loader/Loader"
 // Simple AddService component placeholder
 const AddServices = ({ onCancel }: { onCancel: () => void }) => {
   // Here add your form logic for adding a new service

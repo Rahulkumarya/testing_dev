@@ -1,7 +1,7 @@
 "use client";
 // import type { Metadata } from "next";
 // import { Inter } from "next/font/google";
-import "../../../../urohealth//app/globals.css";
+import "../../../app/globals.css";
 
 //import font family
 import { Poppins } from "next/font/google";
