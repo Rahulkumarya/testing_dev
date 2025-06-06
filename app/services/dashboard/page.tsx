@@ -10,11 +10,14 @@ const ProtectedServiceDashboardPage = () => {
   const { data: user, isLoading } = useLoadUserQuery({});
   const router = useRouter();
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/services/auth/login");
-    }
-  }, [isLoading, user, router]);
+  // useEffect(() => {
+  //   if(isLoading){
+  //     <h1>Loading..</h1>
+  //   }
+  //   else if (!isLoading && !user) {
+  //     router.push("/services/auth/login");
+  //   }
+  // }, [isLoading, user, router]);   //
 
   if (isLoading || !user) return <Loader />;
 

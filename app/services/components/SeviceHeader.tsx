@@ -39,6 +39,7 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute, }) => {
 const [logout,{isLoading}]=useLogoutMutation()
 const router=useRouter();
 
+console.log(`user register data serviceheader `,user)
     const handleLogout = async() => {
       try {
         const res=await logout().unwrap();
@@ -184,11 +185,11 @@ const router=useRouter();
           {/* mobile sidebar */}
           {openSidebar && (
             <div
-              className="fixed w-full h-screen top-0 left-0 z-[99999] bg-white text-black" // MOD: removed dark:bg-[unset]
+              className="fixed w-full h-screen top-0 left-0 z-[99999]  bg-opacity-50" // MOD: removed dark:bg-[unset]
               onClick={handleClose}
               id="screen"
             >
-              <div className="w-[70%] fixed z-[999999999] h-screen bg-white top-0 right-0 text-black">
+              <div className="w-[70%] fixed z-[999999999] h-screen bg-white top-0 right-0  text-black">
                 {" "}
                 {/* MOD: removed dark:bg-slate-900 */}
                 <NavItems activeItem={activeItem} isMobile={true} />
