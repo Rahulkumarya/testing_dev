@@ -12,12 +12,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./features/api/apiSlice";
 import authSlice from "./features/auth/authSlice";
 import { doctorApi } from "./features/dprofile/profileApi";
+
 // import { boolean } from "yup";
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authSlice,
+  
   
   },
   devTools: false,
