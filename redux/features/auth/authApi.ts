@@ -255,9 +255,9 @@ export const authApi = apiSlice.injectEndpoints({
       query: () => ({
         url: "logout",
         method: "GET",
-        credentials: "include" as const,
+        // credentials: "include" as const,
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+      async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
           await queryFulfilled;
           dispatch(userLoggedOut());
@@ -267,7 +267,25 @@ export const authApi = apiSlice.injectEndpoints({
       },
     }),
 
+
+
+
+
+
+
+
+
     // ─────────────── New OTP endpoints ───────────────
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 1) sendOtp:

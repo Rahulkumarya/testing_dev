@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { FC, useState, useEffect } from "react";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
 
-import NavItems from "../../utils/SerNavItems";
+import NavItems from "../../utils/PatientNav";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../../public/assests/avatar.png";
@@ -69,7 +69,8 @@ const Header: FC<Props> = () => {
 
   const handleLogout = async () => {
     try {
-      await logout().unwrap();
+    const res=  await logout().unwrap();
+ 
       router.push("/");
     } catch (err) {
       console.error("Failed to logout:", err);

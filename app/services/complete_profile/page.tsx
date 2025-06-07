@@ -91,6 +91,7 @@ import DiagnosisProfile from "./component/DiagnosisProfile";
 import HospitalProfile from "./component/HospitalProfile";
 import RadiologyProfile from "./component/RadiologyProfile";
 import ResortProfile from "./component/ResortProfile";
+import PatientProfile from "./component/PatientProfile";
 // ... other imports
 
 const Page = () => {
@@ -130,6 +131,8 @@ console.log(`data is `,data)
         return <RadiologyProfile />;
       case "resort":
         return <ResortProfile />;
+      case "patient":
+        return <PatientProfile/>
       default:
         router.push("/");
     }

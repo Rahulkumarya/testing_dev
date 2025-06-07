@@ -8,12 +8,19 @@ import { useVerifyOtpMutation } from "../../../../../redux/features/auth/authApi
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../../redux/store";
 import toast from "react-hot-toast";
+// import { Router } from "lucide-react";
+
+import { useRouter } from "next/navigation";
+
+
 
 interface FormValues {
   otp: string;
 }
 
 const VerifyOtpForm: React.FC = () => {
+
+  const router =useRouter()
   // RTK Query mutation for verifying OTP
   const [verifyOtp, { isLoading, isError, error, isSuccess }] =
     useVerifyOtpMutation();
@@ -32,6 +39,7 @@ const VerifyOtpForm: React.FC = () => {
     onSubmit: (values) => {
       // Trigger verifyOtp mutation with entered OTP
       verifyOtp(values);
+      router.push("/services/complete_profile");
     },
   });
 
