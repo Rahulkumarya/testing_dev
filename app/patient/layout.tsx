@@ -15,6 +15,7 @@ import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "../../app/component/Loader/Loader";
 import Header from "./component/Header";
 import Footer from "../service/home/Footer"
+import { SocketProvider } from "../context/SocketContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -43,10 +44,11 @@ export default function RootLayout({
   return (
     <>
       <Providers>
+      <SocketProvider>
       
           <Custom>{children}</Custom>
           <Toaster position="top-center" reverseOrder={false} />
-      
+          </SocketProvider>
       </Providers>
     </>
   );

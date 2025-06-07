@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import SoSButton from "./sos/SosButton";
 
+
 export type NavItem = {
   name: string;
   url?: string; // only for real links
@@ -14,10 +15,12 @@ export const NavItemsData: NavItem[] = [
   { name: "Insurance", url: "/patient/insurance" },
   { name: "Appointment", url: "/patient/appointment" },
   { name: "FAQ", url: "/patient/faq" },
+  
   {
     name: "SoS",
     action: <SoSButton />,
   },
+
 ];
 
 type Props = {

@@ -23,6 +23,22 @@ export const profileApi = apiSlice.injectEndpoints({
       }),
     }),
 
+
+    sosPatient:builder.mutation({
+        query:(formData)=>({
+            url:"trigger",
+            method:"POST",
+            body:formData,
+            credentials:"include" as const,
+        })
+    }),
+
+
+
+
+
+
+
     // getPatients: builder.query<any[], void>({
     //   query: () => "/Allpatients",
     // }),
@@ -42,4 +58,4 @@ export const profileApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {useCreatePatientMutation,useCheckProfileQuery} =profileApi
+export const {useCreatePatientMutation,useSosPatientMutation,useCheckProfileQuery} =profileApi

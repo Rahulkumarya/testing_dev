@@ -14,6 +14,7 @@ import React, { FC, useState } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./component/Loader/Loader";
 import Header from "./services/components/SeviceHeader"
+import { SocketProvider } from "./context/SocketContext";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -46,10 +47,11 @@ export default function RootLayout({
       >
         <Providers>
           <SessionProvider>
+          <SocketProvider>
   
               <Custom>{children}</Custom>
               <Toaster position="top-center" reverseOrder={false} />
-            
+              </SocketProvider>
           </SessionProvider>
         </Providers>
       </body>

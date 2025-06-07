@@ -60,10 +60,13 @@ const Verification: FC<Props> = ({ setRoute }) => {
       return;
     }
 
-    await activation({
+    const res=await activation({
       activation_token: token,
       activation_code: verificationNumber,
     });
+
+
+    console.log(`activation error is `,res);
   };
 
   const handleInputChange = (index: number, value: string) => {
