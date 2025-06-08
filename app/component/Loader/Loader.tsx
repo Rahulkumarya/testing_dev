@@ -1,9 +1,9 @@
 import React from "react";
 import "./Loader.css";
 
-type Props = {};
+// type Props = {};
 
-const Loader = (props: Props) => {
+const Loader = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="loader"></div>

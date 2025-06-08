@@ -50,7 +50,7 @@ const VerifyOtpForm: React.FC = () => {
     }
     if (isError) {
       // @ts-ignore
-      toast.error(error?.data?.message || "Failed to verify OTP");
+      toast.error(error?.message || "Failed to verify OTP");
     }
   }, [isSuccess, isError, error]);
 

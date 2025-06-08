@@ -22,7 +22,7 @@ const AddService = () => {
           <DoctorAddServiceForm /> <br />
           <br />
           <br />
-          <ServicesPage />{" "}
+        
           <h1 className="text-black text-center bg-red-400">AllServices</h1>
         </>
       );

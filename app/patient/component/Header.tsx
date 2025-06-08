@@ -17,15 +17,15 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import LoginPage from "./register/page"; // assuming this is your Login component
 
-type Props = {};
+// type Props = {};
 
-const Header: FC<Props> = () => {
+const Header= () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
   const { data } = useSession();
   const [socialAuth, { isSuccess }] = useSocialAuthMutation();

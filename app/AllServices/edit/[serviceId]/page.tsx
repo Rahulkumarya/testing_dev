@@ -95,7 +95,7 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 
 const EditServicePage = () => {
-  const { serviceId, userType } = useParams();
+  const { serviceId } = useParams();
   const id = serviceId as string;
   const router = useRouter();
 
