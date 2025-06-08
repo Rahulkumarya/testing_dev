@@ -44,15 +44,16 @@ const VerifyOtpForm: React.FC = () => {
   });
 
   // Show toast notifications on success or error
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Login successful");
-    }
-    if (isError) {
-      // @ts-ignore
-      toast.error(error?.message || "Failed to verify OTP");
-    }
-  }, [isSuccess, isError, error]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     toast.success("Login successful");
+  //   }
+  //   if (isError) {
+  //     // @ts-ignore
+  //     console.log(`error is ${isError}`)
+  //     // toast.error(error?.message || "Failed to verify OTP");
+  //   }
+  // }, [isSuccess, isError, error]);
 
   // If no phone in state, prompt user to go back
   if (!phone) {

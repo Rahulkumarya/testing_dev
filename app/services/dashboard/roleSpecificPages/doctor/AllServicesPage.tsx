@@ -289,7 +289,7 @@ const ServicesPage = () => {
 
   // Fetch services with page, search, and sort parameters
   // Adjust your API hook to accept these params if not already
-  const { data, error, isLoading, isFetching, refetch } =
+  const { data, isError, isLoading, isFetching, refetch } =
     useGetAllDoctorServicesQuery(
       {
         page,
@@ -302,6 +302,8 @@ const ServicesPage = () => {
         refetchOnMountOrArgChange: true,
       }
     );
+
+  console.log(`isError and data ${isError.message} and data is ${data} `,isError,data);
 
 
   const [deleteService] = useDeleteDoctorServiceMutation();

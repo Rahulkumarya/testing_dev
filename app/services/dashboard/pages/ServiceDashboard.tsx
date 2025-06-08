@@ -19,11 +19,17 @@ import { BsCashStack } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import { store } from "../../../../redux/store";
 import Sidebar from "./../layout/Sidebar";
+import dynamic from "next/dynamic";
 import DashboardLayout from "./../layout/DashboardLayout";
 
+// Dynamically import NotificationIcon to disable SSR (avoids hydration mismatch)
+const NotificationIcon = dynamic(
+  () => import("../../../context/Notification").then((mod) => mod.NotificationIcon),
+  { ssr: false }
+);
 // Page Components
 import DashboardKpi from "./component/DashboardKpi";
-import Notifications from "./component/Notifications";
+// import Notifications from "./component/Notifications";
 import PaymentDetails from "./component/PaymentDetails";
 import AddServices from "./component/AddServices"
 import AllServices from "./component/AllServices";
@@ -31,7 +37,7 @@ import AllServices from "./component/AllServices";
   const doctorMenu = [
     { name: "DashboardKpi", icon: <FaTachometerAlt />, label: "Dashboard" },
     { name: "Availability", icon: <FaToggleOn />, label: "Availability" },
-    { name: "Notifications", icon: <FaBell />, label: "Notifications" },
+    // { name: "Notifications", icon: <FaBell />, label: "Notifications icons " },
     { name: "Earning", icon: <SiGreatlearning />, label: "Earning" },
     { name: "Growth", icon: <GiGrowth />, label: "Growth" },
     { name: "Lead", icon: <MdLeaderboard />, label: "Lead Manager" },
@@ -84,7 +90,7 @@ const ServiceDashboard = () => {
       case "DashboardKpi":
         return <DashboardKpi />;
       case "Notifications":
-        return <Notifications />;
+        return <NotificationIcon/>;
       case "Payment":
         return <PaymentDetails />;
     case "AddService":

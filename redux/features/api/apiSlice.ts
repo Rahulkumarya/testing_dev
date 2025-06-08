@@ -5,8 +5,9 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_SERVER_URI,
-    credentials:"include"
+    credentials: "include",
   }),
+  // tagTypes: ["DoctorServices", "DoctorService"],
   endpoints: (builder) => ({
     refreshToken: builder.query({
       query: (data) => ({
@@ -36,7 +37,6 @@ export const apiSlice = createApi({
         }
       },
     }),
-
   }),
 });
 

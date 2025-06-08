@@ -18,6 +18,7 @@ import { BsCashStack } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { store } from "@/redux/store";
+import Notification from "../../context/Notification"
 type Props = {
   
 };
@@ -30,7 +31,7 @@ console.log(`userDatais Dashboard and role is ${user.role} and name is ${user.na
   const menu = [
     { name: "DashboardKpi", icon: <FaTachometerAlt />, label: "Dashboard" },
     { name: "Availability", icon: <FaToggleOn />, label: "Availability" },
-    { name: "Notifications", icon: <FaBell />, label: "Notifications" },
+    { name: <Notification/>, icon: <FaBell />, label: "Notifications" },
     { name: "Earning", icon: <SiGreatlearning />, label: "Earning" },
     { name: "Growth", icon: <GiGrowth />, label: "Growth" },
     { name: "Lead", icon: <MdLeaderboard />, label: "Lead Manager" },

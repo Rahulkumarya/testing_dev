@@ -29,7 +29,7 @@ const AddService = () => {
     case "hospital":
       return <DiagnosisAddServiceForm />;
     default:
-      return <p>No notifications available for your role.</p>;
+      return <p className="text-center font-[400] text-xl mt-10 pt-20 ">Please SignUp and Login For Services Creating</p>;
   }
 };
 

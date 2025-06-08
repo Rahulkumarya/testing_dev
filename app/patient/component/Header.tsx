@@ -131,12 +131,12 @@ const Header= () => {
                       >
                         Profile
                       </Link>
-                      <button
+                      {/* <button
                         onClick={handleLogout}
                         className="text-left w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
                       >
                         Logout
-                      </button>
+                      </button> */}
                     </div>
                   )}
                 </div>

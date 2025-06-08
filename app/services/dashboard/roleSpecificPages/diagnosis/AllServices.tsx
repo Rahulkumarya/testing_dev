@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import AddService from "./AddService";
+import AddService from "./AddServices";
 import { ArrowLeft } from "lucide-react";
 // Simple AddService component placeholder
 const AddServices = ({ onCancel }: { onCancel: () => void }) => {
@@ -25,11 +25,8 @@ const AddServices = ({ onCancel }: { onCancel: () => void }) => {
         <ArrowLeft className="w-4 h-4" />
       </Button>
       {/* Your add service form elements here */}
-      <AddService
-        onCancel={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
+    
+  
     </div>
   );
 };
@@ -50,19 +47,26 @@ const ServicesPage = () => {
 
   // Fetch services with page, search, and sort parameters
   // Adjust your API hook to accept these params if not already
-  const { data, error, isLoading, isFetching, refetch } =
-    useGetAllDoctorServicesQuery(
-      {
-        page,
-        search: searchTerm,
-        sortBy,
-        order: sortOrder,
-      }, // optional
+  const {
+    data,
+    error, // this is the RTK Query “error” object (if any)
+    isError, // true if there was an error
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetAllDoctorServicesQuery(
+    { page, search: searchTerm, sortBy, order: sortOrder },
+    { refetchOnMountOrArgChange: true }
+  );
 
-      {
-        refetchOnMountOrArgChange: true,
-      }
-    );
+
+  useEffect(() => {
+    if (isError) {
+      console.error("🚨 RTK Query error:", error);
+    }
+  }, [isError, error]);
+  
+
 
   const [deleteService] = useDeleteDoctorServiceMutation();
 
@@ -77,7 +81,9 @@ const ServicesPage = () => {
         toast.error("Failed to delete");
       }
     }
-  };
+  };  
+
+
 
   // Handle "Add New Service" click to toggle UI
   const handleAddNewClick = () => {

@@ -100,14 +100,15 @@ export const profileApi = apiSlice.injectEndpoints({
       query: (id) => `/single/${id}`,
     }),
 
-    deleteDoctor: builder.mutation({
-      query: (id) => ({
-        url: `delete/${id}`,
-        method: "DELETE",
-        body: { id },
-      }),
-    }),
+    // deleteDoctor: builder.mutation({
+    //   query: (id) => ({
+    //     url: `delete/${id}`,
+    //     method: "DELETE",
+    //     body: { id },
+    //     overrideExisting:true,
+    //   }),
+    // }),
   }),
 });
 
-export const {useCreateDoctorMutation,useGetDoctorByIdQuery,useGetDoctorsQuery,useDeleteDoctorMutation,useCheckProfileQuery} =profileApi
+export const {useCreateDoctorMutation,useGetDoctorByIdQuery,useGetDoctorsQuery,useCheckProfileQuery} =profileApi

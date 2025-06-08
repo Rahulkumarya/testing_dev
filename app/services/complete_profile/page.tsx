@@ -114,6 +114,8 @@ console.log(`data is `,data)
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Something went wrong...</div>;
 
+  console.log(user?.role,`user role check`);
+
   const renderProfileComponent = () => {
     switch (user?.role) {
       case "doctor":
@@ -132,7 +134,7 @@ console.log(`data is `,data)
       case "resort":
         return <ResortProfile />;
       case "patient":
-        return <PatientProfile/>
+        return <PatientProfile/>;
       default:
         router.push("/");
     }

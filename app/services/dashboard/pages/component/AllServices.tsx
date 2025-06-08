@@ -8,19 +8,18 @@ import { store } from "@/redux/store";
 
 import DiagnosisAddServiceForm from "../../roleSpecificPages/diagnosis/AddServices";
 // import AllService from "../../roleSpecificPages/doctor/AllService"
-import ServicesPage from "../../roleSpecificPages/doctor/AllServicesPage";
+// import ServicesPage from "../../roleSpecificPages/diagnosis/AllServicesPage";
+import ServicesPage from "../../roleSpecificPages/diagnosis/AllServices";
 
 const AllServices = () => {
   const user = useSelector((state: store) => state.auth.user);
 
   switch (user.role) {
     case "doctor":
-      return (
-        <>
-          
-          <h1 className="text-black text-center bg-red-400">AllServices</h1>
-        </>
-      );
+      return 
+        <ServicesPage/>;
+      
+     
     case "hospital":
       return <ServicesPage/>;
     default:

@@ -1,6 +1,4 @@
-// app/context/SocketContext
-
-
+// context/SocketContext.tsx
 "use client";
 
 import React, {
@@ -12,50 +10,38 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
-import {store} from "../../redux/store"
+import { store } from "../../redux/store";
 
-// Define TypeScript types
 interface ISocketContext {
   socket: Socket | null;
   isConnected: boolean;
 }
-
 const SocketContext = createContext<ISocketContext>({
   socket: null,
   isConnected: false,
 });
-
 export const useSocket = () => useContext(SocketContext);
 
-// Provider
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
-  // Assume you fetch user from localStorage or global state
+  // 👇 Get the logged-in userId from Redux
+  const userId = useSelector((state: store) => state.auth.user?._id);
 
-  const user = useSelector((state: store) => state.auth.user);
-  const userId=user?._id
+ console.log(`socketContext id ${userId}`)
   useEffect(() => {
     if (!userId || socketRef.current) return;
 
     const socket = io("http://localhost:5000", {
       query: { userId },
-      transports: ["websocket"], // Add this line to force WebSocket
+      transports: ["websocket"],
       withCredentials: true,
     });
-
     socketRef.current = socket;
 
-    socket.on("connect", () => {
-      setIsConnected(true);
-      console.log("✅ Connected to socket:", socket.id);
-    });
-
-    socket.on("disconnect", () => {
-      setIsConnected(false);
-      console.log("❌ Disconnected from socket");
-    });
+    socket.on("connect", () => setIsConnected(true));
+    socket.on("disconnect", () => setIsConnected(false));
 
     return () => {
       socket.disconnect();

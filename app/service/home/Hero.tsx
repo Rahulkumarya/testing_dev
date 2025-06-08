@@ -149,30 +149,21 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import Image from "next/image";
 import FeaturedCarousel from "./component/FeaturedCarousel";
 
 const categories = [
-  { title: "Doctors", img: "/images/categories/doctor.png" },
-  { title: "Diagnostics", img: "/images/categories/diagnostic.png" },
-  { title: "Resorts", img: "/images/categories/resort.png" },
-  { title: "Ambulance", img: "/images/categories/ambulance.png" },
-  { title: "Pharmacy", img: "/images/categories/pharmacy.png" },
+  { title: "Doctors", img: "/assests/doctor.jpg" },
+  { title: "Diagnostics", img: "/assests/diagnosis.jpg" },
+  { title: "Resorts", img: "/assests/resort.jpg" },
+  { title: "Ambulance", img: "/assests/radiology.jpg" },
+  { title: "Pharmacy", img: "/assests/pharmacy.jpg" },
+  { title: "Ambulance", img: "/assests/radiology.jpg" },
+  { title: "Pharmacy", img: "/assests/pharmacy.jpg" },
+  { title: "Ambulance", img: "/assests/radiology.jpg" },
+  { title: "Pharmacy", img: "/assests/pharmacy.jpg" },
 ];
 
 const services = [
@@ -192,19 +183,19 @@ const services = [
     name: "Metro Diagnostics",
     type: "CT/MRI Services",
     location: "Delhi",
-    img: "/images/diagnostic.jpg",
+    img: "/assests/diagnostic.jpg",
   },
   {
     name: "Dr. Aisha Khan",
     type: "Cardiologist",
     location: "Lakeside Hospital",
-    img: "/images/doctor.jpg",
+    img: "/assests/doctor.jpg",
   },
   {
     name: "Sunrise Beach Resort",
     type: "Luxury Stay",
     location: "Goa, India",
-    img: "/images/resort.jpg",
+    img: "/assests/resort.jpg",
   },
   {
     name: "Metro Diagnostics",

@@ -144,7 +144,7 @@ const SignUp: FC<Props> = ({ setRoute }) => {
             onChange={handleChange}
             className={`${errors.role && touched.role && "border-red-500"} ${
               styles.input
-            } cursor-pointer text-red-500`}
+            } cursor-pointer text-gray-700`}
           >
             <option value="" disabled>
               -- Select Role --
@@ -188,10 +188,10 @@ const SignUp: FC<Props> = ({ setRoute }) => {
           or join with
         </h5>
 
-        <div className="flex items-center justify-center my-3">
+        {/* <div className="flex items-center justify-center my-3">
           <FcGoogle size={30} className="cursor-pointer mr-2" />
           <AiFillGithub size={30} className="cursor-pointer mr-2" />
-        </div>
+        </div> */}
 
         <h5 className="text-center pt-4 font-Poppins text-[14px]">
           Already have an account?{" "}
