@@ -103,7 +103,7 @@ const formik = useFormik({
         <div className="w-full md:w-1/2 bg-white p-6 shadow-lg rounded-xl">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-blue-700">
-              Doctor Service Form
+              Diagnosis Service Form
             </h2>
             {/* {!editMode && (
               <button

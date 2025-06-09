@@ -176,7 +176,7 @@ const DoctorAddServiceForm = () => {
 
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             <input
-              disabled={!editMode}
+             
               type="text"
               name="serviceName"
               placeholder="Service Name"
@@ -186,7 +186,7 @@ const DoctorAddServiceForm = () => {
             />
 
             <textarea
-              disabled={!editMode}
+             
               name="description"
               placeholder="Service Description"
               rows={3}
@@ -198,7 +198,7 @@ const DoctorAddServiceForm = () => {
             {/* Fee and Estimate */}
             <div className="flex gap-4">
               <input
-                disabled={!editMode}
+             
                 type="text"
                 name="fee"
                 placeholder="Fee (₹)"
@@ -207,7 +207,7 @@ const DoctorAddServiceForm = () => {
                 className="w-full border px-4 py-2 rounded"
               />
               <input
-                disabled={!editMode}
+             
                 type="text"
                 name="estimatedPrice"
                 placeholder="Estimated Price (₹)"
@@ -219,7 +219,7 @@ const DoctorAddServiceForm = () => {
 
             {/* Duration Select */}
             <select
-              disabled={!editMode}
+             
               name="duration"
               onChange={formik.handleChange}
               value={formik.values.duration}
@@ -235,7 +235,7 @@ const DoctorAddServiceForm = () => {
             {/* Show doctor type input only if duration = custom */}
             {formik.values.duration === "custom" && (
               <input
-                disabled={!editMode}
+               
                 type="text"
                 name="customDoctorType"
                 placeholder="Doctor Type"
@@ -247,7 +247,7 @@ const DoctorAddServiceForm = () => {
 
             {/* Availability Dropdown */}
             <select
-              disabled={!editMode}
+             
               name="availability"
               onChange={formik.handleChange}
               value={formik.values.availability}
@@ -262,7 +262,7 @@ const DoctorAddServiceForm = () => {
             {/* Image Upload */}
             <div className="flex items-center gap-4">
               <input
-                disabled={!editMode}
+              
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}

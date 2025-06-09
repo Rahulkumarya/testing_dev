@@ -243,12 +243,156 @@
 
 //3rd
 // component/DoctorServiceCard.tsx
+// "use client";
+
+// import React, { useEffect, useState, useMemo } from "react";
+// // If you're in Next.js, import Image for optimized loading
+// import Image from "next/image";
+// import { calculateDistance } from "../../../../lib/utils"; // your Haversine helper
+
+// export interface Service {
+//   _id: string;
+//   name: string;            // renamed from serviceName
+//   specialty: string;
+//   location: {
+//     coordinates: [number, number];
+//     city: string;
+//     state: string;
+//     pincode: string;
+//     address: string;
+//     landmark?: string;
+//     type: string;
+//   };
+//   latitude: number;
+//   longitude: number;
+//   fee: number;
+//   distance?: number;       // optional server-computed distance
+// }
+
+// interface Props {
+//   service: Service;
+//   onViewDetails: () => void;
+//   onBook: () => void;
+// }
+
+// export default function DoctorServiceCard({
+//   service,
+//   onViewDetails,
+//   onBook,
+// }: Props) {
+//   // 1) Pull fields straight out of `service` for readability:
+//   const {
+//     name,
+//     specialty,
+//     latitude,
+//     longitude,
+//     fee,
+//     distance: serverDistance = null,
+//     location,
+//   } = service;
+
+//   // 2) Track our own distance (either from server or client calc):
+//   const [distance, setDistance] = useState<number | null>(serverDistance);
+
+//   // 3) Only run geolocation ONCE on mount:
+//   useEffect(() => {
+//     if (!navigator.geolocation) return;  // bail if unsupported
+
+//     navigator.geolocation.getCurrentPosition(
+//       ({ coords }) => {
+//         const clientDist = calculateDistance(
+//           coords.latitude,
+//           coords.longitude,
+//           latitude,
+//           longitude
+//         );
+//         setDistance(clientDist);
+//       },
+//       () => {
+//         // on error/denial, keep serverDistance (or null)
+//         setDistance(serverDistance);
+//       }
+//     );
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, []);  // empty deps = mount only
+
+//   // 4) Build a memoized, human-readable address string:
+//   const fullAddress = useMemo(() => {
+//     const { address, landmark, city, state, pincode } = location;
+//     return [address, landmark, city, `${state} – ${pincode}`]
+//       .filter(Boolean)
+//       .join(", ");
+//   }, [location]);
+
+//   return (
+//     <div className="bg-white rounded-2xl shadow p-6 flex flex-col hover:shadow-lg transition-shadow">
+//       {/* 5) Image header */}
+//       <div className="relative w-full h-48 mb-4 rounded-t-2xl overflow-hidden">
+//         <Image
+//           src="/images/doctor-placeholder.jpg"
+//           alt={name}
+//           layout="fill"
+//           objectFit="cover"
+//         />
+//       </div>
+
+//       {/* 6) Core info */}
+//       <h3 className="text-xl font-semibold mb-1">{name}</h3>
+//       <p className="text-sm text-gray-600 mb-2">{specialty}</p>
+//       <p className="text-sm text-gray-500 mb-4">{fullAddress}</p>
+
+//       {/* 7) Distance (defensive) */}
+//       <p className="text-sm text-gray-500 mb-4">
+//         {distance != null
+//           ? `${distance.toFixed(2)} km away`
+//           : "Distance unavailable"}
+//       </p>
+
+//       {/* 8) Fee */}
+//       <p className="text-lg font-medium mb-6">₹{fee.toLocaleString()}</p>
+
+//       {/* 9) Actions */}
+//       <div className="mt-auto flex space-x-2">
+//         <button
+//           onClick={onViewDetails}
+//           className="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-sm hover:bg-gray-50"
+//         >
+//           View Details
+//         </button>
+//         <button
+//           onClick={onBook}
+//           className="flex-1 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm hover:bg-blue-700"
+//         >
+//           Book
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//4th
+// component/DoctorServiceCard.tsx
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
 // If you're in Next.js, import Image for optimized loading
 import Image from "next/image";
-import { calculateDistance } from "../../../../lib/utils"; // your Haversine helper
+import { calculateDistance } from "../../../utils/sos/CalculateDistance"; // your Haversine helper
+import Link from "next/link"
+import { useRouter } from "next/navigation";
 
 export interface Service {
   _id: string;
@@ -271,6 +415,7 @@ export interface Service {
 
 interface Props {
   service: Service;
+  serviceType:string;
   onViewDetails: () => void;
   onBook: () => void;
 }
@@ -278,6 +423,7 @@ interface Props {
 export default function DoctorServiceCard({
   service,
   onViewDetails,
+  serviceType,
   onBook,
 }: Props) {
   // 1) Pull fields straight out of `service` for readability:
@@ -290,6 +436,11 @@ export default function DoctorServiceCard({
     distance: serverDistance = null,
     location,
   } = service;
+
+const router = useRouter();
+
+
+
 
   // 2) Track our own distance (either from server or client calc):
   const [distance, setDistance] = useState<number | null>(serverDistance);
@@ -318,6 +469,8 @@ export default function DoctorServiceCard({
 
   // 4) Build a memoized, human-readable address string:
   const fullAddress = useMemo(() => {
+    if (!location) return "Location unavailable";
+
     const { address, landmark, city, state, pincode } = location;
     return [address, landmark, city, `${state} – ${pincode}`]
       .filter(Boolean)
@@ -338,6 +491,8 @@ export default function DoctorServiceCard({
 
       {/* 6) Core info */}
       <h3 className="text-xl font-semibold mb-1">{name}</h3>
+      <h3 className="text-xl font-semibold mb-1">{name}</h3>
+
       <p className="text-sm text-gray-600 mb-2">{specialty}</p>
       <p className="text-sm text-gray-500 mb-4">{fullAddress}</p>
 
@@ -354,7 +509,10 @@ export default function DoctorServiceCard({
       {/* 9) Actions */}
       <div className="mt-auto flex space-x-2">
         <button
-          onClick={onViewDetails}
+          onClick={() => {
+            console.log("view details clicking");
+            router.push(`/AllServices/Patient/${service._id}/${serviceType}`);
+          }}
           className="flex-1 px-4 py-2 rounded-xl border border-gray-300 text-sm hover:bg-gray-50"
         >
           View Details

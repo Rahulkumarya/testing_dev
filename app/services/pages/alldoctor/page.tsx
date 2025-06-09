@@ -474,7 +474,7 @@ import { useFetchDoctorsQuery } from "@/redux/features/patients/patientApi";
 import SearchAndFilterBar from "../component/SearchAndFilterBar";
 import DoctorServiceCard from "../component/DoctorServiceCard";
 import Loader from "../../../component/Loader/Loader";
-
+import Link from "next/link";
 interface SearchCriteria {
   q?: string;
   lat?: number;
@@ -494,10 +494,14 @@ export default function AllDoctorPage() {
   } = useFetchDoctorsQuery(criteria);
 
   // Handler passed to your SearchAndFilterBar
-  const handleSearch = (newC: SearchCriteria) => {
-    setCriteria(newC);
+  console.log(`get doctor services`, services);
+  const handleSearch = (newC: any) => {
+    setCriteria({
+      q: newC.query,
+      lat: newC.latitude,
+      lng: newC.longitude,
+    });
   };
-
   // Loading and error states
   if (isLoading) return <Loader />;
   if (isError)
@@ -517,11 +521,15 @@ export default function AllDoctorPage() {
         {/* --- Doctor Cards Grid --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {services.map((service) => (
+
+            console.log(`service is`, service.serviceName),
             <DoctorServiceCard
               key={service._id}
+
               // map your API's `serviceName` into the `name` prop your card expects
               service={{ ...service, name: service.serviceName }}
-              onViewDetails={() => console.log("View", service.serviceName)}
+              serviceType={service.serviceType}
+              onViewDetails={() => console.log("View", service.serviceType)}
               onBook={() => console.log("Book", service.serviceName)}
             />
           ))}

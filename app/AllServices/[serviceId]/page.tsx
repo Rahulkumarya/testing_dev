@@ -19,6 +19,9 @@ export default function ServiceDetailPage() {
     refetchOnMountOrArgChange: true,
   });
 
+  console.log("Service data:", data);
+  console.log("Service ID get :", id);
+
   const [deleteService] = useDeleteDoctorServiceMutation();
   const [toggleDoctorServiceField] = useToggleDoctorServiceFieldMutation();
 
