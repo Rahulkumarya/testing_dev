@@ -70,6 +70,11 @@ export const profileApi = apiSlice.injectEndpoints({
 
 
 
+
+
+
+    
+
     DoctorById: builder.query<any, string>({
       query: (id) => `/doctorService/${id}`,
     }),

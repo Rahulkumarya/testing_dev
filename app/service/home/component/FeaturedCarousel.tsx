@@ -97,17 +97,27 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
                 maxWidth: "400px", // optional max width so cards don't get too wide on huge desktops
               }}
             >
-              <Image
-                src={service.img}
-                alt={service.name}
-                width={500}
-                height={300}
-                className="rounded-t-lg object-cover w-full h-[200px]"
-              />
+              {service.img ? (
+                <Image
+                  src={service.img}
+                  alt={service.name || "Service image"}
+                  width={500}
+                  height={300}
+                  className="rounded-t-lg object-cover w-full h-[200px]"
+                />
+              ) : (
+                <div className="w-full h-[200px] bg-gray-200 flex items-center justify-center text-gray-500 text-sm rounded-t-lg">
+                  No Image Available
+                </div>
+              )}
               <div className="p-4">
-                <h3 className="font-semibold text-lg">{service.name}</h3>
-                <p className="text-gray-500">{service.type}</p>
-                <p className="text-sm text-gray-400">{service.location}</p>
+                <h3 className="font-semibold text-lg">{service.serviceName}</h3>
+                <p className="text-gray-500">{service.serviceType}</p>
+                <p className="text-sm text-gray-400">
+                  {service.location?.city && service.location?.state
+                    ? `${service.location.city}, ${service.location.state}`
+                    : "Location not available"}
+                </p>
               </div>
             </div>
           ))}
