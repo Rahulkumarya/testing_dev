@@ -377,9 +377,9 @@ export default function SearchAndFilterBar({
           className="w-full md:w-[180px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="">All Specialties</option>
-          {specialties.map((spec) => (
+          {/* {specialties.map((spec) => (
             <option key={spec} value={spec}> {spec} </option>
-          ))}
+          ))} */}
         </select>
 
         {/* Location dropdown & button */}
@@ -390,9 +390,9 @@ export default function SearchAndFilterBar({
             className="w-full md:w-[180px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="">All Locations</option>
-            {locations.map((loc) => (
+            {/* {locations.map((loc) => (
               <option key={loc} value={loc}> {loc} </option>
-            ))}
+            ))} */}
           </select>
           <button
             type="button"

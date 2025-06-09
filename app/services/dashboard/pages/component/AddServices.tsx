@@ -18,7 +18,7 @@ const AddService = () => {
 
   switch (user.role) {
     case "doctor":
-      return <><DoctorAddServiceForm/> <br /><br /><br /><ServicesPage/> <h1 className="text-black text-center bg-red-400">AllServices</h1></>;
+      return <><ServicesPage/> </>;
     case "hospital":
       return <DiagnosisAddServiceForm/>;
     default:

@@ -18,7 +18,7 @@ const AllDashboardKpi = () => {
       return (
         <>
           
-          <h1 className="text-black text-center bg-red-400">AllServices</h1>
+        <DoctorServiceStats />
         </>
       );
     case "hospital":

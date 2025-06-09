@@ -45,10 +45,30 @@ export const profileApi = apiSlice.injectEndpoints({
 
     // }),
 
-
-    Doctors:builder.query<any[], void>({
-      query:()=>"/doctorServices/page"
+    Doctors: builder.query<any[], void>({
+      query: () => "/doctorServices/page",
     }),
+
+    // 1. Define a query that takes an object with optional q, lat, lng
+    fetchDoctors: builder.query<
+      any[],
+      { q?: string; lat?: number; lng?: number }
+    >({
+      // 2. Build the URL with query-string params
+      query: ({ q, lat, lng }) => {
+        const params = new URLSearchParams();
+        if (q) params.append("q", q);
+        if (lat != null && lng != null) {
+          params.append("lat", lat.toString());
+          params.append("lng", lng.toString());
+        }
+        return `/doctorService/p?${params.toString()}`;
+      },
+      // you can transformResponse here if you want to pluck out `data`
+      transformResponse: (raw: { data: any[] }) => raw.data,
+    }),
+
+
 
     DoctorById: builder.query<any, string>({
       query: (id) => `/doctorService/${id}`,
@@ -73,4 +93,4 @@ export const profileApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {useCreatePatientMutation,useSosPatientMutation,useDoctorByIdQuery,useDoctorsQuery} =profileApi
+export const {useCreatePatientMutation,useSosPatientMutation,useDoctorByIdQuery,useDoctorsQuery,useFetchDoctorsQuery} =profileApi
