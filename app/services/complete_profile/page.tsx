@@ -92,6 +92,8 @@ import HospitalProfile from "./component/HospitalProfile";
 import RadiologyProfile from "./component/RadiologyProfile";
 import ResortProfile from "./component/ResortProfile";
 import PatientProfile from "./component/PatientProfile";
+import AmbulanceProfile from "./component/AmbulanceProfile";
+import MedicineShopProfile from "./component/MedicineProfile";
 // ... other imports
 
 const Page = () => {
@@ -123,6 +125,12 @@ console.log(`data is `,data)
       // ... add other role-based forms
       case "gym":
         return <GymProfile />;
+      
+      case "ambulance":
+        return <AmbulanceProfile />;
+
+      case "pharmacy":
+        return <MedicineShopProfile />;
 
       case "diagnosis":
         return <DiagnosisProfile />;

@@ -192,7 +192,7 @@ export const profileApi = apiSlice.injectEndpoints({
       },
 
       // Optional: Refresh list if needed
-      invalidatesTags: ["DoctorServices"],
+      // invalidatesTags: ["DoctorServices"],
     }),
 
     // ✅ UPDATE doctor service

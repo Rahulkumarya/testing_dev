@@ -192,7 +192,7 @@ console.log(`user register data serviceheader `,user)
               <div className="w-[70%] fixed z-[999999999] h-screen bg-white top-0 right-0  text-black">
                 {" "}
                 {/* MOD: removed dark:bg-slate-900 */}
-                <NavItems activeItem={activeItem} isMobile={true} />
+                <NavItems activeItem={1} isMobile={true} />
                 <HiOutlineUserCircle
                   size={25}
                   className="cursor-pointer ml-5 my-2 text-black" // MOD: removed dark:text-white

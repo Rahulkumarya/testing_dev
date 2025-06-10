@@ -45,7 +45,7 @@ export const profileApi = apiSlice.injectEndpoints({
 
     // }),
 
-    Doctors: builder.query<any[], void>({
+    AllServices: builder.query<any[], void>({
       query: () => "/doctorServices/page",
     }),
 
@@ -67,13 +67,6 @@ export const profileApi = apiSlice.injectEndpoints({
       // you can transformResponse here if you want to pluck out `data`
       transformResponse: (raw: { data: any[] }) => raw.data,
     }),
-
-
-
-
-
-
-    
 
     DoctorById: builder.query<any, string>({
       query: (id) => `/doctorService/${id}`,
@@ -98,4 +91,10 @@ export const profileApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {useCreatePatientMutation,useSosPatientMutation,useDoctorByIdQuery,useDoctorsQuery,useFetchDoctorsQuery} =profileApi
+export const {
+  useCreatePatientMutation,
+  useSosPatientMutation,
+  useDoctorByIdQuery,
+  useAllServicesQuery,
+  useFetchDoctorsQuery,
+} = profileApi;

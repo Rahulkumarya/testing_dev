@@ -1,19 +1,37 @@
-"use client"
-import React from 'react'
-import { useParams } from 'next/navigation'
-import { useGetDoctorServiceByIdQuery } from '@/redux/features/services/dprofile/ServiceApi'
-interface Props {
-    
-}
+"use client";
 
-const page = (props: Props) => {
-    return (
-        <div className='max-w-3xl mx-auto p-6 space-y-6 container'>
-            <h1 className='text-3xl font-bold'>Booking Page</h1>
-            Booking page for service
-            <p>Service ID:</p>
-        </div>
-    )
-}
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import RazorpayButton from "../../component/RazorpayButton"; // Adjust the import path as necessary
+import axios from "axios";
 
-export default page
+export default function BookServicePage() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const serviceId = params.get("serviceId")!;
+  const [service, setService] = useState<{ name: string; fee: number } | null>(
+    null
+  );
+
+  useEffect(() => {
+    // Fetch service details
+    axios.get(`/api/services/${serviceId}`).then((res) => {
+      setService(res.data);
+    });
+  }, [serviceId]);
+
+  if (!service) return <p>Loading service...</p>;
+
+  return (
+    <div className="max-w-lg mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">{service.name}</h1>
+      <p className="mb-6">Fee: ₹{service.fee}</p>
+      {/* Razorpay payment button */}
+      <RazorpayButton
+        serviceId={serviceId}
+        amount={service.fee}
+        name={service.name}
+      />
+    </div>
+  );
+}

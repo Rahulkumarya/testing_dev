@@ -10,11 +10,12 @@ import { Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Providers from "../../Provider";
 import { SessionProvider } from "next-auth/react";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./../../component/Loader/Loader";
+import Header from "./../components/SeviceHeader"
 import ServiceDashboard from "./pages/ServiceDashboard";
-import Footer from "../../service/home/Footer"
+import Footer from "../../service/home/Footer";
 import { SocketProvider } from "@/app/context/SocketContext";
 
 const poppins = Poppins({
@@ -49,10 +50,10 @@ export default function RootLayout({
       >
         <Providers>
           <SessionProvider>
-          <SocketProvider>
+            <SocketProvider>
               <Custom>{children}</Custom>
               <Toaster position="top-center" reverseOrder={false} />
-              </SocketProvider>
+            </SocketProvider>
           </SessionProvider>
         </Providers>
       </body>
@@ -62,10 +63,27 @@ export default function RootLayout({
 
 const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
+  const [open, setOpen] = useState(false);
+  const [activeItem] = useState(0);
+  const [route, setRoute] = useState("Login");
+  return (
+    <>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <Header
+            open={open}
+            setOpen={setOpen}
+            activeItem={activeItem}
+            setRoute={setRoute}
+            route={route}
+          />
 
-  return <>{isLoading ? <Loader /> : <>{children
-  }
-  <Footer/>
-  
-  </>}</>;
+          {children}
+          <Footer />
+        </>
+      )}
+    </>
+  );
 };

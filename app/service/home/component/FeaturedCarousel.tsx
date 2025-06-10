@@ -67,9 +67,9 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
 
   return (
     <section className="py-12 px-4 bg-gray-50">
-      <h2 className="text-2xl font-semibold text-center mb-8">
+      {/* <h2 className="text-2xl font-semibold text-center mb-8">
         Featured Services
-      </h2>
+      </h2> */}
 
       <div className="relative max-w-6xl mx-auto">
         {/* Scroll container */}

@@ -1,4 +1,5 @@
 "use client"
+import Link from "next/link";
 import React from "react";
 import {
   FaFacebookF,
@@ -29,29 +30,29 @@ export default function Footer() {
           <h4 className="text-xl font-semibold text-white mb-6">Quick Links</h4>
           <ul className="space-y-3">
             <li>
-              <a href="#" className="hover:text-blue-500 transition">
+              <Link href="/" className="hover:text-blue-500 transition">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-blue-500 transition">
+              <Link href="/services/dashboard" className="hover:text-blue-500 transition">
                 Services
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-blue-500 transition">
+              <Link href="/service/about" className="hover:text-blue-500 transition">
                 About Us
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-blue-500 transition">
+              <Link href="/service/contact" className="hover:text-blue-500 transition">
                 Contact
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-blue-500 transition">
+              <Link href="#" className="hover:text-blue-500 transition">
                 Careers
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -75,12 +76,12 @@ export default function Footer() {
             </li>
             <li className="flex items-center space-x-3">
               <FaEnvelope className="text-blue-500" />
-              <a
+              <Link
                 href="mailto:info@yourcompany.com"
                 className="hover:text-blue-500 transition"
               >
                 info@yourcompany.com
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

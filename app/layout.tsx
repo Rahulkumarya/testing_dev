@@ -13,7 +13,10 @@ import { SessionProvider } from "next-auth/react";
 import React, { FC, useState } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./component/Loader/Loader";
-import Header from "./services/components/SeviceHeader"
+// import Header from "./services/components/SeviceHeader"
+
+
+import Header from "./patient/component/Header";
 import { SocketProvider } from "./context/SocketContext";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -70,13 +73,16 @@ const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
         <Loader />
       ) : (
         <>
-          <Header
+          {/* <Header
             open={open}
             setOpen={setOpen}
             activeItem={activeItem}
             setRoute={setRoute}
             route={route}
-          />
+          /> */}
+
+
+          <Header/>
 
           {children}
         </>
