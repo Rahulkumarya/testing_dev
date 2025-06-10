@@ -75,7 +75,7 @@ console.log(`data is `,data)
         if (profileRes?.data?.profileCompleted === false) {
           router.push("/services/complete_profile");
         } else {
-          router.push("/"); // or any other default home page
+          router.push("/services"); // or any other default home page
         }
 
         setOpen(false);

@@ -45,7 +45,7 @@ console.log(`user register data serviceheader `,user)
         const res=await logout().unwrap();
         console.log(`response logout`,res);
         // Optionally redirect or show a message after logout
-        router.push("/");
+        router.push("/services");
       } catch (err) {
         console.error("Failed to logout:", err);
       }
@@ -122,7 +122,7 @@ console.log(`user register data serviceheader `,user)
                   </Link>
                 </div>
                 <div className="flex items-center text-black">
-                  <NavItems activeItem={activeItem} isMobile={false} />
+                  <NavItems activeItem={0} isMobile={false} />
 
                   {/* //   only for mobile for responsiveness*/}
                   <div className="800px:hidden block md:hidden sm:hidden lg:hidden">
@@ -192,7 +192,7 @@ console.log(`user register data serviceheader `,user)
               <div className="w-[70%] fixed z-[999999999] h-screen bg-white top-0 right-0  text-black">
                 {" "}
                 {/* MOD: removed dark:bg-slate-900 */}
-                <NavItems activeItem={1} isMobile={true} />
+                <NavItems activeItem={0} isMobile={true} />
                 <HiOutlineUserCircle
                   size={25}
                   className="cursor-pointer ml-5 my-2 text-black" // MOD: removed dark:text-white

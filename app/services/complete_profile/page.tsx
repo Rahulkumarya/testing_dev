@@ -1,83 +1,3 @@
-// "use client";
-
-// import React, { FC } from "react";
-// import HospitalProfile from "./component/HospitalProfile";
-// import AmbulanceProfile from "./component/AmbulanceProfile";
-// import GymProfile from "./component/GymProfile";
-// import RadiologyProfile from "./component/RadiologyProfile";
-// import MedicineShopProfile from "./component/MedicineProfile";
-// import ResortProfile from "./component/ResortProfile";
-// import DiagnosisProfile from "./component/DiagnosisProfile";
-// import { useSelector } from "react-redux";
-// import { store } from "../../../redux/store";
-// import DoctorProfile from "./component/DoctorProfile";
-// import { useRouter } from "next/navigation";
-
-// interface Props {}
-
-// // ✅ Centralized Profile Page for Different User Roles
-// const Page: FC<Props> = () => {
-//   // Fetching user from Redux store
-//   const user = useSelector((state: store) => state.auth.user);
-
-//   // ✅ Dynamically renders the profile completion component based on user role
-//   const renderProfileComponent = () => {
-
-//     const router=useRouter();
-//     switch (user?.role) {
-//       case "doctor":
-//           return <DoctorProfile/>
-//       case "hospital":
-//         return <HospitalProfile />;
-
-//       case "ambulance":
-//         return <AmbulanceProfile />;
-
-//       case "gym":
-//         return <GymProfile />;
-
-//       case "radiology":
-//         return <RadiologyProfile />;
-
-//       case "medicine-shop":
-//         return <MedicineShopProfile />;
-
-//       case "resort":
-//         return <ResortProfile />;
-
-//       case "diagnosis":
-//         return <DiagnosisProfile />;
-
-//       default:
-//         router.push("/");
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen px-4 py-8 bg-gray-50">
-//       {/* 
-//         ✅ Future Enhancements:
-//         - Add loader/spinner while role is being fetched.
-//         - Show step indicator / progress bar for multi-step forms.
-//         - Handle edge cases when role is undefined/null.
-//         - Add role-based title (e.g., "Complete Your Hospital Profile").
-//       */}
-
-//       {renderProfileComponent()}
-//     </div>
-//   );
-// };
-
-// export default Page;
-
-
-
-
-
-
-
-
-
 "use client";
 
 import React, { useEffect } from "react";
@@ -116,7 +36,9 @@ console.log(`data is `,data)
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Something went wrong...</div>;
 
+  console.log(`user is  error`, isError);
   console.log(user?.role,`user role check`);
+  
 
   const renderProfileComponent = () => {
     switch (user?.role) {
@@ -142,9 +64,20 @@ console.log(`data is `,data)
       case "resort":
         return <ResortProfile />;
       case "patient":
-        return <PatientProfile/>;
+        return (
+          <>
+            <h1>patient profile</h1>
+            <br /> <PatientProfile />
+          </>
+        );
       default:
-        router.push("/");
+        if(user?.role==="patient"){
+          router.push("/");
+        }
+        else{
+          router.push("/services");
+        }
+      
     }
   };
 

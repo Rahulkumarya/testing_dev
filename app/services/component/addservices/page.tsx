@@ -1,18 +1,9 @@
-"use client";
-//handles all addServices router like radiology,doctor,ambulance,patient
-
-import { useSelector } from "react-redux";
-import { store } from "@/redux/store";
-// import DoctorNotifications from "./DoctorNotifications";
-// import RadiologyNotifications from "./RadiologyNotifications";
-// import DoctorAddServiceForm from "../../roleSpecificPages/doctor/AddService";
-// import DiagnosisAddServiceForm from "../../roleSpecificPages/diagnosis/AddServices";
-// // import AllService from "../../roleSpecificPages/doctor/AllService"
-// import ServicesPage from "../../roleSpecificPages/doctor/AllServicesPage";
+"use client"
 import DoctorAddServiceForm from "@/app/services/dashboard/roleSpecificPages/diagnosis/AddServices";
-import DiagnosisAddServiceForm from "../../../app/services/dashboard/roleSpecificPages/diagnosis/AddServices";
+import DiagnosisAddServiceForm from "../../dashboard/roleSpecificPages/diagnosis/AddServices";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const AddService = () => {
   const user = useSelector((state: store) => state.auth.user);

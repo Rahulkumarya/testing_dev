@@ -172,9 +172,9 @@ const DoctorProfileForm = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
-      <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
-        Create Doctor Profile
-      </h1>
+      <h3 className="text-3xl font-bold text-blue-400 mb-6 text-center">
+        Complete Your Doctor Profile
+      </h3>
 
       <Formik
         initialValues={initialValues}

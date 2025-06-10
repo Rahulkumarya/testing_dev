@@ -11,7 +11,7 @@ import { store } from "@/redux/store";
 import Select from "react-select";
 import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
 import { useCreateDiagnosisMutation } from "@/redux/features/services/diagnosis/profileApi";
-
+import { useCreateMedicineMutation } from "@/redux/features/services/medicine/profileApi";
 // Reusable Form Field Component
 export const FormField = ({ label, name, type = "text" }: any) => (
   <div className="flex flex-col gap-1">
@@ -41,8 +41,8 @@ const specializationOptions = [
 const MedicineProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
+const [createMedicine, { isLoading, isSuccess }]=useCreateMedicineMutation();
 
-  const [createDiagnosis,{isLoading,isSuccess}]=useCreateDiagnosisMutation();
   const user = useSelector((state: store) => state.auth.user);
   const router = useRouter();
 
@@ -76,12 +76,12 @@ const MedicineProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
   const initialValues = {
     userId: user?._id,
-    specialization: [""],
+  
     registrationNumber: "",
     experience: "",
     gstNumber: "",
@@ -106,9 +106,7 @@ const MedicineProfile = () => {
 
   const validationSchema = Yup.object().shape({
     userId: Yup.string(),
-    specialization: Yup.array().of(Yup.string().required("Required")),
-    registrationNumber: Yup.string().required("Required"),
-    experience: Yup.number().min(0).required("Required"),
+    registrationNumber: Yup.string(),
     gstNumber: Yup.string()
       .matches(
         /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
@@ -154,19 +152,19 @@ const MedicineProfile = () => {
   const handleSubmit = async (values: any) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
-    values.specialization.forEach((spec: string, i: number) =>
-      formData.append(`specialization[${i}]`, spec)
-    );
+
+   
     formData.append("location", JSON.stringify(values.location));
     formData.append("accountDetails", JSON.stringify(values.accountDetails));
-    const exclude = ["avatar", "specialization", "location", "accountDetails"];
+    const exclude = ["avatar", "location", "accountDetails"];
     Object.keys(values).forEach((key) => {
       if (!exclude.includes(key)) formData.append(key, values[key]);
     });
 
     try {
-      const res = await createDiagnosis(formData).unwrap();
-      toast.success("Doctor profile created!");
+      const res = await createMedicine(formData).unwrap();
+      toast.success("Medicine profile Completed!");
+      router.push("/services");
       console.log("Submitted:", res);
     } catch (err: any) {
       console.error("Error:", err);
@@ -176,9 +174,9 @@ const MedicineProfile = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
-      <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-       Complete your Profile
-      </h1>
+      <h3 className="text-2xl font-bold text-blue-400 mb-6 text-center">
+       Complete your Pharmacy Profile
+      </h3>
 
       <Formik
         initialValues={initialValues}
@@ -188,7 +186,7 @@ const MedicineProfile = () => {
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1">
+            {/* <div className="md:col-span-1">
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Specializations
               </label>
@@ -215,17 +213,13 @@ const MedicineProfile = () => {
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
-            </div>
+            </div> */}
 
             {/* Basic Info */}
-            <FormField label="Registration Number" name="registrationNumber" />
-            <FormField
-              label="Experience (in years)"
-              name="experience"
-              type="number"
-            />
+          
+            <FormField label="Drug License" name="licenceNumber" />
             <FormField label="GST Number" name="gstNumber" />
-            <FormField label="License Number" name="licenceNumber" />
+           
             {/* <FormField label="Clinic Address" name="address" /> */}
 
             {/* Geo Fields (Auto-Filled) */}

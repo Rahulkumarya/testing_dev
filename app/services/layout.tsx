@@ -1,21 +1,23 @@
 "use client";
 // import type { Metadata } from "next";
 // import { Inter } from "next/font/google";
-import "../../../app/globals.css";
+// import "../../../app/globals.css";
+
+import "../../app/globals.css"
 
 //import font family
 import { Poppins } from "next/font/google";
 import { Josefin_Sans } from "next/font/google";
 
 import { Toaster } from "react-hot-toast";
-import Providers from "../../Provider";
+import Providers from "../Provider";
 import { SessionProvider } from "next-auth/react";
 import React, { FC, useState } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
-import Loader from "./../../component/Loader/Loader";
-import Header from "./../components/SeviceHeader"
+import Loader from "../component/Loader/Loader";
+import Header from "./components/SeviceHeader"
 import ServiceDashboard from "./pages/ServiceDashboard";
-import Footer from "../../service/home/Footer";
+import Footer from "../service/home/Footer";
 import { SocketProvider } from "@/app/context/SocketContext";
 
 const poppins = Poppins({
@@ -81,7 +83,7 @@ const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
           />
 
           {children}
- 
+          <Footer />
         </>
       )}
     </>
