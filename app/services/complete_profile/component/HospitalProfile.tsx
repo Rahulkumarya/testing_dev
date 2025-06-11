@@ -29,14 +29,7 @@ export const FormField = ({ label, name, type = "text" }: any) => (
     />
   </div>
 );
-const specializationOptions = [
-  { value: "Cardiologist", label: "Yoga" },
-  { value: "Dermatologist", label: "Musuleup" },
-  { value: "Neurologist", label: "Running" },
-  { value: "Orthopedic", label: "Orthopedic" },
-  { value: "Pediatrician", label: "Pediatrician" },
-  // add more as needed
-];
+
 
 
 const HospitalProfile = () => {
@@ -78,16 +71,16 @@ const HospitalProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
   const initialValues = {
     userId: user?._id,
-    specialization: [""],
+
     registrationNumber: "",
     experience: "",
     gstNumber: "",
-    licenceNumber: "",
+
     address: "",
     location: {
       coordinates: [geo.lon, geo.lat],
@@ -108,7 +101,6 @@ const HospitalProfile = () => {
 
   const validationSchema = Yup.object().shape({
     userId: Yup.string(),
-    specialization: Yup.array().of(Yup.string().required("Required")),
     registrationNumber: Yup.string().required("Required"),
     experience: Yup.number().min(0).required("Required"),
     gstNumber: Yup.string()
@@ -117,7 +109,6 @@ const HospitalProfile = () => {
         "Invalid GST Number"
       )
       .required("GST Number is required"),
-    licenceNumber: Yup.string(),
     address: Yup.string(),
     location: Yup.object().shape({
       coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
@@ -156,19 +147,17 @@ const HospitalProfile = () => {
   const handleSubmit = async (values: any) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
-    values.specialization.forEach((spec: string, i: number) =>
-      formData.append(`specialization[${i}]`, spec)
-    );
+  
     formData.append("location", JSON.stringify(values.location));
     formData.append("accountDetails", JSON.stringify(values.accountDetails));
-    const exclude = ["avatar", "specialization", "location", "accountDetails"];
+    const exclude = ["avatar", "location", "accountDetails"];
     Object.keys(values).forEach((key) => {
       if (!exclude.includes(key)) formData.append(key, values[key]);
     });
 
     try {
       const res = await createHospital(formData).unwrap();
-      toast.success("Doctor profile created!");
+      toast.success("Thanks for completing your profile!");
       console.log("Submitted:", res);
     } catch (err: any) {
       console.error("Error:", err);
@@ -178,8 +167,8 @@ const HospitalProfile = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
-      <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-        Complete your Profile
+      <h1 className="text-2xl font-bold text-blue-500 mb-6 text-center">
+        Complete your  Hospital Profile
       </h1>
 
       <Formik
@@ -190,44 +179,17 @@ const HospitalProfile = () => {
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Specializations
-              </label>
-              <Select
-                isMulti
-                name="specialization"
-                options={specializationOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(
-                  selectedOptions: { value: string; label: string }[]
-                ) =>
-                  setFieldValue(
-                    "specialization",
-                    selectedOptions.map((opt) => opt.value)
-                  )
-                }
-                value={specializationOptions.filter((opt) =>
-                  values.specialization.includes(opt.value)
-                )}
-              />
-              <ErrorMessage
-                name="specialization"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+      
 
             {/* Basic Info */}
-            <FormField label="Registration Number" name="registrationNumber" />
+            <FormField label="NABH accreditation Number" name="registrationNumber" />
             <FormField
               label="Experience (in years)"
               name="experience"
               type="number"
             />
             <FormField label="GST Number" name="gstNumber" />
-            <FormField label="License Number" name="licenceNumber" />
+           
             {/* <FormField label="Clinic Address" name="address" /> */}
 
             {/* Geo Fields (Auto-Filled) */}

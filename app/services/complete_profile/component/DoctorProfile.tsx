@@ -73,13 +73,13 @@ const DoctorProfileForm = () => {
   }, []);
 
   useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
   const initialValues = {
     userId: user?._id,
     specialization: [""],
-    registrationNumber: "",
+    registrationNumber:"",
     experience: "",
     gstNumber: "",
     licenceNumber: "",
@@ -104,8 +104,8 @@ const DoctorProfileForm = () => {
   const validationSchema = Yup.object().shape({
       userId: Yup.string(),
       specialization: Yup.array().of(Yup.string().required("Required")),
-      registrationNumber: Yup.string().required("Required"),
-      experience: Yup.number().min(0).required("Required"),
+      
+      experience: Yup.number().min(0),
       gstNumber: Yup.string()
         .matches(
           /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
@@ -162,7 +162,7 @@ const DoctorProfileForm = () => {
 
     try {
       const res = await createDoctor(formData).unwrap();
-      toast.success("Doctor profile created!");
+      toast.success("Thanks  for completing your profile!");
       console.log("Submitted:", res);
     } catch (err: any) {
       console.error("Error:", err);
@@ -214,14 +214,14 @@ const DoctorProfileForm = () => {
             </div>
 
             {/* Basic Info */}
-            <FormField label="Registration Number" name="registrationNumber" />
+            <FormField label="Licence Number" name="registrationNumber" />
             <FormField
               label="Experience (in years)"
               name="experience"
               type="number"
             />
             <FormField label="GST Number" name="gstNumber" />
-            <FormField label="License Number" name="licenceNumber" />
+         
             {/* <FormField label="Clinic Address" name="address" /> */}
 
             {/* Geo Fields (Auto-Filled) */}

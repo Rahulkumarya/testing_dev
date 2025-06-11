@@ -10,7 +10,9 @@ import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
 import Select from "react-select";
 import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
-import { useCreateGymMutation } from "@/redux/features/services/gym/profileApi";
+
+import { useCreateGymMutation } from "../../../../redux/features/services/gym/profileApi";
+
 
 // Reusable Form Field Component
 export const FormField = ({ label, name, type = "text" }: any) => (
@@ -28,21 +30,16 @@ export const FormField = ({ label, name, type = "text" }: any) => (
     />
   </div>
 );
-const specializationOptions = [
-  { value: "Cardiologist", label: "Yoga" },
-  { value: "Dermatologist", label: "Musuleup" },
-  { value: "Neurologist", label: "Running" },
-  { value: "Orthopedic", label: "Orthopedic" },
-  { value: "Pediatrician", label: "Pediatrician" },
-  // add more as needed
-];
+
+
 
 
 const GymProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
 
-  const [createGym,{isLoading,isSuccess}]=useCreateGymMutation();
+  const [createGym, { isLoading, isSuccess }] =
+    useCreateGymMutation();
   const user = useSelector((state: store) => state.auth.user);
   const router = useRouter();
 
@@ -76,16 +73,16 @@ const GymProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
   const initialValues = {
     userId: user?._id,
-    specialization: [""],
+
     registrationNumber: "",
     experience: "",
     gstNumber: "",
-    licenceNumber: "",
+
     address: "",
     location: {
       coordinates: [geo.lon, geo.lat],
@@ -104,18 +101,19 @@ const GymProfile = () => {
     avatar: null,
   };
 
-const validationSchema = Yup.object().shape({
+  const validationSchema = Yup.object().shape({
     userId: Yup.string(),
-    specialization: Yup.array().of(Yup.string().required("Required")),
     registrationNumber: Yup.string().required("Required"),
     experience: Yup.number().min(0).required("Required"),
+    ambulanceNumber: Yup.string()
+      .matches(/^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/, "Invalid Ambulance Number"),
+      
     gstNumber: Yup.string()
       .matches(
         /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
         "Invalid GST Number"
       )
       .required("GST Number is required"),
-    licenceNumber: Yup.string(),
     address: Yup.string(),
     location: Yup.object().shape({
       coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
@@ -136,8 +134,6 @@ const validationSchema = Yup.object().shape({
     }),
   });
 
-
-
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setFieldValue: any
@@ -156,19 +152,17 @@ const validationSchema = Yup.object().shape({
   const handleSubmit = async (values: any) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
-    values.specialization.forEach((spec: string, i: number) =>
-      formData.append(`specialization[${i}]`, spec)
-    );
+  
     formData.append("location", JSON.stringify(values.location));
     formData.append("accountDetails", JSON.stringify(values.accountDetails));
-    const exclude = ["avatar", "specialization", "location", "accountDetails"];
+    const exclude = ["avatar", "location", "accountDetails"];
     Object.keys(values).forEach((key) => {
       if (!exclude.includes(key)) formData.append(key, values[key]);
     });
 
     try {
       const res = await createGym(formData).unwrap();
-      toast.success("Doctor profile created!");
+      toast.success("Thanks for completing your profile!");
       console.log("Submitted:", res);
     } catch (err: any) {
       console.error("Error:", err);
@@ -178,8 +172,8 @@ const validationSchema = Yup.object().shape({
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
-      <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-       Complete your Profile
+      <h1 className="text-2xl font-bold text-blue-500 mb-6 text-center">
+        Complete your Gym Profile
       </h1>
 
       <Formik
@@ -190,44 +184,20 @@ const validationSchema = Yup.object().shape({
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Specializations
-              </label>
-              <Select
-                isMulti
-                name="specialization"
-                options={specializationOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(
-                  selectedOptions: { value: string; label: string }[]
-                ) =>
-                  setFieldValue(
-                    "specialization",
-                    selectedOptions.map((opt) => opt.value)
-                  )
-                }
-                value={specializationOptions.filter((opt) =>
-                  values.specialization.includes(opt.value)
-                )}
-              />
-              <ErrorMessage
-                name="specialization"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
-
             {/* Basic Info */}
-            <FormField label="Registration Number" name="registrationNumber" />
+            <FormField
+              label="Registration Number"
+              name="registrationNumber"
+            />
             <FormField
               label="Experience (in years)"
               name="experience"
               type="number"
             />
+           
+
             <FormField label="GST Number" name="gstNumber" />
-            <FormField label="License Number" name="licenceNumber" />
+
             {/* <FormField label="Clinic Address" name="address" /> */}
 
             {/* Geo Fields (Auto-Filled) */}
@@ -298,12 +268,18 @@ const validationSchema = Yup.object().shape({
                 />
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-                 <FormField
-                                  label="Account Number"
-                                  name="accountDetails.accountNumber"
-                                  value={values.accountDetails.accountNumber}
-                                  onChange={setFieldValue}
-                                />
+                {/* <MaskedInputField
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                  value={values.accountDetails.accountNumber}
+                  onChange={setFieldValue}
+                /> */}
+                <FormField
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                  value={values.accountDetails.accountNumber}
+                  onChange={setFieldValue}
+                />
               </div>
             </div>
 

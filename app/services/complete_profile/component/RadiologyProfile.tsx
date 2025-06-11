@@ -77,7 +77,7 @@ const [createRadiology, { isLoading, isSuccess }] = useCreateRadiologyMutation()
   }, []);
 
   useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
   const initialValues = {

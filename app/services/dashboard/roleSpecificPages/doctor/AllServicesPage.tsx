@@ -419,12 +419,12 @@ const ServicesPage = () => {
                       <p className="text-gray-500">{service.description}</p>
                     </div>
                     <div className="flex gap-3">
-                      <Link href={`/AllServices/${service._id}`}>
+                      <Link href={`/services/component/AllServices/${service._id}`}>
                         <Button variant="ghost" size="icon">
                           <Eye className="w-5 h-5" />
                         </Button>
                       </Link>
-                      <Link href={`/AllServices/edit/${service._id}`}>
+                      <Link href={`/services/component/AllServices/edit/${service._id}`}>
                         <Button variant="ghost" size="icon">
                           <Pencil className="w-5 h-5 cursor-pointer" />
                         </Button>

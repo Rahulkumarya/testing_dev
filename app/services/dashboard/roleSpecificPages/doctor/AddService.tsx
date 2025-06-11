@@ -176,7 +176,6 @@ const DoctorAddServiceForm = () => {
 
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             <input
-             
               type="text"
               name="serviceName"
               placeholder="Service Name"
@@ -186,7 +185,6 @@ const DoctorAddServiceForm = () => {
             />
 
             <textarea
-             
               name="description"
               placeholder="Service Description"
               rows={3}
@@ -198,7 +196,6 @@ const DoctorAddServiceForm = () => {
             {/* Fee and Estimate */}
             <div className="flex gap-4">
               <input
-             
                 type="text"
                 name="fee"
                 placeholder="Fee (₹)"
@@ -207,7 +204,6 @@ const DoctorAddServiceForm = () => {
                 className="w-full border px-4 py-2 rounded"
               />
               <input
-             
                 type="text"
                 name="estimatedPrice"
                 placeholder="Estimated Price (₹)"
@@ -219,7 +215,6 @@ const DoctorAddServiceForm = () => {
 
             {/* Duration Select */}
             <select
-             
               name="duration"
               onChange={formik.handleChange}
               value={formik.values.duration}
@@ -235,7 +230,6 @@ const DoctorAddServiceForm = () => {
             {/* Show doctor type input only if duration = custom */}
             {formik.values.duration === "custom" && (
               <input
-               
                 type="text"
                 name="customDoctorType"
                 placeholder="Doctor Type"
@@ -247,7 +241,6 @@ const DoctorAddServiceForm = () => {
 
             {/* Availability Dropdown */}
             <select
-             
               name="availability"
               onChange={formik.handleChange}
               value={formik.values.availability}
@@ -262,7 +255,6 @@ const DoctorAddServiceForm = () => {
             {/* Image Upload */}
             <div className="flex items-center gap-4">
               <input
-              
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
@@ -310,12 +302,32 @@ const DoctorAddServiceForm = () => {
             </button>
 
             {/* Submit Button */}
-            <button
+            {/* <button
               type="submit"
               className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
             >
               Submit Service
-            </button>
+            </button> */}
+
+            <div className="flex gap-6">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white w-[90%] py-2 rounded hover:bg-blue-700 "
+              >
+                Submit Service
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  formik.handleSubmit(); // Trigger same form submission
+                  // resetForm is already called inside onSubmit after success
+                }}
+                className="bg-green-500 text-white w-[90%] py-2 rounded hover:bg-green-700"
+              >
+                Save and Add New
+              </button>
+            </div>
           </form>
         </div>
 

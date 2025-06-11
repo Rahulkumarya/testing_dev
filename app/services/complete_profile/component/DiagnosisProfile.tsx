@@ -28,14 +28,7 @@ export const FormField = ({ label, name, type = "text" }: any) => (
     />
   </div>
 );
-const specializationOptions = [
-  { value: "Cardiologist", label: "Yoga" },
-  { value: "Dermatologist", label: "Musuleup" },
-  { value: "Neurologist", label: "Running" },
-  { value: "Orthopedic", label: "Orthopedic" },
-  { value: "Pediatrician", label: "Pediatrician" },
-  // add more as needed
-];
+
 
 
 const DiagnosisProfile = () => {
@@ -76,12 +69,12 @@ const DiagnosisProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (isSuccess) router.push("/");
+    if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
   const initialValues = {
     userId: user?._id,
-    specialization: [""],
+
     registrationNumber: "",
     experience: "",
     gstNumber: "",
@@ -106,9 +99,8 @@ const DiagnosisProfile = () => {
 
   const validationSchema = Yup.object().shape({
     userId: Yup.string(),
-    specialization: Yup.array().of(Yup.string().required("Required")),
     registrationNumber: Yup.string().required("Required"),
-    experience: Yup.number().min(0).required("Required"),
+    experience: Yup.number().min(0),
     gstNumber: Yup.string()
       .matches(
         /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
@@ -154,19 +146,17 @@ const DiagnosisProfile = () => {
   const handleSubmit = async (values: any) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
-    values.specialization.forEach((spec: string, i: number) =>
-      formData.append(`specialization[${i}]`, spec)
-    );
+  
     formData.append("location", JSON.stringify(values.location));
     formData.append("accountDetails", JSON.stringify(values.accountDetails));
-    const exclude = ["avatar", "specialization", "location", "accountDetails"];
+    const exclude = ["avatar", "location", "accountDetails"];
     Object.keys(values).forEach((key) => {
       if (!exclude.includes(key)) formData.append(key, values[key]);
     });
 
     try {
       const res = await createDiagnosis(formData).unwrap();
-      toast.success("Doctor profile created!");
+      toast.success("Thanks for completing your profile!");
       console.log("Submitted:", res);
     } catch (err: any) {
       console.error("Error:", err);
@@ -177,7 +167,7 @@ const DiagnosisProfile = () => {
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
       <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">
-       Complete your Profile
+       Complete your Diagnostic Profile
       </h1>
 
       <Formik
@@ -188,34 +178,7 @@ const DiagnosisProfile = () => {
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Specializations
-              </label>
-              <Select
-                isMulti
-                name="specialization"
-                options={specializationOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(
-                  selectedOptions: { value: string; label: string }[]
-                ) =>
-                  setFieldValue(
-                    "specialization",
-                    selectedOptions.map((opt) => opt.value)
-                  )
-                }
-                value={specializationOptions.filter((opt) =>
-                  values.specialization.includes(opt.value)
-                )}
-              />
-              <ErrorMessage
-                name="specialization"
-                component="div"
-                className="text-red-500 text-sm mt-1"
-              />
-            </div>
+            
 
             {/* Basic Info */}
             <FormField label="Registration Number" name="registrationNumber" />

@@ -407,7 +407,10 @@ export default function HomePage() {
                   key={cat.title}
                   className="flex flex-col items-center bg-gray-100 p-4 rounded-lg hover:shadow transition"
                 >
-                  <Image src={cat.img} alt={cat.title} width={60} height={60} />
+                  <Image src="/assests/resort.jpg" 
+                  alt={cat.title}
+                  
+                  width={60} height={60} />
                   <p className="mt-3 font-medium">{cat.title}</p>
                 </div>
               ))}

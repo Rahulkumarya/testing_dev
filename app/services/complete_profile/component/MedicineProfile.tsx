@@ -163,7 +163,7 @@ const [createMedicine, { isLoading, isSuccess }]=useCreateMedicineMutation();
 
     try {
       const res = await createMedicine(formData).unwrap();
-      toast.success("Medicine profile Completed!");
+      toast.success("Thanks for completing your profile!");
       router.push("/services");
       console.log("Submitted:", res);
     } catch (err: any) {
