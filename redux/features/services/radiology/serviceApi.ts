@@ -7,11 +7,11 @@ export const profileApi = apiSlice.injectEndpoints({
   
     createRadiologyService: builder.mutation({
       query: (formData) => ({
-        url: "create-service",
+        url: "radiology/create-service",
         method: "POST",
         body: formData,
         credentials: "include" as const,
-        // formData:true,
+        formData:true,
       }),
     }),
 

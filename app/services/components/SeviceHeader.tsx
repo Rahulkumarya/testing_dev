@@ -131,6 +131,7 @@ console.log(`user register data serviceheader `,user)
                       className="cursor-pointer  text-black"
                       onClick={() => setOpenSidebar(true)}
                     />
+                    <h3> login </h3>
                   </div>
                   {user ? (
                     <div className="relative dropdown-avatar">

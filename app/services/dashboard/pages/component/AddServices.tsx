@@ -21,6 +21,9 @@ const AddService = () => {
       return <><ServicesPage/> </>;
     case "hospital":
       return <DiagnosisAddServiceForm/>;
+    
+      case "radiology":
+        return <RadiologyAddServiceForm/>
     default:
       return <p>No notifications available for your role.</p>;
   }

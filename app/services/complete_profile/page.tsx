@@ -29,7 +29,7 @@ const Page = () => {
 console.log(`data is `,data)
   useEffect(() => {
     if (data?.profileCompleted) {
-      router.push("/");
+      router.push("/services");
     }
   }, [data]);
 

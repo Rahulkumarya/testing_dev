@@ -1,288 +1,339 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useFormik } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { FaUpload, FaEdit } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useCreateRadiologyServiceMutation } from "../../../../../redux/features/services/radiology/serviceApi";
 import { useSelector } from "react-redux";
-import {store} from "../../../../../redux/store"
-import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
+import { useRouter } from "next/navigation";
+import { store } from "@/redux/store";
+import Select from "react-select";
 
-const DoctorAddServiceForm = () => {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [editMode, setEditMode] = useState(true);
-  const [discountAmount, setDiscountAmount] = useState<number | null>(null);
-  const [showAddMore, setShowAddMore] = useState(true);
-const [createDoctorService, { isLoading, isError }] = useCreateDoctorServiceMutation();
-const user = useSelector((state: store) => state.auth.user);
-const formik = useFormik({
-  initialValues: {
+// Reusable Form Field Component
+export const FormField = ({ label, name, type = "text" }: any) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm font-semibold text-gray-700">{label}</label>
+    <Field
+      name={name}
+      type={type}
+      className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+    <ErrorMessage
+      name={name}
+      component="div"
+      className="text-red-500 text-sm"
+    />
+  </div>
+);
+
+const mode = [
+  { value: "online", label: "Online" },
+  { value: "inhome", label: "Inhome" },
+];
+
+const reports = [
+  { value: "center", label: "To be Collected from Center" },
+  { value: "Sendwhatsapp", label: "Will be Sent by WhatsApp" },
+  { value: "courier", label: "Can be Delivered at Home by Courier" },
+  { value: "person", label: "Can be Delivered at Home by Person" },
+];
+
+const categories = [
+  { value: "X-Ray", label: "X-Ray" },
+  { value: "MRI", label: "MRI" },
+  { value: "CT-Scan", label: "CT-Scan" },
+];
+
+const RadiologyServiceForm = () => {
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [createRadiologyService, { isLoading, isSuccess }] =
+    useCreateRadiologyServiceMutation();
+  const user = useSelector((state: store) => state.auth.user);
+  const router = useRouter();
+  const [selectedReports, setSelectedReports] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  const [geo, setGeo] = useState({
+    lat: "",
+    lon: "",
+    city: "",
+    state: "",
+    pincode: "",
+    address: "",
+    landmark: "",
+  });
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const response = await fetch(
+        `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`
+      );
+      const data = await response.json();
+      setGeo({
+        lat: latitude.toString(),
+        lon: longitude.toString(),
+        city: data.address.city || "",
+        state: data.address.state || "",
+        pincode: data.address.postcode || "",
+        address: data.display_name || "",
+        landmark: data.address.suburb || "",
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess) router.push("/services");
+  }, [isSuccess, router]);
+
+  const initialValues = {
     userId: user?._id,
+    category: "",
+    mode: [],
     serviceName: "",
     description: "",
     fee: "",
     estimatedPrice: "",
-    mode: "",
-    duration: "",
-    customDoctorType: "",
-    availability: "",
-    image: null as File | null,
-  },
-  validationSchema: Yup.object({
-    serviceName: Yup.string().required("Service Name is required"),
-    description: Yup.string().required("Description is required"),
-    fee: Yup.number()
-      .typeError("Fee must be a number")
-      .required("Fee is required"),
-    estimatedPrice: Yup.number()
-      .typeError("Estimated price must be a number")
-      .required("Estimated price is required"),
-    duration: Yup.string().required("Duration is required"),
-    customDoctorType: Yup.string().when("duration", {
-      is: "custom",
-      then: (schema) =>
-        schema.required("Doctor Type is required for custom duration"),
+    reports: [],
+    courierfee: "",
+    persornfee: "",
+    address: "",
+    location: {
+      coordinates: [geo.lon, geo.lat],
+      city: geo.city,
+      state: geo.state,
+      pincode: geo.pincode,
+      address: geo.address,
+      landmark: geo.landmark,
+    },
+    avatar: null,
+  };
+  const validationSchema = Yup.object().shape({
+    category: Yup.string().required("Required"),
+    mode: Yup.array().of(Yup.string().required("Required")),
+    serviceName: Yup.string().required("Required"),
+    description: Yup.string().required("Required"),
+    fee: Yup.number().required("Required"),
+    estimatedPrice: Yup.string(),
+    reports: Yup.array().of(Yup.string().required("Reports")),
+    courierfee: Yup.string().when("reports", {
+      is: (val: any) => Array.isArray(val) && val.includes("courier"),
+      then: Yup.string().required("Courier fee required"),
     }),
-    availability: Yup.string().required("Availability is required"),
-    image: Yup.mixed().nullable(),
-  }),
-  onSubmit: async (values) => {
-  try {
-    const formData = new FormData();
-    formData.append("userId", values.userId);
-    formData.append("serviceName", values.serviceName);
-    formData.append("description", values.description);
-    formData.append("fee", values.fee.toString());
-    formData.append("estimatedPrice", values.estimatedPrice.toString());
-    formData.append("mode", values.mode);
-    formData.append("duration", values.duration);
-    formData.append("customDoctorType", values.customDoctorType);
-    formData.append("availability", values.availability);
-    if (values.image) {
-      formData.append("image", values.image);
-    }
+    persornfee: Yup.string().when("reports", {
+      is: (val: any) => Array.isArray(val) && val.includes("person"),
+      then: Yup.string().required("Person fee required"),
+    }),
+    location: Yup.object().shape({
+      coordinates: Yup.array().of(Yup.string()).length(2),
+      city: Yup.string(),
+      state: Yup.string(),
+      pincode: Yup.string(),
+      address: Yup.string(),
+      landmark: Yup.string(),
+    }),
+  });
+  
+  
 
-    const res = await createDoctorService(formData).unwrap();
-    console.log("response", res);
-    alert("Service submitted successfully!");
-    setEditMode(false);
-  } catch (error) {
-    console.error("Error submitting service:", error);
-    alert("Failed to submit service.");
-  }
-}
-
-});
-
-  useEffect(() => {
-    const fee = parseFloat(formik.values.fee);
-    const est = parseFloat(formik.values.estimatedPrice);
-    if (!isNaN(fee) && !isNaN(est) && est > fee) {
-      const discount = est - fee;
-      setDiscountAmount(discount);
-    } else {
-      setDiscountAmount(null);
-    }
-  }, [formik.values.fee, formik.values.estimatedPrice]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFieldValue: any
+  ) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
-      formik.setFieldValue("image", file);
+      setFieldValue("avatar", file);
       const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.onloadend = () => setAvatarPreview(reader.result as string);
       reader.readAsDataURL(file);
+    } else {
+      setFieldValue("avatar", null);
+    }
+  };
+
+  const handleSubmit = async (values: any) => {
+    const formData = new FormData();
+    if (values.avatar) formData.append("avatar", values.avatar);
+
+    formData.append("category",values.category);
+    formData.append("serviceName",values.serviceName);
+    formData.append("description",values.description);
+    formData.append("fee",values.fee);
+    formData.append("estimatedPrice",values.estimatedPrice);
+    
+
+
+    values.mode.forEach((mod: string, i: number) =>
+      formData.append(`mode[${i}]`, mod)
+    );
+    values.reports.forEach((rep: string, i: number) =>
+      formData.append(`reports[${i}]`, rep)
+    );
+
+    if (values.courierfee) formData.append("courierfee", values.courierfee);
+    if (values.persornfee) formData.append("persornfee", values.persornfee);
+
+    formData.append("location", JSON.stringify(values.location));
+
+    const exclude = [
+      "avatar",
+      "mode",
+      "reports",
+      "courierfee",
+      "persornfee",
+      "location",
+    ];
+
+    Object.keys(values).forEach((key) => {
+      if (!exclude.includes(key)) formData.append(key, values[key]);
+    });
+
+    try {
+      console.log(`formdata is `,formData);
+      const res = await createRadiologyService(formData).unwrap();
+      toast.success("Thanks for completing your profile!");
+      console.log(`response is `,res);
+    } catch (err: any) {
+      console.error("Error:", err);
+      toast.error(err?.data?.message || "Failed to submit profile.");
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="flex flex-col sm:flex-col md:flex-row gap-6 md:gap-8">
-        {/* Form Section */}
-        <div className="w-full md:w-1/2 bg-white p-6 shadow-lg rounded-xl">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-blue-700">
-              Radiology Service Form
-            </h2>
-            {!editMode && (
-              <button
-                onClick={() => setEditMode(true)}
-                className="text-gray-500 hover:text-blue-600 transition"
-              >
-                <FaEdit />
-              </button>
-            )}
-          </div>
-
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {/* Service Name */}
-            <input
-              disabled={!editMode}
-              type="text"
-              name="serviceName"
-              placeholder="Service Name"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.serviceName}
-              className="w-full border px-4 py-2 rounded"
-            />
-
-            {/* Description */}
-            <textarea
-              disabled={!editMode}
-              name="description"
-              placeholder="Service Description"
-              rows={3}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.description}
-              className="w-full border px-4 py-2 rounded"
-            />
-
-            {/* Fee & Estimate */}
-            <div className="flex gap-4">
-              <input
-                disabled={!editMode}
-                type="text"
-                name="fee"
-                placeholder="Fee (₹)"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.fee}
-                className="w-full border px-4 py-2 rounded"
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ setFieldValue, values }) => (
+          <Form className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Category
+              </label>
+              <Select
+                name="category"
+                options={categories}
+                className="basic-select"
+                classNamePrefix="select"
+                onChange={(selected: { value: string; label: string }) => {
+                  setSelectedCategory(selected.value);
+                  setFieldValue("category", selected.value);
+                }}
+                value={
+                  categories.find((c) => c.value === values.category) || null
+                }
               />
-              <input
-                disabled={!editMode}
-                type="text"
-                name="estimatedPrice"
-                placeholder="Estimated Price (₹)"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.estimatedPrice}
-                className="w-full border px-4 py-2 rounded"
+              <ErrorMessage
+                name="category"
+                component="div"
+                className="text-red-500 text-sm mt-1"
               />
             </div>
 
-            {/* Duration */}
-            <select
-              disabled={!editMode}
-              name="duration"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.duration}
-              className="w-full border px-4 py-2 rounded"
-            >
-              <option value="">Select Duration</option>
-              <option value="15">15 Minutes</option>
-              <option value="30">30 Minutes</option>
-              <option value="45">45 Minutes</option>
-              <option value="custom">Custom</option>
-            </select>
+            {/* Mode (Multi Selection) */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Mode
+              </label>
+              <Select
+                isMulti
+                name="mode"
+                options={mode}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={(selectedOptions) => {
+                  const selected = selectedOptions.map((opt) => opt.value);
+                  setFieldValue("mode", selected);
+                }}
+                value={mode.filter((opt) => values.mode.includes(opt.value))}
+              />
+              <ErrorMessage
+                name="mode"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-            {/* Custom Doctor Type */}
-            {formik.values.duration === "custom" && (
-              <input
-                disabled={!editMode}
-                type="text"
-                name="customDoctorType"
-                placeholder="Doctor Type"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.customDoctorType}
-                className="w-full border px-4 py-2 rounded"
+            <FormField label="Service Name" name="serviceName" />
+            <FormField label="Description" name="description" />
+            <FormField label="Fee (in Rs)" name="fee" type="number" />
+            <FormField label="Estimated Price" name="estimatedPrice" />
+
+            {/* Reports (Multi Selection) */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Reports
+              </label>
+              <Select
+                isMulti
+                name="reports"
+                options={reports}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={(selectedOptions) => {
+                  const selected = selectedOptions.map((opt) => opt.value);
+                  setSelectedReports(selected);
+                  setFieldValue("reports", selected);
+                }}
+                value={reports.filter((opt) =>
+                  values.reports.includes(opt.value)
+                )}
+              />
+              <ErrorMessage
+                name="reports"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
+
+            {values.reports.includes("courier") && (
+              <FormField label="Courier Fee (in Rs)" name="courierfee" />
+            )}
+
+            {values.reports.includes("person") && (
+              <FormField
+                label="Person Delivery Fee (in Rs)"
+                name="persornfee"
               />
             )}
 
-            {/* Availability */}
-            <select
-              disabled={!editMode}
-              name="availability"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.availability}
-              className="w-full border px-4 py-2 rounded"
-            >
-              <option value="">Select Availability</option>
-              <option value="weekdays">Weekdays</option>
-              <option value="weekends">Weekends</option>
-              <option value="both">Both</option>
-            </select>
+            <FormField label="Address (Optional)" name="address" />
 
-            {/* Image Upload */}
-            <div className="flex items-center gap-4">
+            {/* Avatar Upload */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700">
+                Upload Image (Optional)
+              </label>
               <input
-                disabled={!editMode}
                 type="file"
+                name="avatar"
                 accept="image/*"
-                onChange={handleImageChange}
-                className="border p-2 rounded"
+                onChange={(e) => handleAvatarChange(e, setFieldValue)}
               />
-              {imagePreview && (
+              {avatarPreview && (
                 <img
-                  src={imagePreview}
+                  src={avatarPreview}
                   alt="Preview"
-                  className="w-14 h-14 object-cover rounded shadow"
+                  className="w-32 h-32 object-cover mt-2 rounded-md border"
                 />
               )}
             </div>
 
-            {editMode && (
-              <button
-                type="submit"
-                className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
-              >
-                Submit Service
-              </button>
-            )}
-
-           
-          </form>
-        </div>
-
-        {/* Service Card Preview */}
-        <div className="w-full md:w-1/2 bg-white p-6 shadow-xl rounded-xl flex flex-col items-center justify-center text-center">
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Service"
-              className="w-full max-w-sm h-40 object-cover rounded-lg mb-4 shadow-md"
-            />
-          )}
-          <h3 className="text-lg font-bold text-gray-700 mb-1">
-            {formik.values.serviceName || "Service Name"}
-          </h3>
-          <p className="text-sm text-gray-500 mb-3">
-            {formik.values.description || "Description..."}
-          </p>
-          <div className="text-gray-600">
-            <p>
-              <strong>Fee:</strong> ₹{formik.values.fee || "0"}
-            </p>
-            <p>
-              <strong>Estimated:</strong> ₹{formik.values.estimatedPrice || "0"}
-            </p>
-            {discountAmount !== null && (
-              <p className="text-green-600 font-semibold">
-                You save: ₹{discountAmount.toFixed(2)}
-              </p>
-            )}
-          </div>
-          <p className="text-sm mt-2 text-gray-500">
-            <strong>Duration:</strong> {formik.values.duration || "-"}{" "}
-            {formik.values.customDoctorType &&
-              `(${formik.values.customDoctorType})`}
-          </p>
-          <p className="text-sm text-gray-500">
-            <strong>Availability:</strong> {formik.values.availability || "-"}
-          </p>
-        </div>
-      </div>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+            >
+              Submit
+            </button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };
 
-export default DoctorAddServiceForm;
-function createDoctorService(values: { userId: any; serviceName: string; description: string; fee: string; estimatedPrice: string; mode: string; duration: string; customDoctorType: string; availability: string; image: File | null; }) {
-  throw new Error("Function not implemented.");
-}
-
+export default RadiologyServiceForm;

@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { store } from "../../../../../redux/store";
 import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
 import toast from "react-hot-toast";
+import RadiologyServiceForm from "../radiology/AddService";
 
 const DoctorAddServiceForm = () => {
   // For image preview
@@ -166,7 +167,9 @@ const DoctorAddServiceForm = () => {
 
   // 🧾 UI STARTS HERE
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+
+    <>
+       <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Side: Form */}
         <div className="w-full md:w-1/2 bg-white p-6 shadow-lg rounded-xl">
@@ -368,6 +371,13 @@ const DoctorAddServiceForm = () => {
         </div>
       </div>
     </div>
+
+
+    <div>
+      <RadiologyServiceForm/>
+    </div>
+    </>
+ 
   );
 };
 

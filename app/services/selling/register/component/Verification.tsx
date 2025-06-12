@@ -50,7 +50,6 @@ if(user){
 
 
 
-
   useEffect(() => {
     inputRefs.current[0]?.focus(); // auto focus first box
   }, []);
@@ -61,6 +60,9 @@ if(user){
         passwordRef.current = "";
         toast.success("Please Complete your profile");
         dispatch(setCurrentStep(2));
+      
+          router.push("/services/complete_profile");
+       
     }
     if (loginError) {
       toast.error("Login failed, please try again");
@@ -122,14 +124,23 @@ if(user){
       const res = await login({ email, password }).unwrap();
       localStorage.setItem("token", res.accessToken);
 
-      toast.success("Please Complete your profile");
-      const profileRes = await refetch();
+      // toast.success("Please Complete your profile");
 
-      const profileCompleted = profileRes?.data?.profileCompleted;
+      // const profileRes = await refetch(); // refetch from `useCheckProfileQuery`
 
-      router.push(
-        profileCompleted === false ? "/services/complete_profile" : "/services"
-      );
+     
+
+      // const profileCompleted = profileRes?.data?.profileCompleted;
+      // if(profileCompleted===false){
+      //   router.push("/services/complete_profile");
+      // }
+      // else{
+      //   router.push("/services");
+      // }
+
+      // router.push(
+      //   profileCompleted === false ? "/services/complete_profile" : "/services"
+      // );
       // cleanup
       emailRef.current = "";
       passwordRef.current = "";

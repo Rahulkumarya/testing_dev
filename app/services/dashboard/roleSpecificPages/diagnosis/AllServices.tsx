@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import AddService from "./AddServices";
 import { ArrowLeft } from "lucide-react";
+import RadiologyServiceForm from "../radiology/AddService";
 // Simple AddService component placeholder
 const AddServices = ({ onCancel }: { onCancel: () => void }) => {
   // Here add your form logic for adding a new service
@@ -114,7 +115,13 @@ const ServicesPage = () => {
     <div className="max-w-6xl mx-auto p-6">
       {/* Toggle showing AddService or service list */}
       {showAddService ? (
+        <>
         <AddServices onCancel={handleCancelAddService} />
+        <RadiologyServiceForm/>
+        </>
+
+
+        
       ) : (
         <>
           <div className="flex justify-between items-center mb-6">

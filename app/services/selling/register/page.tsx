@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 
 // Define roles you want to show
 const roles = [
-  "Pharmacy",
+  "pharmacy",
   "doctor",
-  "Practitioner",
-  "Clinic",
-  "Pathology",
-  "Radiology",
-  "Resort",
+  "practitioner",
+  "clinic",
+  "pathology",
+  "radiology",
+  "resort",
 ];
 
 const Page = () => {
@@ -37,7 +37,9 @@ const Page = () => {
               className="bg-white p-6 rounded-xl shadow hover:shadow-lg cursor-pointer transition duration-300 text-center"
               onClick={() => handleSelectRole(role)}
             >
-              <h2 className="text-xl font-semibold">{role}</h2>
+              <h2 className="text-xl font-semibold">
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </h2>
             </div>
           ))}
         </div>

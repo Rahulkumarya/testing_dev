@@ -15,7 +15,9 @@ type Props = {
 };
 
 const schema = Yup.object().shape({
-  name: Yup.string().required("Please enter your name!"),
+  phone: Yup.string()
+  .required("Please enter your mobile number!")
+  .matches(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian phone number"),
   email: Yup.string()
     .email("Invalid email!")
     .required("Please enter your email!"),
@@ -46,9 +48,9 @@ const role = params?.role as string;
   }, [isSuccess, error, data?.message, setRoute]);
 
   const formik = useFormik({
-    initialValues: { name: "", email: "", password: "" },
+    initialValues: { phone: "", email: "", password: "" },
     validationSchema: schema,
-    onSubmit: async ({ name, email, password }) => {
+    onSubmit: async ({phone, email, password }) => {
       if (!role) {
         toast.error("Role is missing from URL params");
         return;
@@ -56,7 +58,7 @@ const role = params?.role as string;
 
       
 
-      await register({ name, email, password, role });
+      await register({ phone, email, password, role });
       emailRef.current = email;
       passwordRef.current = password;
     },
@@ -66,106 +68,98 @@ const role = params?.role as string;
 
   return (
     <>
-
-{
-    routes==="SignUp" &&(
+      {routes === "SignUp" && (
         <div className="w-full max-w-lg mx-auto px-4 start-left mb-10">
-        <h1 className={`${styles.title} mb-2`}>Join UronHealth</h1>
-        <p className="text-gray-500 text-sm mb-6">
-          Create your account to continue
-        </p>
-  
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className={styles.label} htmlFor="name">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              value={values.name}
-              onChange={handleChange}
-              placeholder="Rahul Kumar"
-              className={`${
-                errors.name && touched.name ? "border-red-500" : ""
-              } ${styles.input}`}
-            />
-            {errors.name && touched.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
-            )}
-          </div>
-  
-          {/* Email */}
-          <div>
-            <label className={styles.label} htmlFor="email">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              value={values.email}
-              onChange={handleChange}
-              placeholder="example@gmail.com"
-              className={`${
-                errors.email && touched.email ? "border-red-500" : ""
-              } ${styles.input}`}
-            />
-            {errors.email && touched.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
-            )}
-          </div>
-  
-          {/* Password */}
-          <div className="relative">
-            <label className={styles.label} htmlFor="password">
-              Password
-            </label>
-            <input
-              type={show ? "text" : "password"}
-              name="password"
-              id="password"
-              value={values.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              className={`${
-                errors.password && touched.password ? "border-red-500" : ""
-              } ${styles.input}`}
-            />
-            {show ? (
-              <AiOutlineEye
-                className="absolute right-3 bottom-3 cursor-pointer text-gray-500"
-                onClick={() => setShow(false)}
-              />
-            ) : (
-              <AiOutlineEyeInvisible
-                className="absolute right-3 bottom-3 cursor-pointer text-gray-500"
-                onClick={() => setShow(true)}
-              />
-            )}
-            {errors.password && touched.password && (
-              <p className="text-red-500 text-sm">{errors.password}</p>
-            )}
-          </div>
-  
-          <button type="submit" className={styles.button}>
-            Sign Up
-          </button>
-        </form>
-  
-  
-  
-        {/* Onboarding step */}
-        
-      </div>
-    )
-}
+          <h1 className={`${styles.title} mb-2`}>
+            Create your account to continue
+          </h1>
+          <p className="text-gray-500 text-sm mb-6"></p>
 
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
+            <div>
+              <label className={styles.label} htmlFor="name">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                name="phone"
+                id="phone"
+                value={values.phone}
+                onChange={handleChange}
+                placeholder="Enter your phone number"
+                className={`${
+                  errors.phone && touched.phone ? "border-red-500" : ""
+                } ${styles.input}`}
+              />
+              {errors.phone && touched.phone && (
+                <p className="text-red-500 text-sm">{errors.phone}</p>
+              )}
+            </div>
 
-{
-    routes==="Verification" &&(
+            {/* Email */}
+            <div>
+              <label className={styles.label} htmlFor="email">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                value={values.email}
+                onChange={handleChange}
+                placeholder="example@gmail.com"
+                className={`${
+                  errors.email && touched.email ? "border-red-500" : ""
+                } ${styles.input}`}
+              />
+              {errors.email && touched.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div className="relative">
+              <label className={styles.label} htmlFor="password">
+                Password
+              </label>
+              <input
+                type={show ? "text" : "password"}
+                name="password"
+                id="password"
+                value={values.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                className={`${
+                  errors.password && touched.password ? "border-red-500" : ""
+                } ${styles.input}`}
+              />
+              {show ? (
+                <AiOutlineEye
+                  className="absolute right-3 bottom-3 cursor-pointer text-gray-500"
+                  onClick={() => setShow(false)}
+                />
+              ) : (
+                <AiOutlineEyeInvisible
+                  className="absolute right-3 bottom-3 cursor-pointer text-gray-500"
+                  onClick={() => setShow(true)}
+                />
+              )}
+              {errors.password && touched.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
+            </div>
+
+            <button type="submit" className={styles.button}>
+              Sign Up
+            </button>
+          </form>
+
+          {/* Onboarding step */}
+        </div>
+      )}
+
+      {routes === "Verification" && (
         <>
           <Verification
             setRoute={setRoute}
@@ -173,10 +167,8 @@ const role = params?.role as string;
             passwordRef={passwordRef}
           />
         </>
-    )
-}
-
-</>
+      )}
+    </>
   );
 };
 
