@@ -12,6 +12,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "./features/api/apiSlice";
 import authSlice from "./features/auth/authSlice";
 import { doctorApi } from "./features/dprofile/profileApi";
+import onboardingSlice from "./features/onboarding/onboardingSlice"
+import { on } from "events";
 
 
 // import { boolean } from "yup";
@@ -20,6 +22,7 @@ export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authSlice,
+    onboarding: onboardingSlice,
    
   },
   devTools: false,
