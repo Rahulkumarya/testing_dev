@@ -9,6 +9,7 @@ import { store } from "../../../../../redux/store";
 import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
 import toast from "react-hot-toast";
 import RadiologyServiceForm from "../radiology/AddService";
+import ClinicServiceForm from "../clinic/ClinicAddService";
 
 const DoctorAddServiceForm = () => {
   // For image preview
@@ -375,6 +376,10 @@ const DoctorAddServiceForm = () => {
 
     <div>
       <RadiologyServiceForm/>
+    </div>
+
+    <div>
+      <ClinicServiceForm/>
     </div>
     </>
  
