@@ -4,7 +4,8 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useCreateRadiologyServiceMutation } from "../../../../../redux/features/services/radiology/serviceApi";
+
+import { useCreateClinicServiceMutation } from "../../../../../redux/features/services/clinic/serviceApi";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
@@ -20,14 +21,9 @@ const MODES = [
   { value: "Online", label: "Online" },
   { value: "Inhome", label: "Inhome" },
   { value: "Hybrid", label: "Hybrid" },
-  { value: "e-clinic", label: "e-clinic" },
+  { value: "e_clinic", label: "e-clinic" },
 ];
-const REPORTS = [
-  { value: "center", label: "Collected from Center" },
-  { value: "whatsapp", label: "Sent by WhatsApp" },
-  { value: "courier", label: "Delivered by Courier" },
-  { value: "person", label: "Delivered by Person" },
-];
+
 
 const ClinicServiceForm = () => {
   // Geolocation state
@@ -44,7 +40,7 @@ const ClinicServiceForm = () => {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
-  const [createService, { isLoading }] = useCreateRadiologyServiceMutation();
+  const [createClinicService, { isLoading }] = useCreateClinicServiceMutation();
   const user = useSelector((state: store) => state.auth.user);
   const router = useRouter();
   const [action, setAction] = useState<"save" | "save_new">("save");
@@ -94,14 +90,13 @@ const ClinicServiceForm = () => {
     modes: [] as string[],
     serviceName: "",
     description: "",
-    fee: "",
     offlinePrice: "",
     onlinePrice: "",
     estimatedPrice: "",
     homeServicePrice: "",
     hybridServicePrice: "",
     e_clinicServicePrice: "",
-    reports: [] as string[],
+  
     address: geo.address,
     location: {
       coordinates: [geo.lon, geo.lat],
@@ -118,7 +113,6 @@ const ClinicServiceForm = () => {
     modes: Yup.array().min(1, "Select at least one mode"),
     serviceName: Yup.string().required("Service name required"),
     description: Yup.string().required("Description required"),
-    fee: Yup.number().required("Fee required").min(0),
     estimatedPrice: Yup.string(),
     homeServicePrice: Yup.number().when("modes", {
       is: (m: string[]) => m.includes("Inhome"),
@@ -140,7 +134,6 @@ const ClinicServiceForm = () => {
       is: (m: string[]) => m.includes("Online"),
       then: (s) => s.required().min(0),
     }),
-    reports: Yup.array().min(1, "Select at least one report type"),
   });
 
   // Submit logic
@@ -154,20 +147,21 @@ const ClinicServiceForm = () => {
     values.modes.forEach((m, i) => formData.append(`modes[${i}]`, m));
     formData.append("serviceName", values.serviceName);
     formData.append("description", values.description);
-    formData.append("fee", values.fee);
+    formData.append("onlinePrice", values.onlinePrice);
     formData.append("estimatedPrice", values.estimatedPrice);
     formData.append("offlinePrice", values.offlinePrice);
     formData.append("onlinePrice", values.onlinePrice);
     formData.append("homeServicePrice", values.homeServicePrice);
     formData.append("hybridServicePrice", values.hybridServicePrice);
     formData.append("e_clinicServicePrice", values.e_clinicServicePrice);
-    formData.append("reports", JSON.stringify(values.reports));
+
     formData.append("location", JSON.stringify(values.location));
     images.forEach((img, idx) => formData.append(`serviceImages`, img));
 
     try {
-      await createService(formData).unwrap();
-      toast.success("Service added successfully");
+     const res=  await createClinicService(formData).unwrap();
+     console.log(`response of clinic`,res);
+      toast.success("Service created successfully");
       action === "save_new"
         ? formikHelpers.resetForm()
         : router.push("/services/dashboard");
@@ -187,7 +181,7 @@ const ClinicServiceForm = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, submitForm }) => (
+        {({ values,  submitForm }) => (
           <Form className={styles.formGrid}>
             {/* Category */}
             <div className={styles.fullWidth}>
@@ -262,34 +256,82 @@ const ClinicServiceForm = () => {
               />
             </div>
 
+            {/* online Service Price  */}
 
-
-
-
-            {/* Conditional price fields... same pattern using styles.input and ErrorMessage */}
-
-            {/* Reports */}
-            <div className={styles.fullWidth}>
-              <label className={styles.label}>Reports</label>
-              <div className={styles.optionGroup}>
-                {REPORTS.map((opt) => (
-                  <label key={opt.value} className={styles.optionLabel}>
-                    <Field
-                      type="checkbox"
-                      name="reports"
-                      value={opt.value}
-                      className="form-checkbox text-blue-600"
-                    />
-                    <span>{opt.label}</span>
-                  </label>
-                ))}
+            {values.modes.includes("Online") && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Online Service Price
+                </label>
+                <Field
+                  name="onlinePrice"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded focus:ring focus:ring-blue-300"
+                />
+                <ErrorMessage
+                  name="onlinePrice"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
-              <ErrorMessage
-                name="reports"
-                component="div"
-                className={styles.error}
-              />
-            </div>
+            )}
+
+            {values.modes.includes("Inhome") && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  In-Home Service Price
+                </label>
+                <Field
+                  name="homeServicePrice"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded focus:ring focus:ring-blue-300"
+                />
+                <ErrorMessage
+                  name="homeServicePrice"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+            )}
+
+            {/* Hybrid Service Price if inhome selected */}
+            {values.modes.includes("Hybrid") && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  Hybrid Service Price
+                </label>
+                <Field
+                  name="hybridServicePrice"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded focus:ring focus:ring-blue-300"
+                />
+                <ErrorMessage
+                  name="hybridServicePrice"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+            )}
+
+            {/* e-clinic Service Price if inhome selected */}
+            {values.modes.includes("e_clinic") && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">
+                  e-clinic Service Price
+                </label>
+                <Field
+                  name="e_clinicServicePrice"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded focus:ring focus:ring-blue-300"
+                />
+                <ErrorMessage
+                  name="e_clinicServicePrice"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+            )}
+            {/* Conditional price fields... same pattern using styles.input and ErrorMessage */}
 
             {/* Image Upload Card */}
             <div className={styles.fullWidth}>

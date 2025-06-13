@@ -5,9 +5,9 @@ import { apiSlice } from "../../api/apiSlice";
 export const profileApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
   
-    createResortService: builder.mutation({
+    createClinicService: builder.mutation({
       query: (formData) => ({
-        url: "resort/create-service",
+        url: "clinic/create-service",
         method: "POST",
         body: formData,
         credentials: "include" as const,
@@ -34,4 +34,4 @@ export const profileApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {useCreateResortServiceMutation} =profileApi
+export const {useCreateClinicServiceMutation} =profileApi
