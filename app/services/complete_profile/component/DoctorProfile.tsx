@@ -4,55 +4,41 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useCreateDoctorMutation } from "../../../../redux/features/services/dprofile/profileApi";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
-import Select from "react-select";
+import { RootState } from "@/redux/store";
+import { useCreateDoctorMutation } from "@/redux/features/services/dprofile/profileApi";
+import Image from "next/image";
 
-interface FormFieldProps {
-  label: string;
-  name: string;
-  type?: string;
-}
-
-interface Location {
-  coordinates: [string, string];
-  city: string;
-  state: string;
-  pincode: string;
-  address: string;
-  landmark: string;
-}
-
-interface AccountDetails {
-  HolderName: string;
-  Ifsc: string;
-  accountNumber: string;
-  bankName: string;
-}
-
+// Define the form values type
 interface FormValues {
-  userId: string;
-  specialization: string[];
+  userId: string | undefined;
   registrationNumber: string;
   experience: string;
   gstNumber: string;
-  licenceNumber: string;
+  doctorNumber: string;
   address: string;
-  location: Location;
-  accountDetails: AccountDetails;
-  avatar: File | null;
-}
-
-interface ApiError {
-  data?: {
-    message?: string;
+  specialization: string[];
+  location: {
+    coordinates: [string, string];
+    city: string;
+    state: string;
+    pincode: string;
+    address: string;
+    landmark: string;
   };
+  accountDetails: {
+    HolderName: string;
+    Ifsc: string;
+    accountNumber: string;
+    bankName: string;
+  };
+  avatar: File | null;
+  [key: string]: any; // Add index signature to allow string indexing
 }
 
 // Reusable Form Field Component
-export const FormField = ({ label, name, type = "text" }: FormFieldProps) => (
+export const FormField = ({ label, name, type = "text" }: any) => (
   <div className="flex flex-col gap-1">
     <label className="text-sm font-semibold text-gray-700">{label}</label>
     <Field
@@ -68,20 +54,10 @@ export const FormField = ({ label, name, type = "text" }: FormFieldProps) => (
   </div>
 );
 
-const specializationOptions = [
-  { value: "Cardiologist", label: "Cardiologist" },
-  { value: "Dermatologist", label: "Dermatologist" },
-  { value: "Neurologist", label: "Neurologist" },
-  { value: "Orthopedic", label: "Orthopedic" },
-  { value: "Pediatrician", label: "Pediatrician" },
-  // add more as needed
-];
-
-
-const DoctorProfileForm = () => {
+const DoctorProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const [geo, setGeo] = useState({
@@ -117,14 +93,14 @@ const DoctorProfileForm = () => {
     if (isSuccess) router.push("/services");
   }, [isSuccess, router]);
 
-  const initialValues = {
+  const initialValues: FormValues = {
     userId: user?._id,
-    specialization: [""],
-    registrationNumber:"",
+    registrationNumber: "",
     experience: "",
     gstNumber: "",
-    licenceNumber: "",
+    doctorNumber: "",
     address: "",
+    specialization: [],
     location: {
       coordinates: [geo.lon, geo.lat],
       city: geo.city,
@@ -143,39 +119,40 @@ const DoctorProfileForm = () => {
   };
 
   const validationSchema = Yup.object().shape({
-      userId: Yup.string(),
-      specialization: Yup.array().of(Yup.string().required("Required")),
-      
-      experience: Yup.number().min(0),
-      gstNumber: Yup.string()
-        .matches(
-          /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
-          "Invalid GST Number"
-        )
-        .required("GST Number is required"),
-      licenceNumber: Yup.string(),
+    userId: Yup.string(),
+    registrationNumber: Yup.string().required("Required"),
+    experience: Yup.number().min(0).required("Required"),
+    doctorNumber: Yup.string()
+      .matches(/^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/, "Invalid Doctor Number"),
+    gstNumber: Yup.string()
+      .matches(
+        /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
+        "Invalid GST Number"
+      )
+      .required("GST Number is required"),
+    address: Yup.string(),
+    specialization: Yup.array().of(Yup.string()).min(1, "Select at least one specialization"),
+    location: Yup.object().shape({
+      coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
+      city: Yup.string(),
+      state: Yup.string(),
+      pincode: Yup.string(),
       address: Yup.string(),
-      location: Yup.object().shape({
-        coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
-        city: Yup.string(),
-        state: Yup.string(),
-        pincode: Yup.string(),
-        address: Yup.string(),
-        landmark: Yup.string(),
-      }),
-      accountDetails: Yup.object().shape({
-        HolderName: Yup.string().required("Required"),
-        Ifsc: Yup.string()
-          .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
-          .required("Required"),
-        accountNumber: Yup.string()
-          .required("Account Number is required"),
-        bankName: Yup.string().required("Required"),
-      }),
-    });
+      landmark: Yup.string(),
+    }),
+    accountDetails: Yup.object().shape({
+      HolderName: Yup.string().required("Required"),
+      Ifsc: Yup.string()
+        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
+        .required("Required"),
+      accountNumber: Yup.string().required("Account Number is required"),
+      bankName: Yup.string().required("Required"),
+    }),
+  });
+
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: (field: string, value: File | null) => void
+    setFieldValue: (field: string, value: any) => void
   ) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
@@ -191,11 +168,9 @@ const DoctorProfileForm = () => {
   const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
-    values.specialization.forEach((spec: string, i: number) =>
-      formData.append(`specialization[${i}]`, spec)
-    );
     formData.append("location", JSON.stringify(values.location));
     formData.append("accountDetails", JSON.stringify(values.accountDetails));
+    formData.append("specialization", JSON.stringify(values.specialization));
     const exclude = ["avatar", "specialization", "location", "accountDetails"];
     Object.keys(values).forEach((key) => {
       if (!exclude.includes(key)) formData.append(key, values[key]);
@@ -205,18 +180,17 @@ const DoctorProfileForm = () => {
       const res = await createDoctor(formData).unwrap();
       toast.success("Thanks for completing your profile!");
       console.log("Submitted:", res);
-    } catch (err: unknown) {
-      const error = err as ApiError;
-      console.error("Error:", error);
-      toast.error(error?.data?.message || "Failed to submit profile.");
+    } catch (err: any) {
+      console.error("Error:", err);
+      toast.error(err?.data?.message || "Failed to submit profile.");
     }
   };
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
-      <h3 className="text-3xl font-bold text-blue-400 mb-6 text-center">
-        Complete Your Doctor Profile
-      </h3>
+      <h1 className="text-2xl font-bold text-blue-500 mb-6 text-center">
+        Complete your Doctor Profile
+      </h1>
 
       <Formik
         initialValues={initialValues}
@@ -226,28 +200,44 @@ const DoctorProfileForm = () => {
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Specializations
+            {/* Basic Info */}
+            <FormField
+              label="Medical Council Registration Number"
+              name="registrationNumber"
+            />
+            <FormField
+              label="Experience (in years)"
+              name="experience"
+              type="number"
+            />
+            <FormField label="Doctor Number" name="doctorNumber" />
+            <FormField label="GST Number" name="gstNumber" />
+
+            {/* Specialization */}
+            <div className="md:col-span-2">
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                Specialization
               </label>
-              <Select
-                isMulti
-                name="specialization"
-                options={specializationOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(
-                  selectedOptions: { value: string; label: string }[]
-                ) =>
-                  setFieldValue(
-                    "specialization",
-                    selectedOptions.map((opt) => opt.value)
-                  )
-                }
-                value={specializationOptions.filter((opt) =>
-                  values.specialization.includes(opt.value)
-                )}
-              />
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  "Cardiology",
+                  "Dermatology",
+                  "Neurology",
+                  "Pediatrics",
+                  "Orthopedics",
+                  "Gynecology",
+                ].map((spec) => (
+                  <label key={spec} className="flex items-center space-x-2">
+                    <Field
+                      type="checkbox"
+                      name="specialization"
+                      value={spec}
+                      className="form-checkbox h-4 w-4 text-blue-600"
+                    />
+                    <span className="text-sm text-gray-700">{spec}</span>
+                  </label>
+                ))}
+              </div>
               <ErrorMessage
                 name="specialization"
                 component="div"
@@ -255,23 +245,9 @@ const DoctorProfileForm = () => {
               />
             </div>
 
-            {/* Basic Info */}
-            <FormField label="Licence Number" name="registrationNumber" />
-            <FormField
-              label="Experience (in years)"
-              name="experience"
-              type="number"
-            />
-            <FormField label="GST Number" name="gstNumber" />
-         
-            {/* <FormField label="Clinic Address" name="address" /> */}
-
             {/* Geo Fields (Auto-Filled) */}
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-2">
-                {/* <h2 className="text-sm font-semibold text-gray-700">
-                  Professional Location
-                </h2> */}
                 <button
                   type="button"
                   className="text-blue-600 underline text-sm cursor-pointer"
@@ -297,7 +273,6 @@ const DoctorProfileForm = () => {
                             data.address.neighbourhood ||
                             "",
                         };
-                        // Update Formik fields
                         setFieldValue("location", locData);
                         toast.success("Location fetched successfully!");
                       });
@@ -334,12 +309,10 @@ const DoctorProfileForm = () => {
                 />
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-               <FormField
-                                label="Account Number"
-                                name="accountDetails.accountNumber"
-                                value={values.accountDetails.accountNumber}
-                                onChange={setFieldValue}
-                              />
+                <FormField
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                />
               </div>
             </div>
 
@@ -361,10 +334,12 @@ const DoctorProfileForm = () => {
                 </div>
                 {avatarPreview && (
                   <div className="flex justify-center md:justify-start">
-                    <img
+                    <Image
                       src={avatarPreview}
                       alt="Avatar Preview"
-                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"
+                      width={128}
+                      height={128}
+                      className="rounded-full object-cover border-2 border-gray-300 shadow"
                     />
                   </div>
                 )}
@@ -388,4 +363,4 @@ const DoctorProfileForm = () => {
   );
 };
 
-export default DoctorProfileForm;
+export default DoctorProfile;

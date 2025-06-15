@@ -3,6 +3,7 @@
 
 import { useSelector } from "react-redux";
 import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 // import DoctorNotifications from "./DoctorNotifications";
 // import RadiologyNotifications from "./RadiologyNotifications";
 // import DoctorAddServiceForm from "../../roleSpecificPages/doctor/AddService";
@@ -15,7 +16,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
 const AddService = () => {
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
   switch (user.role) {
     case "doctor":

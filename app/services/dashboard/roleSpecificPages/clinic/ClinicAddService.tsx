@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 import { useCreateClinicServiceMutation } from "../../../../../redux/features/services/clinic/serviceApi";
 import { useSelector } from "react-redux";
@@ -351,9 +352,11 @@ const ClinicServiceForm = () => {
                     key={idx}
                     className="relative w-24 h-24 border rounded overflow-hidden"
                   >
-                    <img
+                    <Image
                       src={src}
                       alt={`preview-${idx}`}
+                      width={96}
+                      height={96}
                       className="object-cover w-full h-full"
                     />
                     <button

@@ -15,6 +15,14 @@ export const profileApi = apiSlice.injectEndpoints({
       }),
     }),
 
+    getAllGymServices: builder.query<any[], void>({
+      query: () => ({
+        url: "gym/all-services",
+        method: "GET",
+        credentials: "include" as const,
+      }),
+    }),
+
     // getDoctors: builder.query<any[], void>({
     //   query: () => "/Alldoctors",
     // }),
@@ -34,4 +42,4 @@ export const profileApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {useCreateGymServiceMutation} =profileApi
+export const { useCreateGymServiceMutation, useGetAllGymServicesQuery } = profileApi

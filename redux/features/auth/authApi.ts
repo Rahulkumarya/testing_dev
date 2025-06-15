@@ -151,6 +151,7 @@ type RegistrationData = {
   email: string;
   password: string;
   name: string;
+  role:string;
 };
 
 // Define the shape of the OTP‐send/verify responses

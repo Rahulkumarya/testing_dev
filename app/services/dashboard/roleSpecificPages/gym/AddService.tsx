@@ -7,6 +7,7 @@ import { FaUpload, FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import {store} from "../../../../../redux/store"
 import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
+import Image from "next/image";
 
 const DoctorAddServiceForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -218,9 +219,11 @@ const formik = useFormik({
                 className="border p-2 rounded"
               />
               {imagePreview && (
-                <img
+                <Image
                   src={imagePreview}
                   alt="Preview"
+                  width={144}
+                  height={56}
                   className="w-14 h-14 object-cover rounded shadow"
                 />
               )}
@@ -242,9 +245,11 @@ const formik = useFormik({
         {/* Service Card Preview */}
         <div className="w-full md:w-1/2 bg-white p-6 shadow-xl rounded-xl flex flex-col items-center justify-center text-center">
           {imagePreview && (
-            <img
+            <Image
               src={imagePreview}
               alt="Service"
+              width={384}
+              height={160}
               className="w-full max-w-sm h-40 object-cover rounded-lg mb-4 shadow-md"
             />
           )}

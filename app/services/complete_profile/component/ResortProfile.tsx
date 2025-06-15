@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 
 
 import { useCreateResortMutation} from "../../../../redux/features/services/resort/profileApi";
@@ -39,7 +39,7 @@ const ResortProfile = () => {
 
   const [createResort, { isLoading, isSuccess }] =
     useCreateResortMutation();
-  const user = useSelector((state: store) => state.auth.user);
+    const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const [geo, setGeo] = useState({

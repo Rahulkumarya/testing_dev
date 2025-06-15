@@ -1,6 +1,3 @@
-
-
-// //remove dark mode
 "use client";
 import Link from "next/link";
 import React, { FC, useState, useEffect } from "react";
@@ -14,12 +11,20 @@ import Verification from "./Auth/VerificationForm";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 import {resetOnboarding} from "@/redux/features/onboarding/onboardingSlice"
+import { socialAuth, userLoggedIn } from "@/redux/features/auth/authSlice";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { setRoute } from "@/redux/features/onboarding/onboardingSlice";
+
+type RouteType = "Login" | "Sign-up" | "Verification";
+
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -103,6 +108,59 @@ console.log(`user register data serviceheader `,user)
         if (e.target.id === "screen") {
             setOpenSidebar(false);
         }
+    };
+
+    const [showModal, setShowModal] = useState(false);
+    const [login, { isLoading }] = useLoginMutation();
+
+    const formik = useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: Yup.object({
+        email: Yup.string()
+          .email("Invalid email address")
+          .required("Email is required"),
+        password: Yup.string()
+          .min(6, "Password must be at least 6 characters")
+          .required("Password is required"),
+      }),
+      onSubmit: async (values) => {
+        try {
+          const res = await login(values).unwrap();
+          if (res?.user) {
+            toast.success("Login successful!");
+            router.push("/services");
+          }
+        } catch (err: any) {
+          toast.error(err?.data?.message || "Login failed");
+        }
+      },
+    });
+
+    const handleGoogleSignIn = async () => {
+      try {
+        const result = await signIn("google", {
+          redirect: false,
+        });
+
+        if (result?.ok && data?.user) {
+          const userData = {
+            access_Token: result.token || "",
+            user: {
+              email: data.user.email || "",
+              name: data.user.name || "",
+              avatar: data.user.image || "",
+            },
+          };
+          dispatch(userLoggedIn(userData));
+          router.push("/services");
+        }
+      } catch (error) {
+        console.error("Google sign in error:", error);
+        toast.error("Failed to sign in with Google");
+      }
     };
 
     return (
@@ -271,6 +329,73 @@ console.log(`user register data serviceheader `,user)
               setRoute={setRoute}
               activeItem={activeItem}
               component={Verification}
+            />
+          )}
+
+          {showModal && (
+            <CustomModel
+              open={showModal}
+              setOpen={setShowModal}
+              activeItem={null}
+              component={() => (
+                <div className="w-full max-w-md mx-auto p-6">
+                  <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+                  <form onSubmit={formik.handleSubmit} className="space-y-4">
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.email}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      />
+                      {formik.touched.email && formik.errors.email && (
+                        <div className="text-red-500 text-sm mt-1">
+                          {formik.errors.email}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.password}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      />
+                      {formik.touched.password && formik.errors.password && (
+                        <div className="text-red-500 text-sm mt-1">
+                          {formik.errors.password}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      {isLoading ? "Logging in..." : "Login"}
+                    </button>
+                  </form>
+                </div>
+              )}
+              setRoute={setRoute}
             />
           )}
         </div>

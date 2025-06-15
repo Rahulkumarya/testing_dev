@@ -4,9 +4,10 @@ import DiagnosisAddServiceForm from "../../dashboard/roleSpecificPages/diagnosis
 // import { useRouter } from "next/navigation";
 // import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const AddService = () => {
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   // const router = useRouter();
   switch (user.role) {
     case "doctor":

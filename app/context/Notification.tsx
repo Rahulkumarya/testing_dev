@@ -1,11 +1,9 @@
-
-
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../context/SocketContext";
 import { useSelector } from "react-redux";
-import {store} from "../../redux/store"
+import { RootState } from "../../redux/store";
 import { Bell } from "lucide-react";
 import { useMarkAllAsReadMutation } from "@/redux/features/patients/notificationApi";
 
@@ -19,7 +17,7 @@ interface Notification {
 
 export const NotificationIcon: React.FC = () => {
   const {socket} = useSocket();
-    const user = useSelector((state: store) => state.auth.user);
+    const user = useSelector((state: RootState) => state.auth.user);
     const userId= user?._id;
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);

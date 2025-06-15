@@ -6,43 +6,31 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { styles } from "../../../../../app/styles/Style";
 import { useRegisterMutation } from "../../../../../redux/features/auth/authApi";
 import toast from "react-hot-toast";
-// import { useSearchParams } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Verification from "../component/Verification";
 import { useSelector } from "react-redux";
-import { store } from "../../../../../redux/store";
-import {useRouter} from "next/navigation"
-
-
-type Props = {
-  setRoute: (route: string) => void;
-};
 
 const schema = Yup.object().shape({
   phone: Yup.string()
-  .required("Please enter your mobile number!")
-  .matches(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian phone number"),
+    .required("Please enter your mobile number!")
+    .matches(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian phone number"),
   email: Yup.string()
     .email("Invalid email!")
     .required("Please enter your email!"),
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const SignUp: FC<Props> = ({ setRoute }) => {
+const SignUp: FC = () => {
   const [show, setShow] = useState(false);
-  const [routes,setRoutes]=useState("SignUp");
+  const [routes, setRoutes] = useState("SignUp");
   const [register, { data, error, isSuccess }] = useRegisterMutation();
-//   const searchParams = useSearchParams();
-//   const role = searchParams.get("role") || ""; // fetch role from query param
-const params = useParams();
-
-const router=useRouter();
-
-const role = params?.role as string;
-  console.log(`Role from URL: ${role}`,role);
+  const params = useParams();
+  const router = useRouter();
+  const role = params?.role as string;
   const emailRef = useRef<string>("");
   const passwordRef = useRef<string>("");
-const step=useSelector((state)=>state.onboarding.currentStep);
+  const step = useSelector((state) => state.onboarding.currentStep);
+
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message || "Registration successful");
@@ -52,18 +40,16 @@ const step=useSelector((state)=>state.onboarding.currentStep);
       const err = error as any;
       toast.error(err.data.message);
     }
-  }, [isSuccess, error, data?.message, setRoute]);
+  }, [isSuccess, error, data?.message]);
 
   const formik = useFormik({
     initialValues: { phone: "", email: "", password: "" },
     validationSchema: schema,
-    onSubmit: async ({phone, email, password }) => {
+    onSubmit: async ({ phone, email, password }) => {
       if (!role) {
         toast.error("Role is missing from URL params");
         return;
       }
-
-      
 
       await register({ phone, email, password, role });
       emailRef.current = email;
@@ -85,9 +71,9 @@ const step=useSelector((state)=>state.onboarding.currentStep);
               <p className="text-gray-500 text-sm mb-6"></p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
+                {/* Phone */}
                 <div>
-                  <label className={styles.label} htmlFor="name">
+                  <label className={styles.label} htmlFor="phone">
                     Phone Number
                   </label>
                   <input
@@ -140,9 +126,7 @@ const step=useSelector((state)=>state.onboarding.currentStep);
                     onChange={handleChange}
                     placeholder="••••••••"
                     className={`${
-                      errors.password && touched.password
-                        ? "border-red-500"
-                        : ""
+                      errors.password && touched.password ? "border-red-500" : ""
                     } ${styles.input}`}
                   />
                   {show ? (
@@ -165,35 +149,20 @@ const step=useSelector((state)=>state.onboarding.currentStep);
                   Sign Up
                 </button>
               </form>
-
-              {/* Onboarding step */}
             </div>
           )}
 
           {routes === "Verification" && (
-            <>
-              <Verification
-                setRoute={setRoute}
-                emailRef={emailRef}
-                passwordRef={passwordRef}
-              />
-            </>
+            <Verification
+              emailRef={emailRef}
+              passwordRef={passwordRef}
+            />
           )}
         </>
       )}
 
-
-
-      {
-        step===2 &&(
-          router.push("/services/selling/component/complete_profile")
-        )
-      }
-      {
-        step===3 &&(
-          router.push("/services/selling/profile")
-        )
-      }
+      {step === 2 && router.push("/services/selling/component/complete_profile")}
+      {step === 3 && router.push("/services/selling/profile")}
     </>
   );
 };

@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import {
   useSocialAuthMutation,
-
 } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
-
-
 import CustomModel from "../../../utils/CustomModel";
 import Login from "./../../components/Auth/LoginForm";
 import SignUp from "./../../components/Auth/SignUpForm";
@@ -22,19 +19,16 @@ const LoginPage = () => {
   );
   const [activeItem] = useState(0);
 
-  // const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
   const { data } = useSession();
   const [socialAuth, { isSuccess }] = useSocialAuthMutation();
-  // const [logout] = useLogoutMutation();
-  // const router = useRouter();
 
   useEffect(() => {
-    if (!user && data) {
+    if (!user && data?.user) {
       socialAuth({
-        email: data.user?.email,
-        name: data.user?.name,
-        avatar: data.user?.image,
+        email: data.user.email || "",
+        name: data.user.name || "",
+        avatar: data.user.image || "",
       });
     }
 
@@ -45,7 +39,6 @@ const LoginPage = () => {
 
   return (
     <div className="w-full h-screen flex justify-center items-center bg-gray-100">
-
       {/* Auth Modals */}
       {route === "Login" && open && (
         <CustomModel

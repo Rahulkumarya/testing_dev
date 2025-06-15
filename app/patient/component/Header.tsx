@@ -78,7 +78,7 @@ const Header = () => {
             </Link>
 
             <div className="flex items-center space-x-4">
-              <NavItems activeItem={0} isMobile={false} />
+              <NavItems isMobile={false} />
 
               {/* Mobile menu toggle */}
               <div className="800px:hidden sm:hidden md:hidden lg:hidden block ">
@@ -133,7 +133,7 @@ const Header = () => {
           onClick={handleCloseSidebar}
         >
           <div className="w-[70%] fixed z-[100000] h-screen bg-white top-0 right-0 text-black">
-            <NavItems activeItem={0} isMobile={true} />
+            <NavItems isMobile={true} />
           </div>
         </div>
       )}

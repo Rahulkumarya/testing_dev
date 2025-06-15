@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { store } from "../../../redux/store";
+import { RootState } from "@/redux/store";
 import { useCheckProfileQuery } from "../../../redux/features/services/dprofile/profileApi";
 import { useRouter } from "next/navigation";
 import DoctorProfile from "./component/DoctorProfile";
@@ -17,7 +17,7 @@ import MedicineShopProfile from "./component/MedicineProfile";
 // ... other imports
 
 const Page = () => {
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
 

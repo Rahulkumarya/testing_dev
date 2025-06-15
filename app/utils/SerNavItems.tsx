@@ -15,28 +15,27 @@ export const NavItemsData = [
 
 type Props = {
   isMobile: boolean;
+  activeItem: number;
 };
 
-const NavItems: React.FC<Props> = ({ isMobile }) => {
+const NavItems: React.FC<Props> = ({ isMobile, activeItem }) => {
   const pathname = usePathname(); // ✅ read current route
 
   // helper to decide if this item is active
-  const isActive = (url: string) => {
-    // exact match:
-    return pathname === url;
-    // or for “starts with” (e.g. child routes):
-    // return pathname.startsWith(url);
+  const isActive = (url: string, idx: number) => {
+    // Use activeItem if provided, otherwise fallback to pathname
+    return activeItem === idx || pathname === url;
   };
 
   const renderDesktop = () => (
     <div className="hidden 800px:flex md:flex lg:flex sm:flex text-black">
-      {NavItemsData.map((item) => (
+      {NavItemsData.map((item, idx) => (
         <Link href={item.url} key={item.name} passHref>
           <span
             className={`
               text-[18px] px-6 font-Poppins font-[400]
               ${
-                isActive(item.url)
+                isActive(item.url, idx)
                   ? "dark:text-[#37a39a] text-blue-500"
                   : "text-black"
               }
@@ -58,13 +57,13 @@ const NavItems: React.FC<Props> = ({ isMobile }) => {
           </span>
         </Link>
       </div>
-      {NavItemsData.map((item) => (
+      {NavItemsData.map((item, idx) => (
         <Link href={item.url} key={item.name} passHref>
           <span
             className={`
               text-[18px] py-2 font-Poppins font-[400]
               ${
-                isActive(item.url)
+                isActive(item.url, idx)
                   ? "dark:text-[#37a39a] text-blue-500"
                   : "text-black"
               }

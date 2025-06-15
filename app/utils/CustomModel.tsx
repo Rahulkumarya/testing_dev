@@ -1,13 +1,15 @@
-import React, { FC } from "react";
+import React, { FC, Dispatch, SetStateAction } from "react";
 
 import { Modal, Box } from "@mui/material";
+
+type RouteType = "Login" | "Sign-up" | "Verification";
 
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
   activeItem: any;
   component: any;
-  setRoute?: (route: string) => void;
+  setRoute?: Dispatch<SetStateAction<RouteType>>;
 };
 
 const CustomModel: FC<Props> = ({

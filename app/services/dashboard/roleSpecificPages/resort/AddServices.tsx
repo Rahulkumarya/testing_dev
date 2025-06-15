@@ -5,8 +5,7 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-
+import Image from "next/image";
 
 import { useCreateResortServiceMutation } from "../../../../../redux/features/services/resort/serviceApi";
 import { useSelector } from "react-redux";
@@ -23,8 +22,6 @@ const IMAGE_CATEGORIES = [
   "Sitting Space",
   "Balcony",
 ];
-
-
 
 const CATEGORIES = [
   { value: "Room", label: "Room" },
@@ -55,7 +52,6 @@ const ResortServiceForm = () => {
   const user = useSelector((state: store) => state.auth.user);
   const router = useRouter();
   const [action, setAction] = useState<"save" | "save_new">("save");
-
 
   // Fetch user address via geolocation
   useEffect(() => {
@@ -276,10 +272,12 @@ const ResortServiceForm = () => {
                     }
                   />
                   {categoryImages[cat]?.length ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(categoryImages[cat][0])}
                       alt={cat}
-                      className="w-24 h-24 object-cover rounded mb-2"
+                      width={96}
+                      height={96}
+                      className="object-cover rounded mb-2"
                     />
                   ) : (
                     <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded mb-2">
@@ -311,8 +309,11 @@ const ResortServiceForm = () => {
                     key={idx}
                     className="relative w-24 h-24 border rounded overflow-hidden"
                   >
-                    <img
+                    <Image
                       src={URL.createObjectURL(file)}
+                      alt={`preview-${idx}`}
+                      width={96}
+                      height={96}
                       className="object-cover w-full h-full"
                     />
                     <button

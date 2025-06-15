@@ -4,14 +4,11 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
-
+import { RootState } from "@/redux/store";
 import { useCreateAmbulanceMutation } from "../../../../redux/features/services/ambulance/profileApi";
 import Image from "next/image";
-
 
 // Reusable Form Field Component
 export const FormField = ({ label, name, type = "text" }: any) => (
@@ -30,16 +27,10 @@ export const FormField = ({ label, name, type = "text" }: any) => (
   </div>
 );
 
-
-
-
 const AmbulanceProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
-
-  const [createAmbulance, { isLoading, isSuccess }] =
-    useCreateAmbulanceMutation();
-  const user = useSelector((state: store) => state.auth.user);
+  const [createAmbulance, { isLoading, isSuccess }] = useCreateAmbulanceMutation();
+  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const [geo, setGeo] = useState({
@@ -77,12 +68,10 @@ const AmbulanceProfile = () => {
 
   const initialValues = {
     userId: user?._id,
-
     registrationNumber: "",
     experience: "",
     gstNumber: "",
-    ambulanceNumber:"",
-
+    ambulanceNumber: "",
     address: "",
     location: {
       coordinates: [geo.lon, geo.lat],
@@ -107,7 +96,6 @@ const AmbulanceProfile = () => {
     experience: Yup.number().min(0).required("Required"),
     ambulanceNumber: Yup.string()
       .matches(/^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/, "Invalid Ambulance Number"),
-      
     gstNumber: Yup.string()
       .matches(
         /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
@@ -128,8 +116,7 @@ const AmbulanceProfile = () => {
       Ifsc: Yup.string()
         .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
         .required("Required"),
-      accountNumber: Yup.string()
-        .required("Account Number is required"),
+      accountNumber: Yup.string().required("Account Number is required"),
       bankName: Yup.string().required("Required"),
     }),
   });
@@ -152,7 +139,6 @@ const AmbulanceProfile = () => {
   const handleSubmit = async (values: any) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
-  
     formData.append("location", JSON.stringify(values.location));
     formData.append("accountDetails", JSON.stringify(values.accountDetails));
     const exclude = ["avatar", "location", "accountDetails"];
@@ -173,7 +159,7 @@ const AmbulanceProfile = () => {
   return (
     <div className="max-w-5xl mx-auto p-8 bg-white shadow-xl rounded-2xl my-10">
       <h1 className="text-2xl font-bold text-blue-500 mb-6 text-center">
-        Complete your Ambulacne Profile
+        Complete your Ambulance Profile
       </h1>
 
       <Formik
@@ -194,21 +180,12 @@ const AmbulanceProfile = () => {
               name="experience"
               type="number"
             />
-            <FormField
-              label="Ambulance Number"
-              name="ambulanceNumber"
-            />
-
+            <FormField label="Ambulance Number" name="ambulanceNumber" />
             <FormField label="GST Number" name="gstNumber" />
-
-            {/* <FormField label="Clinic Address" name="address" /> */}
 
             {/* Geo Fields (Auto-Filled) */}
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-2">
-                {/* <h2 className="text-sm font-semibold text-gray-700">
-                  Professional Location
-                </h2> */}
                 <button
                   type="button"
                   className="text-blue-600 underline text-sm cursor-pointer"
@@ -234,7 +211,6 @@ const AmbulanceProfile = () => {
                             data.address.neighbourhood ||
                             "",
                         };
-                        // Update Formik fields
                         setFieldValue("location", locData);
                         toast.success("Location fetched successfully!");
                       });
@@ -271,17 +247,9 @@ const AmbulanceProfile = () => {
                 />
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
-                {/* <MaskedInputField
-                  label="Account Number"
-                  name="accountDetails.accountNumber"
-                  value={values.accountDetails.accountNumber}
-                  onChange={setFieldValue}
-                /> */}
                 <FormField
                   label="Account Number"
                   name="accountDetails.accountNumber"
-                  value={values.accountDetails.accountNumber}
-                  onChange={setFieldValue}
                 />
               </div>
             </div>
@@ -307,7 +275,9 @@ const AmbulanceProfile = () => {
                     <Image
                       src={avatarPreview}
                       alt="Avatar Preview"
-                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"
+                      width={128}
+                      height={128}
+                      className="rounded-full object-cover border-2 border-gray-300 shadow"
                     />
                   </div>
                 )}

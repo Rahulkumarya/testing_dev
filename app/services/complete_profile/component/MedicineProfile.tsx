@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 
 import { useCreateMedicineMutation } from "@/redux/features/services/medicine/profileApi";
 // Reusable Form Field Component
@@ -41,7 +41,7 @@ const MedicineProfile = () => {
   // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
 const [createMedicine, { isLoading, isSuccess }]=useCreateMedicineMutation();
 
-  const user = useSelector((state: store) => state.auth.user);
+const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   const [geo, setGeo] = useState({

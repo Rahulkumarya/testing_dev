@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
-import { store } from "../../redux/store";
+import { RootState } from "../../redux/store";
 
 interface ISocketContext {
   socket: Socket | null;
@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
 
   // 👇 Get the logged-in userId from Redux
-  const userId = useSelector((state: store) => state.auth.user?._id);
+  const userId = useSelector((state: RootState) => state.auth.user?._id);
 
  console.log(`socketContext id ${userId}`)
   useEffect(() => {

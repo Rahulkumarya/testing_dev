@@ -91,3 +91,5 @@ export const store = configureStore({
 
 // 👇 Persistor
 export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof store.getState>;

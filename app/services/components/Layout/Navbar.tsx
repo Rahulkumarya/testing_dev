@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Menu, Bell } from "lucide-react";
 import ServicesMenu from "./ServicesMenu";
 import NotificationDropdown from "./NotificationDropdown";
-import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const [openNotif, setOpenNotif] = useState(false);
@@ -34,7 +33,7 @@ export default function Navbar() {
           </div>
 
           {/* Avatar/UserMenu */}
-          <UserMenu />
+          
         </div>
       </div>
     </nav>

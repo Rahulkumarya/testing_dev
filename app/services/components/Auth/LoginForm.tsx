@@ -10,7 +10,7 @@ import { FcGoogle } from "react-icons/fc";
 import { styles } from "../../../../app/styles/Style";
 import toast from "react-hot-toast";
 import { useLoginMutation } from "../../../../redux/features/auth/authApi";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 import { signIn } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -36,7 +36,7 @@ const schema = Yup.object().shape({
 
 const Login: FC<Props> = ({ setRoute, setOpen }) => {
   const router = useRouter();
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [show, setShow] = useState(false);
   const [login] = useLoginMutation();
 

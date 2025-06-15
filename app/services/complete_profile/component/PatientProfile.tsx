@@ -8,8 +8,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
-
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 import { useCreatePatientMutation } from "@/redux/features/patients/patientApi";
 
 // Blood group options for dropdown
@@ -63,7 +62,7 @@ const PatientProfileForm = () => {
   // RTK Query mutation hook
   const [createPatient, { isLoading, isSuccess }] = useCreatePatientMutation();
   // Get current user from Redux
-  const user = useSelector((state: typeof store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
 
   // Geolocation state

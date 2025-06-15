@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -318,10 +319,12 @@ const [createRadiology, { isLoading, isSuccess }] = useCreateRadiologyMutation()
                 </div>
                 {avatarPreview && (
                   <div className="flex justify-center md:justify-start">
-                    <img
+                    <Image
                       src={avatarPreview}
                       alt="Avatar Preview"
-                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"
+                      width={128}
+                      height={128}
+                      className="rounded-full object-cover border-2 border-gray-300 shadow"
                     />
                   </div>
                 )}
