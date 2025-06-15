@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
-
+import React, { FC, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -9,7 +8,6 @@ import {
 } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { styles } from "../../../../app/styles/Style";
-import { userLoggedIn } from "../../../../redux/features/auth/authSlice";
 import toast from "react-hot-toast";
 import { useLoginMutation } from "../../../../redux/features/auth/authApi";
 import { store } from "@/redux/store";
@@ -17,10 +15,16 @@ import { signIn } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useCheckProfileQuery } from "../../../../redux/features/services/dprofile/profileApi";
+
+interface LoginError {
+  data?: {
+    message?: string;
+  };
+}
+
 type Props = {
   setRoute: (route: string) => void;
   setOpen: (open: boolean) => void;
- 
 };
 
 const schema = Yup.object().shape({
@@ -31,78 +35,45 @@ const schema = Yup.object().shape({
 });
 
 const Login: FC<Props> = ({ setRoute, setOpen }) => {
-
-  const router=useRouter();
+  const router = useRouter();
   const user = useSelector((state: store) => state.auth.user);
-  console.log(`user_name ${user.name}`,user)
   const [show, setShow] = useState(false);
-  const [login, { isSuccess, error }] = useLoginMutation();
+  const [login] = useLoginMutation();
 
-  const { data, isLoading, isError, refetch } = useCheckProfileQuery(
+  const { refetch } = useCheckProfileQuery(
     { userId: user?._id, role: user?.role },
-    { skip: !user?._id || !user?.role } // ✅ wait until user ID and role are present
+    { skip: !user?._id || !user?.role }
   );
-console.log(`data is `,data)
-  // useEffect(() => {
-  //   if(isLoading){
-  //     <h1 className="text-black text-center">Loading...</h1>
-  //   }
-  //   else if (data?.profileCompleted) {
-  //     router.push("/services/complete_profile");
-  //   }
-  // }, [data]);
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
-    // onSubmit: async ({ email, password }) => {
-    //  const res= await login({ email, password }).unwrap();
-    //   console.log(`response login `,res);
-    // const token=  localStorage.setItem("token", res.accessToken);
-    // console.log(`token is `,token)
-
-    // },
-
     onSubmit: async ({ email, password }) => {
       try {
         const res = await login({ email, password }).unwrap();
         localStorage.setItem("token", res.accessToken);
         toast.success("Login Successful");
 
-        // Now check profile here manually (or dispatch to redux)
-        const profileRes = await refetch(); // refetch from `useCheckProfileQuery`
+        const profileRes = await refetch();
 
         if (profileRes?.data?.profileCompleted === false) {
           router.push("/services/complete_profile");
         } else {
-          router.push("/services"); // or any other default home page
+          router.push("/services");
         }
 
         setOpen(false);
-      } catch (err: any) {
-        if (err?.data?.message) {
-          toast.error(err.data.message);
+      } catch (err: unknown) {
+        const error = err as LoginError;
+        if (error?.data?.message) {
+          toast.error(error.data.message);
         } else {
-          toast.error("Login failed!",err);
+          toast.error("Login failed!");
         }
       }
     },
   });
 
-  // useEffect(() => {        // useEffect occurs problem in this login and form completion 
-  //   if (isSuccess) {
-  //     toast.success("Login Successfully");
-  //     router.push("/services/complete_profile");
-
-  //     setOpen(false);
-  //   }
-  //   if (error) {
-  //     if ("data" in error) {
-  //       const errorData = error as any;
-  //       toast.error(errorData.data.message);
-  //     }
-  //   }
-  // }, [isSuccess, error, setOpen]);
   const { errors, touched, values, handleChange, handleSubmit } = formik;
 
   return (

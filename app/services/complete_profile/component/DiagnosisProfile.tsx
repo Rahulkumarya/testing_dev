@@ -1,91 +1,81 @@
 "use client";
 
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { useCreateDiagnosisMutation } from "@/redux/features/dprofile/profileApi";
+import Image from "next/image";
 
-import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
+interface Location {
+  coordinates: [string, string];
+  city: string;
+  state: string;
+  pincode: string;
+  address: string;
+  landmark: string;
+}
 
-import { useCreateDiagnosisMutation } from "@/redux/features/services/diagnosis/profileApi";
+interface AccountDetails {
+  HolderName: string;
+  Ifsc: string;
+  accountNumber: string;
+  bankName: string;
+}
 
-// Reusable Form Field Component
-export const FormField = ({ label, name, type = "text" }: any) => (
+interface FormValues {
+  registrationNumber: string;
+  experience: string;
+  gstNumber: string;
+  licenceNumber: string;
+  location: Location;
+  accountDetails: AccountDetails;
+  avatar: File | null;
+}
+
+interface ApiError {
+  data?: {
+    message?: string;
+  };
+}
+
+interface FormFieldProps {
+  label: string;
+  name: string;
+  type?: string;
+  value?: string;
+  onChange?: (field: string, value: any) => void;
+}
+
+export const FormField = ({ label, name, type = "text", value, onChange }: FormFieldProps) => (
   <div className="flex flex-col gap-1">
-    <label className="text-sm font-semibold text-gray-700">{label}</label>
-    <Field
-      name={name}
+    <label className="text-sm font-medium text-gray-700">{label}</label>
+    <input
       type={type}
-      className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-    <ErrorMessage
       name={name}
-      component="div"
-      className="text-red-500 text-sm"
+      value={value}
+      onChange={(e) => onChange?.(name, e.target.value)}
+      className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
     />
   </div>
 );
 
-
-
 const DiagnosisProfile = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  // const [createDoctor, { isLoading, isSuccess }] = useCreateDoctorMutation();
+  const [createDiagnosis, { isLoading }] = useCreateDiagnosisMutation();
 
-  const [createDiagnosis,{isLoading,isSuccess}]=useCreateDiagnosisMutation();
-  const user = useSelector((state: store) => state.auth.user);
-  const router = useRouter();
-
-  const [geo, setGeo] = useState({
-    lat: "",
-    lon: "",
-    city: "",
-    state: "",
-    pincode: "",
-    address: "",
-    landmark: "",
-  });
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      const response = await fetch(
-        `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`
-      );
-      const data = await response.json();
-      setGeo({
-        lat: latitude.toString(),
-        lon: longitude.toString(),
-        city: data.address.city || "",
-        state: data.address.state || "",
-        pincode: data.address.postcode || "",
-        address: data.display_name || "",
-        landmark: data.address.suburb || "",
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isSuccess) router.push("/services");
-  }, [isSuccess, router]);
-
-  const initialValues = {
-    userId: user?._id,
-
+  const initialValues: FormValues = {
     registrationNumber: "",
     experience: "",
     gstNumber: "",
     licenceNumber: "",
-    address: "",
     location: {
-      coordinates: [geo.lon, geo.lat],
-      city: geo.city,
-      state: geo.state,
-      pincode: geo.pincode,
-      address: geo.address,
-      landmark: geo.landmark,
+      coordinates: ["", ""],
+      city: "",
+      state: "",
+      pincode: "",
+      address: "",
+      landmark: "",
     },
     accountDetails: {
       HolderName: "",
@@ -97,19 +87,14 @@ const DiagnosisProfile = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    userId: Yup.string(),
     registrationNumber: Yup.string().required("Required"),
-    experience: Yup.number().min(0),
-    gstNumber: Yup.string()
-      .matches(
-        /^([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})$/,
-        "Invalid GST Number"
-      )
-      .required("GST Number is required"),
+    experience: Yup.number().min(0).required("Required"),
+    gstNumber: Yup.string(),
     licenceNumber: Yup.string(),
-    address: Yup.string(),
     location: Yup.object().shape({
-      coordinates: Yup.array().of(Yup.string().required("Required")).length(2),
+      coordinates: Yup.array()
+        .of(Yup.string().required("Required"))
+        .length(2, "Must include both lat and long"),
       city: Yup.string(),
       state: Yup.string(),
       pincode: Yup.string(),
@@ -118,18 +103,15 @@ const DiagnosisProfile = () => {
     }),
     accountDetails: Yup.object().shape({
       HolderName: Yup.string().required("Required"),
-      Ifsc: Yup.string()
-        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code")
-        .required("Required"),
-      accountNumber: Yup.string()
-        .required("Account Number is required"),
+      Ifsc: Yup.string().required("Required"),
+      accountNumber: Yup.string().required("Required"),
       bankName: Yup.string().required("Required"),
     }),
   });
 
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any
+    setFieldValue: (field: string, value: any) => void
   ) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
@@ -142,7 +124,7 @@ const DiagnosisProfile = () => {
     }
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
   
@@ -157,9 +139,10 @@ const DiagnosisProfile = () => {
       const res = await createDiagnosis(formData).unwrap();
       toast.success("Thanks for completing your profile!");
       console.log("Submitted:", res);
-    } catch (err: any) {
-      console.error("Error:", err);
-      toast.error(err?.data?.message || "Failed to submit profile.");
+    } catch (err: unknown) {
+      const error = err as ApiError;
+      console.error("Error:", error);
+      toast.error(error?.data?.message || "Failed to submit profile.");
     }
   };
 
@@ -177,9 +160,6 @@ const DiagnosisProfile = () => {
       >
         {({ setFieldValue, values }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-
-            {/* Basic Info */}
             <FormField label="Registration Number" name="registrationNumber" />
             <FormField
               label="Experience (in years)"
@@ -188,14 +168,9 @@ const DiagnosisProfile = () => {
             />
             <FormField label="GST Number" name="gstNumber" />
             <FormField label="License Number" name="licenceNumber" />
-            {/* <FormField label="Clinic Address" name="address" /> */}
 
-            {/* Geo Fields (Auto-Filled) */}
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-2">
-                {/* <h2 className="text-sm font-semibold text-gray-700">
-                  Professional Location
-                </h2> */}
                 <button
                   type="button"
                   className="text-blue-600 underline text-sm cursor-pointer"
@@ -221,7 +196,6 @@ const DiagnosisProfile = () => {
                             data.address.neighbourhood ||
                             "",
                         };
-                        // Update Formik fields
                         setFieldValue("location", locData);
                         toast.success("Location fetched successfully!");
                       });
@@ -244,7 +218,6 @@ const DiagnosisProfile = () => {
               </div>
             </div>
 
-            {/* Account Information Section */}
             <div className="md:col-span-2 bg-white rounded-2xl shadow-md px-8 py-6 mb-5 w-full">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6 border-b-2 border-gray-300 pb-3">
                 <span className="text-2xl">💳</span>
@@ -259,15 +232,14 @@ const DiagnosisProfile = () => {
                 <FormField label="Bank Name" name="accountDetails.bankName" />
                 <FormField label="IFSC Code" name="accountDetails.Ifsc" />
                 <FormField
-                                 label="Account Number"
-                                 name="accountDetails.accountNumber"
-                                 value={values.accountDetails.accountNumber}
-                                 onChange={setFieldValue}
-                               />
+                  label="Account Number"
+                  name="accountDetails.accountNumber"
+                  value={values.accountDetails.accountNumber}
+                  onChange={setFieldValue}
+                />
               </div>
             </div>
 
-            {/* Avatar Upload Section */}
             <div className="md:col-span-2 bg-white rounded-2xl shadow-md px-8 py-6 w-full">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6 border-b-2 border-gray-300 pb-3">
                 <span className="text-2xl">🖼️</span>
@@ -285,17 +257,18 @@ const DiagnosisProfile = () => {
                 </div>
                 {avatarPreview && (
                   <div className="flex justify-center md:justify-start">
-                    <img
+                    <Image
                       src={avatarPreview}
                       alt="Avatar Preview"
-                      className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"
+                      width={128}
+                      height={128}
+                      className="rounded-full object-cover border-2 border-gray-300 shadow"
                     />
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="md:col-span-2">
               <button
                 type="submit"
