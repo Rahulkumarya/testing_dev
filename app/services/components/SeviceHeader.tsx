@@ -58,11 +58,11 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
     
 
     useEffect(() => {
-        if (!user && data) {
+        if (!user && data?.user) {
             socialAuthMutation({
-                email: data?.user?.email,
-                name: data?.user?.name,
-                avatar: data.user?.image,
+                email: data.user.email || "",
+                name: data.user.name || "",
+                avatar: data.user.image || "",
             });
         }
         if (isSocialAuthSuccess) {
@@ -102,8 +102,8 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const handleClose = (e: React.MouseEvent) => {
-        if (e.target.id === "screen") {
+    const handleClose = (e: React.MouseEvent<HTMLDivElement>) => {
+        if ((e.target as HTMLDivElement).id === "screen") {
             setOpenSidebar(false);
         }
     };
@@ -138,27 +138,27 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
     });
 
     const handleGoogleSignIn = async () => {
-      try {
-        const result = await signIn("google", {
-          redirect: false,
-        });
+        try {
+            const result = await signIn("google", {
+                redirect: false,
+            });
 
-        if (result?.ok && data?.user) {
-          const userData = {
-            access_Token: result.token || "",
-            user: {
-              email: data.user.email || "",
-              name: data.user.name || "",
-              avatar: data.user.image || "",
-            },
-          };
-          dispatch(userLoggedIn(userData));
-          router.push("/services");
+            if (result?.ok && data?.user) {
+                const userData = {
+                    access_Token: result.url || "",
+                    user: {
+                        email: data.user.email || "",
+                        name: data.user.name || "",
+                        avatar: data.user.image || "",
+                    },
+                };
+                dispatch(userLoggedIn(userData));
+                router.push("/services");
+            }
+        } catch (error) {
+            console.error("Google sign in error:", error);
+            toast.error("Failed to sign in with Google");
         }
-      } catch (error) {
-        console.error("Google sign in error:", error);
-        toast.error("Failed to sign in with Google");
-      }
     };
 
     return (

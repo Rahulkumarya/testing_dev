@@ -10,13 +10,15 @@ import { Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Providers from "../../Provider";
 import { SessionProvider } from "next-auth/react";
-import React, { FC, useState } from "react";
+import React, { FC, useState, Dispatch, SetStateAction } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./../../component/Loader/Loader";
 import Header from "./../components/SeviceHeader"
 import ServiceDashboard from "./pages/ServiceDashboard";
 import Footer from "../../service/home/Footer";
 import { SocketProvider } from "@/app/context/SocketContext";
+
+type RouteType = "Login" | "Sign-up" | "Verification";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -65,7 +67,7 @@ const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
   const [open, setOpen] = useState(false);
   const [activeItem] = useState(0);
-  const [route, setRoute] = useState("Login");
+  const [route, setRoute] = useState<RouteType>("Login");
   return (
     <>
       {isLoading ? (
