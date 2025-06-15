@@ -4,7 +4,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useCreateDiagnosisMutation } from "@/redux/features/dprofile/profileApi";
+import { useCreateDiagnosisMutation } from "@/redux/features/services/diagnosis/profileApi";
 import Image from "next/image";
 
 interface Location {
