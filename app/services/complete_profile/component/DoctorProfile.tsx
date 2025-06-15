@@ -10,8 +10,49 @@ import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
 import Select from "react-select";
 
+interface FormFieldProps {
+  label: string;
+  name: string;
+  type?: string;
+}
+
+interface Location {
+  coordinates: [string, string];
+  city: string;
+  state: string;
+  pincode: string;
+  address: string;
+  landmark: string;
+}
+
+interface AccountDetails {
+  HolderName: string;
+  Ifsc: string;
+  accountNumber: string;
+  bankName: string;
+}
+
+interface FormValues {
+  userId: string;
+  specialization: string[];
+  registrationNumber: string;
+  experience: string;
+  gstNumber: string;
+  licenceNumber: string;
+  address: string;
+  location: Location;
+  accountDetails: AccountDetails;
+  avatar: File | null;
+}
+
+interface ApiError {
+  data?: {
+    message?: string;
+  };
+}
+
 // Reusable Form Field Component
-export const FormField = ({ label, name, type = "text" }: any) => (
+export const FormField = ({ label, name, type = "text" }: FormFieldProps) => (
   <div className="flex flex-col gap-1">
     <label className="text-sm font-semibold text-gray-700">{label}</label>
     <Field
@@ -134,7 +175,7 @@ const DoctorProfileForm = () => {
     });
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any
+    setFieldValue: (field: string, value: File | null) => void
   ) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
@@ -147,7 +188,7 @@ const DoctorProfileForm = () => {
     }
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();
     if (values.avatar) formData.append("avatar", values.avatar);
     values.specialization.forEach((spec: string, i: number) =>
@@ -162,11 +203,12 @@ const DoctorProfileForm = () => {
 
     try {
       const res = await createDoctor(formData).unwrap();
-      toast.success("Thanks  for completing your profile!");
+      toast.success("Thanks for completing your profile!");
       console.log("Submitted:", res);
-    } catch (err: any) {
-      console.error("Error:", err);
-      toast.error(err?.data?.message || "Failed to submit profile.");
+    } catch (err: unknown) {
+      const error = err as ApiError;
+      console.error("Error:", error);
+      toast.error(error?.data?.message || "Failed to submit profile.");
     }
   };
 

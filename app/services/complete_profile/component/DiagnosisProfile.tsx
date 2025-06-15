@@ -44,7 +44,7 @@ interface FormFieldProps {
   name: string;
   type?: string;
   value?: string;
-  onChange?: (field: string, value: any) => void;
+  onChange?: (field: string, value: string) => void;
 }
 
 export const FormField = ({ label, name, type = "text", value, onChange }: FormFieldProps) => (
@@ -111,7 +111,7 @@ const DiagnosisProfile = () => {
 
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: (field: string, value: any) => void
+    setFieldValue: (field: string, value: File | null) => void
   ) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
