@@ -17,7 +17,7 @@ import { GiGrowth } from "react-icons/gi";
 import { BsCashStack } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 import Notification from "../../context/Notification"
 type Props = {
   
@@ -26,7 +26,7 @@ export const ServiceDashboard: FC<Props> = ({}) => {
   const [activePage, setActivePage] = useState("DashboardKpi");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [sidebarMini, setSidebarMini] = useState(false);
-const user=useSelector((state:store)=>state.auth.user)
+const user=useSelector((state:RootState)=>state.auth.user)
 console.log(`userDatais Dashboard and role is ${user.role} and name is ${user.name}`)
   const menu = [
     { name: "DashboardKpi", icon: <FaTachometerAlt />, label: "Dashboard" },
