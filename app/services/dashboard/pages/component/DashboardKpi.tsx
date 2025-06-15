@@ -2,7 +2,7 @@
 //handles all addServices router like radiology,doctor,ambulance,patient
 
 import { useSelector } from "react-redux";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 // import DoctorNotifications from "./DoctorNotifications";
 // import RadiologyNotifications from "./RadiologyNotifications";
 
@@ -11,7 +11,7 @@ import DiagnosisAddServiceForm from "../../roleSpecificPages/diagnosis/AddServic
 import DoctorServiceStats from "../../roleSpecificPages/doctor/DashboardKpi";
 
 const AllDashboardKpi = () => {
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   switch (user.role) {
     case "doctor":

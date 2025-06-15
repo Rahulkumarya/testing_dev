@@ -2,7 +2,7 @@
 //handles all addServices router like radiology,doctor,ambulance,patient
 
 import { useSelector } from "react-redux";
-import { store } from "@/redux/store";
+import { RootState} from "@/redux/store";
 // import DoctorNotifications from "./DoctorNotifications";
 // import RadiologyNotifications from "./RadiologyNotifications";
 import DoctorAddServiceForm from "../../roleSpecificPages/doctor/AddService";
@@ -12,7 +12,7 @@ import ServicesPage from "../../roleSpecificPages/doctor/AllServicesPage";
 import RadiologyAddServiceForm from "../../roleSpecificPages/radiology/AddService";
 
 const AddService = () => {
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   switch (user.role) {
     case "doctor":

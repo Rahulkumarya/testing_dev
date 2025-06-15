@@ -17,6 +17,10 @@ import Header from "./../components/SeviceHeader"
 import ServiceDashboard from "./pages/ServiceDashboard";
 import Footer from "../../service/home/Footer";
 import { SocketProvider } from "@/app/context/SocketContext";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { resetOnboarding } from "@/redux/features/onboarding/onboardingSlice";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
 
 type RouteType = "Login" | "Sign-up" | "Verification";
 
@@ -68,6 +72,20 @@ const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [activeItem] = useState(0);
   const [route, setRoute] = useState<RouteType>("Login");
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [logout] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap();
+      dispatch(resetOnboarding());
+      router.push("/services");
+    } catch (err) {
+      console.error("Failed to logout:", err);
+    }
+  };
+
   return (
     <>
       {isLoading ? (
@@ -80,6 +98,7 @@ const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
             activeItem={activeItem}
             setRoute={setRoute}
             route={route}
+            logOutHandler={handleLogout}
           />
 
           {children}

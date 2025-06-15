@@ -87,3 +87,6 @@ export const NotificationIcon: React.FC = () => {
     </div>
   );
 };
+
+
+export default NotificationIcon;
