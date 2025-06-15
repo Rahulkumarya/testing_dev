@@ -9,33 +9,32 @@ import { store } from "../../../../../redux/store";
 import { useCreateTourServiceMutation } from "../../../../../redux/features/services/resort/serviceApi";
 import { useRouter } from "next/navigation";
 import { Calendar, Clock, MapPin } from "lucide-react";
+
+const MOTIVES = ["Sightseeing", "Relaxation", "Adventure", "Medical", "Other"];
+const INCLUDES = [
+  "Breakfast",
+  "Lunch",
+  "Dinner",
+  "Transport",
+  "Guide",
+  "Insurance",
+];
+
+
+const CATEGORIES = ["Package", "Group", "Private"];
 const TourOperatorServiceForm = () => {
-  const MOTIVES = [
-    "Sightseeing",
-    "Relaxation",
-    "Adventure",
-    "Medical",
-    "Other",
-  ];
-  const INCLUDES = [
-    "Breakfast",
-    "Lunch",
-    "Dinner",
-    "Transport",
-    "Guide",
-    "Insurance",
-  ];
+
 
   const user = useSelector((state: store) => state.auth.user);
   //   const [createTourService] = useCreateTourOperatorServiceMutation();
-  const [createTourService, { isLoading, isSuccess }] =
+  const [createTourService, { isLoading }] =
     useCreateTourServiceMutation();
   const router = useRouter();
   if (!user?._id) return <div>Loading...</div>;
   console.log(`user is ${user._id} and user `, user);
   const initialValues = {
     userId: user?._id || "",
-    category: "package",
+    category: "",
     serviceName: "",
     details: [
       {
@@ -131,12 +130,34 @@ const TourOperatorServiceForm = () => {
       </div>
       <Formik
         initialValues={initialValues}
-        enableReinitialize
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ values }) => (
           <Form className="p-6 space-y-8">
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Category
+              </label>
+              <Field
+                name="category"
+                as="select"
+                className="w-full border px-3 py-2 rounded"
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </Field>
+              <ErrorMessage
+                name="category"
+                component="div"
+                className="text-red-500 text-xs mt-1"
+              />
+            </div>
+
             {/* Service Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -151,6 +172,91 @@ const TourOperatorServiceForm = () => {
                 component="div"
                 className="text-red-500 text-xs mt-1"
               />
+            </div>
+
+            {/* Max Size & Age Range & Gender */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Max Group Size
+                </label>
+                <Field
+                  name="maxSize"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                />
+                <ErrorMessage
+                  name="maxSize"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Age Min
+                </label>
+                <Field
+                  name="ageRange.min"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                />
+                <ErrorMessage
+                  name="ageRange.min"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Age Max
+                </label>
+                <Field
+                  name="ageRange.max"
+                  type="number"
+                  className="w-full border px-3 py-2 rounded"
+                />
+                <ErrorMessage
+                  name="ageRange.max"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Gender
+                </label>
+                <div className="flex gap-2">
+                  <label className="flex items-center gap-1">
+                    <Field
+                      type="checkbox"
+                      name="gender.female"
+                      className="form-checkbox"
+                    />{" "}
+                    Female
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <Field
+                      type="checkbox"
+                      name="gender.male"
+                      className="form-checkbox"
+                    />{" "}
+                    Male
+                  </label>
+                  <label className="flex items-center gap-1">
+                    <Field
+                      type="checkbox"
+                      name="gender.both"
+                      className="form-checkbox"
+                    />{" "}
+                    Both
+                  </label>
+                </div>
+                <ErrorMessage
+                  name="gender"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
             </div>
 
             {/* Tour Details Array */}

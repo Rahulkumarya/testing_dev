@@ -22,8 +22,8 @@ import { SocketProvider } from "@/app/context/SocketContext";
 import OnboardingHeader from "./component/OnboardingHeader";
 import {store} from "../../../redux/store"
 import { useSelector } from "react-redux";
-
-
+import { store, persistor } from "../../../redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 
 
@@ -61,12 +61,14 @@ export default function RootLayout({
         className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b  duration-300 `}
       >
         <Providers>
-          <SessionProvider>
-            <SocketProvider>
-              <Custom>{children}</Custom>
-              <Toaster position="top-center" reverseOrder={false} />
-            </SocketProvider>
-          </SessionProvider>
+          <PersistGate loading={null} persistor={persistor}>
+            <SessionProvider>
+              <SocketProvider>
+                <Custom>{children}</Custom>
+                <Toaster position="top-center" reverseOrder={false} />
+              </SocketProvider>
+            </SessionProvider>
+          </PersistGate>
         </Providers>
       </body>
     </html>

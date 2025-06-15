@@ -19,6 +19,7 @@ import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
+import {resetOnboarding} from "@/redux/features/onboarding/onboardingSlice"
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -44,6 +45,7 @@ console.log(`user register data serviceheader `,user)
       try {
         const res=await logout().unwrap();
         console.log(`response logout`,res);
+        dispatch(resetOnboarding());   //onboarding reset after logout 
         // Optionally redirect or show a message after logout
         router.push("/services");
       } catch (err) {
@@ -124,15 +126,29 @@ console.log(`user register data serviceheader `,user)
                 <div className="flex items-center text-black">
                   <NavItems activeItem={0} isMobile={false} />
 
+                  {/* if user don't login then shows after login hidden */}
+                  {user ? (
+                    <Link href="/services/selling/register">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-300 mr-4 hidden">
+                        Start Selling
+                      </button>
+                    </Link>
+                  ) : (
+                    <Link href="/services/selling/register">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-300 mr-4">
+                        Start Selling
+                      </button>
+                    </Link>
+                  )}
+
                   {/* //   only for mobile for responsiveness*/}
-                  <div className="800px:hidden block md:hidden sm:hidden lg:hidden">
+                  {/* <div className="800px:hidden block md:hidden sm:hidden lg:hidden">
                     <HiOutlineMenuAlt3
                       size={25}
-                      className="cursor-pointer  text-black"
+                      className="cursor-pointer  text-black "
                       onClick={() => setOpenSidebar(true)}
                     />
-                    <h3> login </h3>
-                  </div>
+                  </div> */}
                   {user ? (
                     <div className="relative dropdown-avatar">
                       <Image
@@ -172,12 +188,31 @@ console.log(`user register data serviceheader `,user)
                       )}
                     </div>
                   ) : (
-                    <HiOutlineUserCircle
-                      size={25}
-                      className="hidden 800px:block md:block lg:block sm:block cursor-pointer text-black"
-                      onClick={() => setOpen(true)}
-                    />
+                    <>
+                      <HiOutlineUserCircle
+                        size={25}
+                        className="hidden  cursor-pointer text-black"
+                        onClick={() => setOpen(true)}
+                      />
+
+                      <Link href="">
+                        <button
+                          className="bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-xl shadow-sm transition duration-300 mr-2"
+                          onClick={() => setOpen(true)}
+                        >
+                          Login
+                        </button>
+                      </Link>
+                    </>
                   )}
+
+                  <div className="800px:hidden block md:hidden sm:hidden lg:hidden">
+                    <HiOutlineMenuAlt3
+                      size={25}
+                      className="cursor-pointer  text-black "
+                      onClick={() => setOpenSidebar(true)}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

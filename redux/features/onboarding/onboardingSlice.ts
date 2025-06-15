@@ -16,8 +16,8 @@ const onboardingSlice = createSlice({
     setCurrentStep(state, action) {
       state.currentStep = action.payload;
     },
+    resetOnboarding: () => initialState, // ✅ this line
   },
 });
-
-export const { setCurrentStep } = onboardingSlice.actions;
+export const { setCurrentStep ,resetOnboarding} = onboardingSlice.actions;
 export default onboardingSlice.reducer;

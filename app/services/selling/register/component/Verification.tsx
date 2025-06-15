@@ -31,6 +31,9 @@ const Verification: FC<Props> = ({ setRoute, emailRef, passwordRef }) => {
     useLoginMutation();
  
 
+
+
+
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -53,6 +56,21 @@ if(user){
   useEffect(() => {
     inputRefs.current[0]?.focus(); // auto focus first box
   }, []);
+  useEffect(() => {
+    if (isActivationSucess) {
+     console.log(`activation success`)
+
+  
+    }
+    if (activationError) {
+      const message =
+        activationError?.data?.message || "Login failed, please try again";
+
+      toast.error(message);
+      console.log("Activation error:", activationError);
+    }
+  }, [isActivationSucess, activationError]);
+
 
   useEffect(() => {
     if(isLoginSuccess){
@@ -61,7 +79,7 @@ if(user){
         toast.success("Please Complete your profile");
         dispatch(setCurrentStep(2));
       
-          router.push("/services/complete_profile");
+          router.push(`/services/selling/component/complete_profile`);
        
     }
     if (loginError) {
@@ -106,10 +124,12 @@ if(user){
     }
 
     try {
-      await activation({
+     const resp= await activation({
         activation_token: token,
         activation_code: code,
       }).unwrap();
+
+      console.log(`activation response`,resp);
 
       // auto-login using refs
       const email = emailRef.current;
@@ -124,23 +144,7 @@ if(user){
       const res = await login({ email, password }).unwrap();
       localStorage.setItem("token", res.accessToken);
 
-      // toast.success("Please Complete your profile");
-
-      // const profileRes = await refetch(); // refetch from `useCheckProfileQuery`
-
-     
-
-      // const profileCompleted = profileRes?.data?.profileCompleted;
-      // if(profileCompleted===false){
-      //   router.push("/services/complete_profile");
-      // }
-      // else{
-      //   router.push("/services");
-      // }
-
-      // router.push(
-      //   profileCompleted === false ? "/services/complete_profile" : "/services"
-      // );
+    
       // cleanup
       emailRef.current = "";
       passwordRef.current = "";

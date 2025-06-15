@@ -2,6 +2,7 @@
 import React from "react";
 import { CheckCircle, CircleDot, Circle } from "lucide-react";
 
+
 interface Step {
   title: string;
   description: string;

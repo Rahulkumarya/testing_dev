@@ -15,6 +15,26 @@ export const profileApi = apiSlice.injectEndpoints({
       }),
     }),
 
+
+//tour services
+
+createTourService: builder.mutation({
+  query: (formData) => ({
+    url: "resort/tour/create-service",
+    method: "POST",
+    body: formData,
+    credentials: "include" as const,
+    // formData:true,
+  }),
+}),
+
+
+
+
+
+
+
+
     // getDoctors: builder.query<any[], void>({
     //   query: () => "/Alldoctors",
     // }),
@@ -34,4 +54,4 @@ export const profileApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const {useCreateResortServiceMutation} =profileApi
+export const {useCreateResortServiceMutation,useCreateTourServiceMutation} =profileApi

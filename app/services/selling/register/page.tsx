@@ -11,6 +11,9 @@ const roles = [
   "pathology",
   "radiology",
   "resort",
+  "e_clinic",
+  "wellness Tour Operator",
+  "hospital",
 ];
 
 const Page = () => {
