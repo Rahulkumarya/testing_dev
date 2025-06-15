@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
+import { Container, Grid, Typography, CircularProgress } from "@mui/material";
 import { useGetAllAmbulanceQuery } from "@/redux/features/services/ambulance/ambulanceApi";
-import { Container, Grid, Typography } from "@mui/material";
 import AmbulanceServiceCard from "../component/AmbulanceServiceCard";
 
 const AllAmbulancePage = () => {
@@ -10,8 +10,8 @@ const AllAmbulancePage = () => {
 
   if (isLoading) {
     return (
-      <Container>
-        <Typography>Loading...</Typography>
+      <Container className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
       </Container>
     );
   }
@@ -19,14 +19,16 @@ const AllAmbulancePage = () => {
   if (error) {
     return (
       <Container>
-        <Typography color="error">Error loading ambulances</Typography>
+        <Typography color="error" className="text-center mt-8">
+          Error loading ambulance services. Please try again later.
+        </Typography>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Container className="py-8">
+      <Typography variant="h4" component="h1" className="mb-6">
         Available Ambulance Services
       </Typography>
       <Grid container spacing={3}>
