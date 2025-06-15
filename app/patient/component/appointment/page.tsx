@@ -1,11 +1,9 @@
 "use client"
 import React from 'react'
 
-interface Props {
-    
-}
 
-const page = (props: Props) => {
+
+const page = () => {
     return (
         <div>
            Appointment page

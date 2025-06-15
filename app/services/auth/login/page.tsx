@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import {
   useSocialAuthMutation,
-  useLogoutMutation,
+
 } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+
 
 import CustomModel from "../../../utils/CustomModel";
 import Login from "./../../components/Auth/LoginForm";
@@ -20,14 +20,14 @@ const LoginPage = () => {
   const [route, setRoute] = useState<"Login" | "Sign-up" | "Verification">(
     "Login"
   );
-  const [activeItem, setActiveItem] = useState(0);
+  const [activeItem] = useState(0);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
   const { data } = useSession();
   const [socialAuth, { isSuccess }] = useSocialAuthMutation();
-  const [logout] = useLogoutMutation();
-  const router = useRouter();
+  // const [logout] = useLogoutMutation();
+  // const router = useRouter();
 
   useEffect(() => {
     if (!user && data) {

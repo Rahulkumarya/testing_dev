@@ -12,9 +12,15 @@ interface FormValues {
   phone: string;
 }
 
+interface ErrorResponse {
+  data?: {
+    message?: string;
+  };
+}
+
 const SendOtpForm: React.FC = () => {
   // RTK Query mutation for sending OTP
-  const [sendOtp, { isLoading, isError, error, isSuccess }] =
+  const [sendOtp, { isLoading, error, isSuccess }] =
     useSendOtpMutation();
 
   // Formik setup with Yup validation
@@ -26,9 +32,13 @@ const SendOtpForm: React.FC = () => {
         .matches(/^\+\d{10,14}$/, "Use E.164 format (e.g. +1234567890)")
         .required("Phone is required"),
     }),
-    onSubmit: (values) => {
-      // Trigger sendOtp mutation with name and phone
-      sendOtp(values);
+    onSubmit: async (values) => {
+      try {
+        await sendOtp(values).unwrap();
+      } catch (error) {
+        console.error("Send OTP error:", error);
+        // Error is handled in the useEffect
+      }
     },
   });
 
@@ -37,11 +47,12 @@ const SendOtpForm: React.FC = () => {
     if (isSuccess) {
       toast.success("OTP sent successfully! Check your phone.");
     }
-    if (isError) {
-      // @ts-ignore
-      toast.error(error?.data?.message || "Failed to send OTP");
+    if (error) {
+      const errorResponse = error as ErrorResponse;
+      const message = errorResponse?.data?.message || "Login failed, please try again";
+      toast.error(message);
     }
-  }, [isSuccess, isError, error]);
+  }, [isSuccess, error]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -106,11 +117,9 @@ const SendOtpForm: React.FC = () => {
           </button>
 
           {/* Status Messages */}
-          {isError && (
-            // Display error below button if mutation fails
+          {error && (
             <p className="text-red-500 text-center text-sm mt-4">
-              {/* @ts-ignore */}
-              {error?.data?.message || "Failed to send OTP"}
+              {(error as ErrorResponse)?.data?.message || "Failed to send OTP"}
             </p>
           )}
           {isSuccess && (

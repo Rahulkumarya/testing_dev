@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useSosPatientMutation } from "@/redux/features/patients/patientApi";
 import { useSelector } from "react-redux";
 import { store } from "@/redux/store";
+import { toast } from "react-hot-toast";
 
 export default function SoSButton() {
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -51,51 +52,50 @@ export default function SoSButton() {
     return () => {
       if (countdownRef.current) clearTimeout(countdownRef.current);
     };
-  }, [countdown, confirmOpen, isSending]);
+  }, [countdown, confirmOpen, isSending, sendSOS]);
 
   // ▶ Step 3: Actually send the SOS
-  const sendSOS = () => {
-    setIsSending(true);
+  const sendSOS = useCallback(async () => {
+    try {
+      setIsSending(true);
 
-    if (!navigator.geolocation) {
-      alert("Geolocation not supported by this browser.");
-      resetAll();
-      return;
-    }
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported by this browser.");
+        resetAll();
+        return;
+      }
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords;
-        try {
-          // Call your RTK Query mutation
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
           await sosPatient({ userId, latitude, longitude }).unwrap();
           alert("🚑 Emergency alert sent!");
-        } catch (err) {
-          console.error("SOS send error:", err);
-          alert("❌ Error sending alert.");
-        } finally {
-          resetAll();
-        }
-      },
-      (error) => {
-        // ▶ Handle permission denied / position unavailable
-        if (error.code === error.PERMISSION_DENIED) {
-          if (
-            confirm(
-              "Location access is required to send SOS. Please enable location in your browser settings."
-            )
-          ) {
-            // Attempt again
-            sendSOS();
+        },
+        (error) => {
+          // ▶ Handle permission denied / position unavailable
+          if (error.code === error.PERMISSION_DENIED) {
+            if (
+              confirm(
+                "Location access is required to send SOS. Please enable location in your browser settings."
+              )
+            ) {
+              // Attempt again
+              sendSOS();
+            }
+          } else {
+            alert("❌ Could not get your location. Try again.");
           }
-        } else {
-          alert("❌ Could not get your location. Try again.");
-        }
-        resetAll();
-      },
-      { timeout: 10000 }
-    );
-  };
+          resetAll();
+        },
+        { timeout: 10000 }
+      );
+    } catch (error) {
+      console.error("Error sending SOS:", error);
+      toast.error("Failed to send SOS signal");
+    } finally {
+      setIsSending(false);
+    }
+  }, [sosPatient, userId]);
 
   // ▶ Step 4: Cleanup everything
   const resetAll = () => {
@@ -153,13 +153,6 @@ export default function SoSButton() {
     </>
   );
 }
-
-
-
-
-
-
-
 
 export function calculateDistance(
   lat1: number,

@@ -6,6 +6,42 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useCreateDoctorMutation } from "@/redux/features/dprofile/profileApi";
 import Select from "react-select";
+
+interface Location {
+  coordinates: [string, string];
+  city: string;
+  state: string;
+  pincode: string;
+  address: string;
+  landmark: string;
+}
+
+interface AccountDetails {
+  HolderName: string;
+  Ifsc: string;
+  accountNumber: string;
+  bankName: string;
+}
+
+interface FormValues {
+  specialization: string[];
+  registrationNumber: string;
+  experience: string;
+  gstNumber: string;
+  licenceNumber: string;
+  gender: string;
+  address: string;
+  location: Location;
+  accountDetails: AccountDetails;
+  avatar: File | null;
+}
+
+interface ApiError {
+  data?: {
+    message?: string;
+  };
+}
+
 // ✅ Doctor Profile Form Component
 const DoctorProfileForm = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -75,7 +111,7 @@ const DoctorProfileForm = () => {
   // ✅ Handle Avatar Image Preview
   const handleAvatarChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any
+    setFieldValue: (field: string, value: any) => void
   ) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
@@ -89,7 +125,7 @@ const DoctorProfileForm = () => {
   };
 
   // ✅ Handle Form Submit
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     const formData = new FormData();
 
     if (values.avatar) {
@@ -120,9 +156,10 @@ const DoctorProfileForm = () => {
       const res = await createDoctor(formData).unwrap();
       toast.success("Doctor profile created successfully!");
       console.log("Submitted:", res);
-    } catch (err: any) {
-      console.error("Error submitting doctor form:", err);
-      toast.error(err?.data?.message || "Failed to create doctor profile.");
+    } catch (err: unknown) {
+      const error = err as ApiError;
+      console.error("Error submitting doctor form:", error);
+      toast.error(error?.data?.message || "Failed to create doctor profile.");
     }
   };
 

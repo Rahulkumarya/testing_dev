@@ -25,7 +25,19 @@ const bloodGroupOptions = [
 ];
 
 // Reusable form field component
-export const FormField = ({ label, name, type = "text", as = "input" }) => (
+type FormFieldProps = {
+  label: string;
+  name: string;
+  type?: string;
+  as?: string;
+};
+
+export const FormField = ({
+  label,
+  name,
+  type = "text",
+  as = "input",
+}: FormFieldProps) => (
   <div className="flex flex-col gap-1">
     <label htmlFor={name} className="text-sm font-semibold text-gray-700">
       {label}

@@ -1,7 +1,7 @@
 "use client"; //use because clients in app folder
 import React from "react";
 import Heading from "./utils/Heading";
-import SignUp from "./services/complete_profile/component/Test";
+
 import HomePage from "./service/home/Hero";
 import Footer from "./service/home/Footer";
 

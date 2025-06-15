@@ -1,45 +1,32 @@
-// remove dark mode
 "use client";
 import Link from "next/link";
-import React, { FC, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
-
 import NavItems from "../../utils/PatientNav";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Image from "next/image";
-import avatar from "../../../public/assests/avatar.png";
 import { useSession } from "next-auth/react";
-import {
-  useSocialAuthMutation,
-  useLogoutMutation,
-} from "@/redux/features/auth/authApi";
+import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import LoginPage from "./register/page"; // assuming this is your Login component
+import { RootState } from "@/redux/store";
+import LoginPage from "./register/page";
 
-// type Props = {};
-
-const Header= () => {
+const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-
-  // const dispatch = useDispatch();
-  const { user } = useSelector((state: any) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const { data } = useSession();
   const [socialAuth, { isSuccess }] = useSocialAuthMutation();
-  const [logout] = useLogoutMutation();
-  const router = useRouter();
 
-  console.log(`userlogin data header register`,user)
   // Social login effect
   useEffect(() => {
-    if (!user && data) {
+    if (!user && data?.user) {
       socialAuth({
-        email: data?.user?.email,
-        name: data?.user?.name,
-        avatar: data.user?.image,
+        email: data.user.email || '',
+        name: data.user.name || '',
+        avatar: data.user.image || '',
       });
     }
     if (isSuccess) {
@@ -58,8 +45,8 @@ const Header= () => {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e: any) => {
-      if (!e.target.closest(".dropdown-avatar")) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".dropdown-avatar")) {
         setShowDropdown(false);
       }
     };
@@ -67,19 +54,9 @@ const Header= () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-    const res=  await logout().unwrap();
- 
-      router.push("/");
-    } catch (err) {
-      console.error("Failed to logout:", err);
-    }
-  };
-
   // Close mobile sidebar when clicking overlay
-  const handleCloseSidebar = (e: any) => {
-    if (e.target.id === "screen") {
+  const handleCloseSidebar = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.currentTarget.id === "screen") {
       setOpenSidebar(false);
     }
   };
@@ -116,34 +93,30 @@ const Header= () => {
               {user ? (
                 <div className="relative dropdown-avatar flex items-center space-x-2">
                   <Image
-                    src={user.avatar || avatar}
+                    src={user.avatar || "/assests/avatar.png"}
                     alt="User Avatar"
-                    className="w-[30px] h-[30px] rounded-full cursor-pointer"
+                    width={30}
+                    height={30}
+                    className="rounded-full cursor-pointer"
                     onClick={() => setShowDropdown((prev) => !prev)}
                   />
                   <span className="text-gray-700 hidden sm:block md:block lg:block">{user.name}</span>
 
                   {showDropdown && (
-                    <div className="absolute  mt-2 w-44 bg-white rounded-md shadow-lg border z-50 text-black top-7 right-4 ">
+                    <div className="absolute mt-2 w-44 bg-white rounded-md shadow-lg border z-50 text-black top-7 right-4">
                       <Link
                         href="/profile"
                         className="px-4 py-2 hover:bg-gray-100 block"
                       >
                         Profile
                       </Link>
-                      {/* <button
-                        onClick={handleLogout}
-                        className="text-left w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        Logout
-                      </button> */}
                     </div>
                   )}
                 </div>
               ) : (
                 <HiOutlineUserCircle
                   size={25}
-                  className="cursor-pointer text-black "
+                  className="cursor-pointer text-black"
                   onClick={() => setOpen(true)}
                 />
               )}
@@ -155,7 +128,7 @@ const Header= () => {
       {/* Mobile sidebar */}
       {openSidebar && (
         <div
-          className="fixed w-full h-screen top-0 left-0 z-[99999]  bg-opacity-50"
+          className="fixed w-full h-screen top-0 left-0 z-[99999] bg-opacity-50"
           id="screen"
           onClick={handleCloseSidebar}
         >

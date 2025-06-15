@@ -1,13 +1,13 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import RazorpayButton from "../../component/RazorpayButton"; // Adjust the import path as necessary
+import RazorpayButton from "../components/RazorpayButton"; // Adjust the import path as necessary
 import axios from "axios";
 
 export default function BookServicePage() {
   const params = useSearchParams();
-  const router = useRouter();
+  // const router = useRouter();
   const serviceId = params.get("serviceId")!;
   const [service, setService] = useState<{ name: string; fee: number } | null>(
     null

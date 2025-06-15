@@ -21,10 +21,13 @@ export default async function handler(
     };
     const order = await razorpay.orders.create(options);
     res.status(200).json({ orderId: order.id, amount: order.amount });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Razorpay order creation failed:", error);
-    res.status(500).json({ error: error.message });
+
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Unknown error occurred" });
+    }
   }
 }
-
-

@@ -4,8 +4,8 @@
 // import "../../../../urohealth//app/globals.css";
 
 //import font family
-import { Poppins } from "next/font/google";
-import { Josefin_Sans } from "next/font/google";
+// import { Poppins } from "next/font/google";
+// import { Josefin_Sans } from "next/font/google";
 
 import { Toaster } from "react-hot-toast";
 import Providers from "../Provider";
@@ -17,17 +17,17 @@ import Header from "./component/Header";
 import Footer from "../service/home/Footer"
 import { SocketProvider } from "../context/SocketContext";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-Poppins",
-});
+// const poppins = Poppins({
+//   subsets: ["latin"],
+//   weight: ["400", "500", "600", "700"],
+//   variable: "--font-Poppins",
+// });
 
-const josefin = Josefin_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-Josefin",
-});
+// const josefin = Josefin_Sans({
+//   subsets: ["latin"],
+//   weight: ["400", "500", "600", "700"],
+//   variable: "--font-Josefin",
+// });
 
 // const inter = Inter({ subsets: ["latin"] });
 

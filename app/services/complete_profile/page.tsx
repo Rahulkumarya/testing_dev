@@ -22,7 +22,7 @@ const Page = () => {
 
 
   //checking profile completed or not 
-  const { data, isLoading, isError, refetch } = useCheckProfileQuery(
+  const { data, isLoading, isError, } = useCheckProfileQuery(
     { userId: user?._id, role: user?.role },
     { skip: !user?._id || !user?.role } // ✅ wait until user ID and role are present
   );
@@ -31,7 +31,7 @@ console.log(`data is `,data)
     if (data?.profileCompleted) {
       router.push("/services");
     }
-  }, [data]);
+  }, [data, router]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Something went wrong...</div>;

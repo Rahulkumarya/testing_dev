@@ -1,29 +1,28 @@
 // components/VerifyOtpForm.tsx
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useVerifyOtpMutation } from "../../../../../redux/features/auth/authApi";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../../redux/store";
-import toast from "react-hot-toast";
-// import { Router } from "lucide-react";
-
+// If your store file exports the store, you can use ReturnType to infer RootState:
+import { store } from "../../../../../redux/store";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
+type RootState = ReturnType<typeof store.getState>;
 
+// import { Router } from "lucide-react";
 
 interface FormValues {
   otp: string;
 }
 
 const VerifyOtpForm: React.FC = () => {
-
-  const router =useRouter()
+  const router = useRouter();
   // RTK Query mutation for verifying OTP
-  const [verifyOtp, { isLoading, isError, error, isSuccess }] =
-    useVerifyOtpMutation();
+  const [verifyOtp, { isLoading, isError, isSuccess }] = useVerifyOtpMutation();
 
   // Retrieve the phone number from Redux state
   const phone = useSelector((state: RootState) => state.auth.phone);
@@ -36,24 +35,17 @@ const VerifyOtpForm: React.FC = () => {
         .matches(/^\d{6}$/, "OTP must be 6 digits")
         .required("OTP is required"),
     }),
-    onSubmit: (values) => {
-      // Trigger verifyOtp mutation with entered OTP
-      verifyOtp(values);
-      router.push("/services/complete_profile");
+    onSubmit: async (values) => {
+      try {
+        await verifyOtp(values).unwrap();
+        toast.success("OTP verified successfully!");
+        router.push("/services/complete_profile");
+      } catch (error) {
+        console.error("Verification error:", error);
+        toast.error("Failed to verify OTP. Please try again.");
+      }
     },
   });
-
-  // Show toast notifications on success or error
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     toast.success("Login successful");
-  //   }
-  //   if (isError) {
-  //     // @ts-ignore
-  //     console.log(`error is ${isError}`)
-  //     // toast.error(error?.message || "Failed to verify OTP");
-  //   }
-  // }, [isSuccess, isError, error]);
 
   // If no phone in state, prompt user to go back
   if (!phone) {
@@ -116,8 +108,7 @@ const VerifyOtpForm: React.FC = () => {
           {isError && (
             // Display error text below button if mutation fails
             <p className="text-red-500 text-center text-sm mt-4">
-              {/* @ts-ignore */}
-              {error?.data?.message || "Failed to verify OTP"}
+              Failed to verify OTP. Please try again.
             </p>
           )}
           {isSuccess && (

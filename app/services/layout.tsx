@@ -16,7 +16,7 @@ import React, { FC, useState } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "../component/Loader/Loader";
 import Header from "./components/SeviceHeader"
-import ServiceDashboard from "./pages/ServiceDashboard";
+// import ServiceDashboard from "./pages/ServiceDashboard";
 import Footer from "../service/home/Footer";
 import { SocketProvider } from "@/app/context/SocketContext";
 

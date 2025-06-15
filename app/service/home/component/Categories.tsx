@@ -1,21 +1,32 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 
 const SERVICES_PER_VIEW = 3;
 
-export default function FeaturedCarousel({ services }: { services: any[] }) {
+type Service = {
+  img: string;
+  name: string;
+  type: string;
+  location: string;
+};
+
+export default function FeaturedCarousel({
+  services,
+}: {
+  services: Service[];
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activePage, setActivePage] = useState(0);
   const totalPages = Math.ceil(services.length / SERVICES_PER_VIEW);
 
-  const scrollToPage = (page: number) => {
+  const scrollToPage = useCallback((page: number) => {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
     const scrollAmount = container.offsetWidth * page;
     container.scrollTo({ left: scrollAmount, behavior: "smooth" });
     setActivePage(page);
-  };
+  }, []);
 
   // Sync scroll position to page index
   useEffect(() => {
@@ -30,15 +41,13 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
     return () => container?.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Optional: Auto scroll every 5s
- 
+  // Auto scroll every 5s
   useEffect(() => {
     const interval = setInterval(() => {
       scrollToPage((activePage + 1) % totalPages);
     }, 5000);
     return () => clearInterval(interval);
-  }, [activePage]);
-  
+  }, [activePage, totalPages, scrollToPage]);
 
   return (
     <section className="py-12 px-4 bg-gray-50">

@@ -8,9 +8,9 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
-import Select from "react-select";
-import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
+
 import { useCreateAmbulanceMutation } from "../../../../redux/features/services/ambulance/profileApi";
+import Image from "next/image";
 
 
 // Reusable Form Field Component
@@ -304,7 +304,7 @@ const AmbulanceProfile = () => {
                 </div>
                 {avatarPreview && (
                   <div className="flex justify-center md:justify-start">
-                    <img
+                    <Image
                       src={avatarPreview}
                       alt="Avatar Preview"
                       className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 shadow"

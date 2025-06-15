@@ -8,9 +8,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { store } from "@/redux/store";
-import Select from "react-select";
-import MaskedInputField from "../../../utils/BankAccount/MaskedInputField"
-import { useCreateDiagnosisMutation } from "@/redux/features/services/diagnosis/profileApi";
+
 import { useCreateMedicineMutation } from "@/redux/features/services/medicine/profileApi";
 // Reusable Form Field Component
 export const FormField = ({ label, name, type = "text" }: any) => (

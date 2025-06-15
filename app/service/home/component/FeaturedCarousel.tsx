@@ -1,10 +1,22 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 
-const SERVICES_PER_VIEW = 3;
+interface Location {
+  city?: string;
+  state?: string;
+}
 
-export default function FeaturedCarousel({ services }: { services: any[] }) {
+interface Service {
+  img?: string;
+  serviceName: string;
+  serviceType: string;
+  location?: Location;
+}
+
+// const SERVICES_PER_VIEW = 3;
+
+export default function FeaturedCarousel({ services }: { services: Service[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activePage, setActivePage] = useState(0);
 
@@ -34,7 +46,7 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
 
   const totalPages = Math.ceil(services.length / servicesPerView);
 
-  const scrollToPage = (page: number) => {
+  const scrollToPage = useCallback((page: number) => {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
 
@@ -42,7 +54,7 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
     const scrollAmount = container.offsetWidth * page;
     container.scrollTo({ left: scrollAmount, behavior: "smooth" });
     setActivePage(page);
-  };
+  }, []);
 
   // Sync scroll position to page index
   useEffect(() => {
@@ -63,7 +75,7 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
       scrollToPage((activePage + 1) % totalPages);
     }, 5000);
     return () => clearInterval(interval);
-  }, [activePage, totalPages]);
+  }, [activePage, totalPages, scrollToPage]);
 
   return (
     <section className="py-12 px-4 bg-gray-50">
@@ -100,7 +112,7 @@ export default function FeaturedCarousel({ services }: { services: any[] }) {
               {service.img ? (
                 <Image
                   src={service.img}
-                  alt={service.name || "Service image"}
+                  alt={service.serviceName}
                   width={500}
                   height={300}
                   className="rounded-t-lg object-cover w-full h-[200px]"

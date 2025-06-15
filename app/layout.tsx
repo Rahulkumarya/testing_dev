@@ -10,7 +10,7 @@ import { Josefin_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Providers from "./Provider";
 import { SessionProvider } from "next-auth/react";
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./component/Loader/Loader";
 // import Header from "./services/components/SeviceHeader"
@@ -64,9 +64,7 @@ export default function RootLayout({
 
 const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
-  const [open, setOpen] = useState(false);
-  const [activeItem] = useState(0);
-  const [route, setRoute] = useState("Login");
+ 
   return (
     <>
       {isLoading ? (

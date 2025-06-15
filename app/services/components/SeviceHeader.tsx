@@ -13,7 +13,7 @@ import SignUp from "./Auth/SignUpForm";
 import Verification from "./Auth/VerificationForm";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
-import avatar from "../../../public/assests/avatar.png";
+
 import { useSession } from "next-auth/react";
 import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
@@ -152,7 +152,7 @@ console.log(`user register data serviceheader `,user)
                   {user ? (
                     <div className="relative dropdown-avatar">
                       <Image
-                        src={user.avatar ? user.avatar : avatar}
+                        src={user.avatar ? user.avatar :"/assests/avatar.png"}
                         alt="User Avatar"
                         className="w-[30px] h-[30px] rounded-full cursor-pointer"
                         onClick={() => setShowDropdown((prev) => !prev)} // Toggle on click

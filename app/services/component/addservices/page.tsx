@@ -1,13 +1,13 @@
 "use client"
 import DoctorAddServiceForm from "@/app/services/dashboard/roleSpecificPages/diagnosis/AddServices";
 import DiagnosisAddServiceForm from "../../dashboard/roleSpecificPages/diagnosis/AddServices";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+// import { useRouter } from "next/navigation";
+// import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
 const AddService = () => {
   const user = useSelector((state: store) => state.auth.user);
-  const router = useRouter();
+  // const router = useRouter();
   switch (user.role) {
     case "doctor":
       return (
