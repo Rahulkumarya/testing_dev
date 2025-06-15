@@ -159,12 +159,14 @@ const ClinicServiceForm = () => {
     images.forEach((img, idx) => formData.append(`serviceImages`, img));
 
     try {
-     const res=  await createClinicService(formData).unwrap();
-     console.log(`response of clinic`,res);
+      const res = await createClinicService(formData).unwrap();
+      console.log(`response of clinic`, res);
       toast.success("Service created successfully");
-      action === "save_new"
-        ? formikHelpers.resetForm()
-        : router.push("/services/dashboard");
+      if (action === "save_new") {
+        formikHelpers.resetForm();
+      } else {
+        router.push("/services/dashboard");
+      }
     } catch (err: any) {
       toast.error(err?.data?.message || "Submission failed");
     }

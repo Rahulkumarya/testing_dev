@@ -1,4 +1,3 @@
-
 //3rd
 "use client";
 
@@ -165,9 +164,11 @@ const ResortServiceForm = () => {
     try {
       await createResortService(formData).unwrap();
       toast.success("Service Created");
-      action === "save_new"
-        ? helpers.resetForm()
-        : router.push("/services/dashboard");
+      if (action === "save_new") {
+        helpers.resetForm();
+      } else {
+        router.push("/services/dashboard");
+      }
     } catch (e: any) {
       toast.error(e?.data?.message || "Error");
     }

@@ -44,12 +44,10 @@ const dispatch = useDispatch();
 const {user} = useSelector((state: store) => state.auth.user);
 console.log(`user_name `,user);
 
-if(user){
-    const { data, isLoading, isError, refetch } = useCheckProfileQuery(
-      { userId: user?._id, role: user?.role },
-      { skip: !user?._id || !user?.role }
-    );
-}
+const { data, isLoading, isError, refetch } = useCheckProfileQuery(
+  { userId: user?._id, role: user?.role },
+  { skip: !user?._id || !user?.role }
+);
 
 
 

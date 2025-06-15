@@ -1,6 +1,3 @@
-
-//5th
-
 "use client";
 
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
@@ -169,9 +166,11 @@ const RadiologyServiceForm = () => {
     try {
       await createRadiologyService(formData).unwrap();
       toast.success("Service added!");
-      action === "save_new"
-        ? formikHelpers.resetForm()
-        : router.push("/services/dashboard");
+      if (action === "save_new") {
+        formikHelpers.resetForm();
+      } else {
+        router.push("/services/dashboard");
+      }
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed");
     }
