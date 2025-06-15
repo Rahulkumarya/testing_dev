@@ -1,8 +1,3 @@
-
-
-
-
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -31,14 +26,9 @@ const AddServices = ({ onCancel }: { onCancel: () => void }) => {
         className="flex items-center gap-2"
       >
         <ArrowLeft className="w-4 h-4" />
-        
       </Button>
       {/* Your add service form elements here */}
-      <AddService
-        onCancel={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
+      <AddService onCancel={onCancel} />
     </div>
   );
 };

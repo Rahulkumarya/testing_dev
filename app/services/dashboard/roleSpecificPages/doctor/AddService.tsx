@@ -13,7 +13,11 @@ import ClinicServiceForm from "../clinic/ClinicAddService";
 import ResortServiceForm from "../resort/AddServices";
 import TourOperatorServiceForm from "../touroperator/AddService";
 
-const DoctorAddServiceForm = () => {
+interface AddServiceProps {
+  onCancel: () => void;
+}
+
+const DoctorAddServiceForm: React.FC<AddServiceProps> = ({ onCancel }) => {
   // For image preview
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -307,31 +311,20 @@ const DoctorAddServiceForm = () => {
               📍Share Location
             </button>
 
-            {/* Submit Button */}
-            {/* <button
-              type="submit"
-              className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
-            >
-              Submit Service
-            </button> */}
-
-            <div className="flex gap-6">
+            {/* Submit and Cancel Buttons */}
+            <div className="flex gap-4">
               <button
                 type="submit"
-                className="bg-blue-500 text-white w-[90%] py-2 rounded hover:bg-blue-700 "
+                className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
               >
                 Submit Service
               </button>
-
               <button
                 type="button"
-                onClick={() => {
-                  formik.handleSubmit(); // Trigger same form submission
-                  // resetForm is already called inside onSubmit after success
-                }}
-                className="bg-green-500 text-white w-[90%] py-2 rounded hover:bg-green-700"
+                onClick={onCancel}
+                className="bg-gray-600 text-white w-full py-2 rounded hover:bg-gray-700"
               >
-                Save and Add New
+                Cancel
               </button>
             </div>
           </form>
