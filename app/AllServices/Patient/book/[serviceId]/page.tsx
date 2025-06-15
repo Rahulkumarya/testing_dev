@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import RazorpayButton from "../../component/RazorpayButton"; // Adjust the import path as necessary
+import RazorpayButton from "../components/RazorpayButton"; // Adjust the import path as necessary
 import axios from "axios";
 
 export default function BookServicePage() {
