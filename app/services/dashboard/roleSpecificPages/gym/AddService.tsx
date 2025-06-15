@@ -9,7 +9,11 @@ import {RootState} from "../../../../../redux/store"
 import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
 import Image from "next/image";
 
-const DoctorAddServiceForm = () => {
+interface AddServiceProps {
+  onCancel: () => void;
+}
+
+const DoctorAddServiceForm: React.FC<AddServiceProps> = ({ onCancel }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(true);
   const [discountAmount, setDiscountAmount] = useState<number | null>(null);
@@ -230,12 +234,21 @@ const formik = useFormik({
             </div>
 
             {editMode && (
-              <button
-                type="submit"
-                className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
-              >
-                Submit Service
-              </button>
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
+                >
+                  Submit Service
+                </button>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="bg-gray-600 text-white w-full py-2 rounded hover:bg-gray-700"
+                >
+                  Cancel
+                </button>
+              </div>
             )}
 
            

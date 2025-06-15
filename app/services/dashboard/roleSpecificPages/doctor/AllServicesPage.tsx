@@ -64,7 +64,7 @@ const ServicesPage = () => {
       }
     );
 
-  console.log(`isError and data ${isError.message} and data is ${data} `,isError,data);
+
 
 
   const [deleteService] = useDeleteDoctorServiceMutation();
