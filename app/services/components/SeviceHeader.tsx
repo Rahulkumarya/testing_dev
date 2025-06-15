@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect, Dispatch, SetStateAction } from "react";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
 
 import NavItems from "../../utils/SerNavItems";
@@ -11,17 +11,14 @@ import Verification from "./Auth/VerificationForm";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 
-import { useSession, signIn } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import { useSession, signIn, SignInResponse } from "next-auth/react";
+import { useSocialAuthMutation, useLogoutMutation, useLoginMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
-import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
-import {resetOnboarding} from "@/redux/features/onboarding/onboardingSlice"
-import { socialAuth, userLoggedIn } from "@/redux/features/auth/authSlice";
+import { resetOnboarding } from "@/redux/features/onboarding/onboardingSlice";
+import { userLoggedIn } from "@/redux/features/auth/authSlice";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
-import { setRoute } from "@/redux/features/onboarding/onboardingSlice";
 
 type RouteType = "Login" | "Sign-up" | "Verification";
 
@@ -29,26 +26,26 @@ type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
   activeItem: number;
-  route: string;
-  setRoute: (route: string) => void;
+  route: RouteType;
+  setRoute: Dispatch<SetStateAction<RouteType>>;
   logOutHandler: () => void;
 };
 
-const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute, }) => {
+const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
     const dispatch = useDispatch();
     const { user } = useSelector((state: any) => state.auth);
     const { data } = useSession();
-    const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+    const [socialAuthMutation, { isSuccess: isSocialAuthSuccess }] = useSocialAuthMutation();
     const [showDropdown, setShowDropdown] = useState(false);
-const [logout,{isLoading}]=useLogoutMutation()
-const router=useRouter();
+    const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation();
+    const router = useRouter();
 
-console.log(`user register data serviceheader `,user)
+    console.log(`user register data serviceheader `,user)
     const handleLogout = async() => {
       try {
-        const res=await logout().unwrap();
+        const res = await logout().unwrap();
         console.log(`response logout`,res);
         dispatch(resetOnboarding());   //onboarding reset after logout 
         // Optionally redirect or show a message after logout
@@ -62,16 +59,16 @@ console.log(`user register data serviceheader `,user)
 
     useEffect(() => {
         if (!user && data) {
-            socialAuth({
-                emal: data?.user?.email,
+            socialAuthMutation({
+                email: data?.user?.email,
                 name: data?.user?.name,
                 avatar: data.user?.image,
             });
         }
-        if (isSuccess) {
+        if (isSocialAuthSuccess) {
             toast.success("Login Successfully");
         }
-    }, [data, isSuccess, socialAuth, user]);
+    }, [data, isSocialAuthSuccess, socialAuthMutation, user]);
 
 
 
@@ -87,8 +84,9 @@ console.log(`user register data serviceheader `,user)
     }, []);
     //handle close after login pop
     useEffect(() => {
-      const handleClickOutside = (e: any) => {
-        if (!e.target.closest(".dropdown-avatar")) {
+      const handleClickOutside = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".dropdown-avatar")) {
           setShowDropdown(false);
         }
       };
@@ -104,14 +102,14 @@ console.log(`user register data serviceheader `,user)
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const handleClose = (e: any) => {
+    const handleClose = (e: React.MouseEvent) => {
         if (e.target.id === "screen") {
             setOpenSidebar(false);
         }
     };
 
     const [showModal, setShowModal] = useState(false);
-    const [login, { isLoading }] = useLoginMutation();
+    const [login, { isLoading: isLoginLoading }] = useLoginMutation();
 
     const formik = useFormik({
       initialValues: {
@@ -387,10 +385,10 @@ console.log(`user register data serviceheader `,user)
                     </div>
                     <button
                       type="submit"
-                      disabled={isLoading}
+                      disabled={isLoginLoading}
                       className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
-                      {isLoading ? "Logging in..." : "Login"}
+                      {isLoginLoading ? "Logging in..." : "Login"}
                     </button>
                   </form>
                 </div>
