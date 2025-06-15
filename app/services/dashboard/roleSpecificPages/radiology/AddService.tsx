@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { useCreateRadiologyServiceMutation } from "../../../../../redux/features/services/radiology/serviceApi";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 
 // Define static options
 const CATEGORIES = [
@@ -42,7 +42,7 @@ const RadiologyServiceForm = () => {
   // Redux mutation hook + loading state
   const [createRadiologyService, { isLoading }] =
     useCreateRadiologyServiceMutation();
-  const user = useSelector((state: store) => state.auth.user);
+    const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
   const [action, setAction] = useState<"save" | "save_new">("save");
 

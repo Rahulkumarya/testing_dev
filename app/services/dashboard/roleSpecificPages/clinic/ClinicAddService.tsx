@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useCreateClinicServiceMutation } from "../../../../../redux/features/services/clinic/serviceApi";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { store } from "@/redux/store";
+import { RootState } from "@/redux/store";
 // import styles from "../../../../styles/Service.styles/styles"; // CSS module exported as TS
 import styles from "../../../../styles/Service.styles"
 // Define static options
@@ -42,7 +42,7 @@ const ClinicServiceForm = () => {
   const [previews, setPreviews] = useState<string[]>([]);
 
   const [createClinicService, { isLoading }] = useCreateClinicServiceMutation();
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state:RootState) => state.auth.user);
   const router = useRouter();
   const [action, setAction] = useState<"save" | "save_new">("save");
 

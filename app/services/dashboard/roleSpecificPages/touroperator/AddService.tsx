@@ -5,7 +5,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { store } from "../../../../../redux/store";
+import { RootState } from "../../../../../redux/store";
 import { useCreateTourServiceMutation } from "../../../../../redux/features/services/resort/serviceApi";
 import { useRouter } from "next/navigation";
 import { Calendar, Clock, MapPin } from "lucide-react";
@@ -26,7 +26,7 @@ const TourOperatorServiceForm = () => {
     "Insurance",
   ];
 
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   //   const [createTourService] = useCreateTourOperatorServiceMutation();
   const [createTourService, { isLoading, isSuccess }] =
     useCreateTourServiceMutation();

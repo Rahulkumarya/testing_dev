@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FaUpload, FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import {store} from "../../../../../redux/store"
+import {RootState} from "../../../../../redux/store"
 import { useCreateAmbulanceServiceMutation } from "../../../../../redux/features/services/ambulance/serviceApi";
 
 const DoctorAddServiceForm = () => {
@@ -14,7 +14,7 @@ const DoctorAddServiceForm = () => {
   const [discountAmount, setDiscountAmount] = useState<number | null>(null);
   const [showAddMore, setShowAddMore] = useState(true);
 const [createAmbulanceService, { isLoading, isError }] = useCreateAmbulanceServiceMutation();
-const user = useSelector((state: store) => state.auth.user);
+const user = useSelector((state: RootState) => state.auth.user);
 const formik = useFormik({
   initialValues: {
     userId: user?._id,

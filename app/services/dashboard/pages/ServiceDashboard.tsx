@@ -17,7 +17,7 @@ import { SiGreatlearning } from "react-icons/si";
 import { GiGrowth } from "react-icons/gi";
 import { BsCashStack } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import { store } from "../../../../redux/store";
+import { RootState } from "../../../../redux/store";
 import Sidebar from "./../layout/Sidebar";
 import dynamic from "next/dynamic";
 import DashboardLayout from "./../layout/DashboardLayout";
@@ -69,7 +69,7 @@ const radiologyMenu = [
 ];
 
 const ServiceDashboard = () => {
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [activePage, setActivePage] = useState("DashboardKpi");
 
   const getMenuByRole = (role: string) => {

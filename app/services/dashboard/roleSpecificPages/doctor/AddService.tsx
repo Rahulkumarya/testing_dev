@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FaUpload, FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { store } from "../../../../../redux/store";
+import { RootState } from "../../../../../redux/store";
 import { useCreateDoctorServiceMutation } from "@/redux/features/services/dprofile/ServiceApi";
 import toast from "react-hot-toast";
 import RadiologyServiceForm from "../radiology/AddService";
@@ -28,7 +28,7 @@ const DoctorAddServiceForm = () => {
     useCreateDoctorServiceMutation();
 
   // Get user from redux store
-  const user = useSelector((state: store) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   // Geolocation state for location fields
   const [geo, setGeo] = useState({
